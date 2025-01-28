@@ -1,3 +1,4 @@
+const BASE_URL_NGROK = 'https://winning-lately-dodo.ngrok-free.app/';
 const BASE_URL = 'http://localhost:3000/';
 
 class ProductService {
@@ -6,6 +7,7 @@ class ProductService {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
       },
     });
 

@@ -76,6 +76,9 @@ export const Header = () => {
               </a>
             )}
           </li>
+          <li>
+            <a href="/user/carrinho">sacola</a>
+          </li>
         </ul>
       </nav>
     </header>
