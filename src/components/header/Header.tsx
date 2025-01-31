@@ -4,6 +4,7 @@ export const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('');
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -12,6 +13,19 @@ export const Header = () => {
       setUserName(user.user.name);
       setIsLoggedIn(true);
     }
+
+    const updateCartCount = () => {
+      const storedCart = localStorage.getItem('cart');
+      if (storedCart) {
+        const cart = JSON.parse(storedCart);
+        const totalItems = cart.reduce((acc: any, item: { quantity: any }) => acc + item.quantity, 0);
+        setCartCount(totalItems);
+      } else {
+        setCartCount(0);
+      }
+    };
+    updateCartCount();
+    window.addEventListener('storage', updateCartCount);
   }, []);
 
   const handleLogout = () => {
@@ -50,7 +64,7 @@ export const Header = () => {
           <li className="relative">
             {isLoggedIn ? (
               <div>
-                <button onClick={toggleDropdown} className="hover:tesx-[#e967a8]">
+                <button onClick={toggleDropdown} className="hover:text-[#e967a8]">
                   {userName}
                 </button>
                 {dropdownVisible && (
@@ -76,8 +90,15 @@ export const Header = () => {
               </a>
             )}
           </li>
-          <li>
-            <a href="/user/carrinho">sacola</a>
+          <li className="relative">
+            <a href="/carrinho" className="relative">
+              <img src="/sacola.png" alt="Sacola" className="w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-2">
+                  {cartCount}
+                </span>
+              )}
+            </a>
           </li>
         </ul>
       </nav>

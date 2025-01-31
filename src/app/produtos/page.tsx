@@ -54,7 +54,7 @@ export default function Produtos() {
   const handleQuantityChange = (productId: number, value: number) => {
     setQuantities(prev => ({
       ...prev,
-      [productId]: Math.min(10, Math.max(1, value)),
+      [productId]: Math.min(100, Math.max(1, value)),
     }));
   };
 
@@ -67,11 +67,17 @@ export default function Produtos() {
   };
 
   const handleAddToCart = (product: Product) => {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    console.log(cart);
     const quantity = quantities[product.id];
-    const total = (quantity * product.preco) / 100;
-    console.log(`Adicionado ao carrinho: ${product.nome}, Quantidade: ${quantity}, Total: R$ ${total.toFixed(2)}`);
+    const existingProductIndex = cart.findIndex((item: Product) => item.id === product.id);
 
-    // Falta implementar o carrinho
+    if (existingProductIndex !== -1) {
+      cart[existingProductIndex].quantity += quantity;
+    } else {
+      cart.push({ ...product, quantity });
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
   };
 
   const openProductModal = (product: Product) => {

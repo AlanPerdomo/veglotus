@@ -1,5 +1,5 @@
+const BASE_URL_NGROK = 'https://winning-lately-dodo.ngrok-free.app/';
 const BASE_URL = 'http://localhost:3000/';
-
 class UserService {
   async cadastrar(data: any) {
     return await fetch(BASE_URL + 'user/cadastrar', {
