@@ -42,15 +42,19 @@ export default function Carrinho() {
     updateCart(updatedCart);
   };
 
-  const concluirPedido = () => {
+  const concluirPedido = () => {};
+
+  const totalPrice = cart.reduce((acc, item) => acc + (item.preco * item.quantity) / 100, 0);
+
+  const handlePayment = async () => {
     const user = localStorage.getItem('user');
     if (!user) {
       alert('Usuário não autenticado!');
       window.location.href = '/user/login';
       return;
     }
-
     const userId = JSON.parse(user)?.user?.id;
+
     if (!userId) {
       alert('Erro ao obter dados do usuário.');
       return;
@@ -59,41 +63,46 @@ export default function Carrinho() {
     const data = {
       userId: userId,
       produtos: cart,
+      paymentStatus: 'PENDENTE',
     };
 
     orderService
       .save(data)
       .then(() => {
         alert('Pedido realizado com sucesso!');
-        localStorage.removeItem('cart');
         setCart([]);
+        localStorage.removeItem('cart');
       })
       .catch(() => {
         alert('Erro ao realizar o pedido.');
       });
-  };
+    // console.log(cart);
+    // console.log(user);
+    // const response = await fetch('http://localhost:3000/pagamento/criar-preferencia', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({
+    //     userId: userId,
+    //     produtos: cart.map(item => ({
+    //       id: item.id,
+    //       nome: item.nome,
+    //       quantity: item.quantity,
+    //       preco: item.preco,
+    //       category: item.categoria,
+    //       description: item.descricao,
+    //     })),
+    //   }),
+    // });
 
-  const totalPrice = cart.reduce((acc, item) => acc + (item.preco * item.quantity) / 100, 0);
-
-  const handlePayment = async () => {
-    console.log(cart);
-    const response = await fetch('http://localhost:3000/pagamento/criar-preferencia', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        produtos: cart.map(item => ({
-          id: item.id,
-          nome: item.nome,
-          quantity: item.quantity,
-          preco: item.preco,
-        })),
-      }),
-    });
-
-    const data = await response.json();
-    if (data.id) {
-      window.location.href = data.init_point;
-    }
+    // const responseData = await response.json();
+    // // console.log(data);
+    // if (responseData.id) {
+    //   // window.location.href = data.init_point;
+    //   // window.location.href = data.sandbox_init_point;
+    //   // 6666336041257509
+    //   // 6666336041257509
+    //   // 2240991837
+    // }
   };
 
   return (
