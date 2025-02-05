@@ -10,6 +10,7 @@ export default function Login() {
 
   useEffect(() => {
     const token = localStorage.getItem('user');
+
     if (token) {
       window.location.href = '/home';
     }
@@ -20,13 +21,11 @@ export default function Login() {
 
     const response = await userService.login(email, password);
 
-    if (!response.ok) {
-      console.log('cu');
-      const errorData = await response.json();
-      setErrorMessage(errorData.message || 'Erro ao realizar login.');
-    } else {
+    if (response.ok) {
       alert('Login realizado com sucesso!');
       window.location.href = '/';
+    } else {
+      setErrorMessage('Email ou senha incorretos');
     }
   };
 
