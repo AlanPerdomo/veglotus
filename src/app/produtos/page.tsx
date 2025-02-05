@@ -5,11 +5,11 @@ import { productService } from '@/service/product.service';
 export default function Produtos() {
   interface Product {
     id: number;
-    nome: string;
-    descricao: string;
-    preco: number;
-    imagem: string;
-    categoria: string;
+    name: string;
+    description: string;
+    price: number;
+    image: string;
+    category: string;
   }
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -28,7 +28,7 @@ export default function Produtos() {
         setProducts(data);
 
         const initialExpandedState = data.reduce((acc: Record<string, boolean>, product: Product) => {
-          acc[product.categoria] = true;
+          acc[product.category] = true;
           return acc;
         }, {});
 
@@ -47,7 +47,7 @@ export default function Produtos() {
 
   useEffect(() => {
     const lowerCaseSearch = search.toLowerCase();
-    const filtered = products.filter(product => product.nome.toLowerCase().includes(lowerCaseSearch));
+    const filtered = products.filter(product => product.name.toLowerCase().includes(lowerCaseSearch));
     setFilteredProducts(filtered);
   }, [search, products]);
 
@@ -93,9 +93,9 @@ export default function Produtos() {
   };
 
   const groupedProducts = filteredProducts.reduce<Record<string, Product[]>>((acc, product) => {
-    const { categoria } = product;
-    if (!acc[categoria]) acc[categoria] = [];
-    acc[categoria].push(product);
+    const { category } = product;
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(product);
     return acc;
   }, {});
 
@@ -141,10 +141,10 @@ export default function Produtos() {
                   className="border rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow bg-white p-4 max-w-sm "
                   onClick={() => openProductModal(product)}
                 >
-                  <img src={product.imagem} alt={product.nome} className="w-full h-32 object-cover" />
+                  <img src={product.image} alt={product.name} className="w-full h-32 object-cover" />
                   <div className="p-2">
-                    <h3 className="text-sm text-black font-semibold truncate">{product.nome}</h3>
-                    <p className="text-green-600 font-bold text-sm">R$ {(product.preco / 100).toFixed(2)}</p>
+                    <h3 className="text-sm text-black font-semibold truncate">{product.name}</h3>
+                    <p className="text-green-600 font-bold text-sm">R$ {(product.price / 100).toFixed(2)}</p>
                   </div>
                 </div>
               ))}
@@ -161,13 +161,13 @@ export default function Produtos() {
               &times;
             </button>
             <img
-              src={selectedProduct.imagem}
-              alt={selectedProduct.nome}
+              src={selectedProduct.image}
+              alt={selectedProduct.name}
               className="w-full h-full object-cover rounded-md mb-4"
             />
-            <h3 className="text-xl font-bold text-black mb-2">{selectedProduct.nome}</h3>
-            <p className="text-gray-700 mb-4">{selectedProduct.descricao}</p>
-            <p className="text-green-600 font-bold text-lg">R$ {(selectedProduct.preco / 100).toFixed(2)}</p>
+            <h3 className="text-xl font-bold text-black mb-2">{selectedProduct.name}</h3>
+            <p className="text-gray-700 mb-4">{selectedProduct.description}</p>
+            <p className="text-green-600 font-bold text-lg">R$ {(selectedProduct.price / 100).toFixed(2)}</p>
             <div className="flex items-center mb-4">
               <button
                 onClick={() => decrementQuantity(selectedProduct.id)}
@@ -194,7 +194,7 @@ export default function Produtos() {
               onClick={() => handleAddToCart(selectedProduct)}
               className="w-full bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold py-2 rounded-md"
             >
-              Adicionar ao Carrinho R$ {((quantities[selectedProduct.id] * selectedProduct.preco) / 100).toFixed(2)}
+              Adicionar ao Carrinho R$ {((quantities[selectedProduct.id] * selectedProduct.price) / 100).toFixed(2)}
             </button>
           </div>
         </div>

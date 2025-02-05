@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 
 interface CartItem {
   id: string;
-  nome: string;
-  preco: number;
-  descricao?: string;
-  imagem: string;
-  categoria?: string;
+  name: string;
+  price: number;
+  description?: string;
+  image: string;
+  category?: string;
   quantity: number;
 }
 
@@ -44,7 +44,7 @@ export default function Carrinho() {
 
   const concluirPedido = () => {};
 
-  const totalPrice = cart.reduce((acc, item) => acc + (item.preco * item.quantity) / 100, 0);
+  const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.quantity) / 100, 0);
 
   const handlePayment = async () => {
     const user = localStorage.getItem('user');
@@ -114,10 +114,10 @@ export default function Carrinho() {
         <div className="space-y-6">
           {cart.map(item => (
             <div key={item.id} className="flex items-center justify-between border p-4 rounded-lg shadow-md bg-white">
-              <img src={item.imagem} alt={item.nome} className="w-16 h-16 object-cover rounded-md" />
+              <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-md" />
               <div className="flex-1 ml-4">
-                <h3 className="text-black font-semibold">{item.nome}</h3>
-                <p className="text-green-600 font-bold">R${(item.preco / 100).toFixed(2)}</p>
+                <h3 className="text-black font-semibold">{item.name}</h3>
+                <p className="text-green-600 font-bold">R${(item.price / 100).toFixed(2)}</p>
               </div>
               <div className="flex items-center">
                 <button

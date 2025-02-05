@@ -10,7 +10,7 @@ class ProductService {
         'ngrok-skip-browser-warning': 'true',
       },
     });
-
+    console.log(response);
     return response;
   }
 }
