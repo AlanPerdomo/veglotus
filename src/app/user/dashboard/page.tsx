@@ -7,8 +7,22 @@ interface User {
   name: string;
   email: string;
   phone?: string;
-  address?: string;
+  cpf?: string;
+  addresses?: Address[];
 }
+
+interface Address {
+  id: string;
+  cep: string;
+  rua: string;
+  numero: string;
+  cidade: string;
+  estado: string;
+  pais: string;
+  complemento: string;
+  isPrincipal: boolean;
+}
+
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [editMode, setEditMode] = useState(false);
@@ -17,16 +31,30 @@ export default function Dashboard() {
     name: '',
     email: '',
     phone: '',
-    address: '',
+    addresses: [],
   });
+  const [principalAddress, setPrincipalAddress] = useState<Address | null>(null);
+  const [addressList, setAddressList] = useState<Address[]>([]);
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [newAddress, setNewAddress] = useState<Partial<Address>>({});
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const token = localStorage.getItem('user');
-      if (token) {
-        const userData = JSON.parse(token).user;
+      const user = localStorage.getItem('user');
+      const addresses = localStorage.getItem('addresses');
+
+      if (user && addresses) {
+        const userData = JSON.parse(user);
+        const addressData = JSON.parse(addresses);
+
         setUser(userData);
-        setFormData(userData);
+        setAddressList(addressData);
+
+        const principalAddress = addressData.find((addr: Address) => addr.isPrincipal);
+        if (principalAddress) {
+          setPrincipalAddress(principalAddress);
+        }
+        setAddressList(addressData);
       }
     };
 
@@ -41,10 +69,45 @@ export default function Dashboard() {
     }));
   };
 
+  const handleAddressChange = (addressId: string) => {
+    const selectedAddress = addressList.find(addr => addr.id === addressId);
+    if (selectedAddress) {
+      setPrincipalAddress(selectedAddress);
+    }
+  };
+
+  const handleSaveNewAddress = async () => {
+    if (!newAddress.rua || !newAddress.numero || !newAddress.cidade || !newAddress.estado) {
+      alert('Preencha todos os campos obrigatórios.');
+      return;
+    }
+
+    const updatedAddressList = [
+      ...addressList,
+      {
+        ...newAddress,
+        id: Date.now().toString(),
+        isPrincipal: false,
+      } as Address,
+    ];
+    setAddressList(updatedAddressList);
+    setNewAddress({});
+    setShowAddressForm(false);
+  };
+
   const handleSave = async () => {
-    const response = await userService.updateUser(formData);
-    if (response.ok) {
-      setUser(formData);
+    const updatedUser = {
+      ...user,
+      ...formData,
+      addresses: addressList.map(addr => ({
+        ...addr,
+        isPrincipal: addr.id === principalAddress?.id,
+      })),
+    };
+
+    const response = await userService.updateUser(updatedUser, localStorage.getItem('token')!);
+    if (response) {
+      setUser(updatedUser);
       setEditMode(false);
       alert('Informações atualizadas com sucesso!');
     } else {
@@ -99,18 +162,42 @@ export default function Dashboard() {
                 />
               </div>
               <div>
-                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-                  Endereço:
+                <label htmlFor="cpf" className="block text-sm font-medium text-gray-700 mb-1">
+                  CPF:
                 </label>
                 <input
                   type="text"
-                  id="address"
-                  name="address"
-                  value={formData.address || ''}
+                  id="cpf"
+                  name="cpf"
+                  value={formData.cpf || ''}
                   onChange={handleInputChange}
                   className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                 />
               </div>
+              <div>
+                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
+                  Endereço:
+                </label>
+                <select
+                  value={principalAddress?.id || ''}
+                  onChange={e => handleAddressChange(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                >
+                  <option value="">Selecione um endereço</option>
+                  {addressList.map(addr => (
+                    <option key={addr.id} value={addr.id}>
+                      {`${addr.rua}, ${addr.numero}, ${addr.cidade}, ${addr.estado}`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                onClick={() => setShowAddressForm(true)}
+                className="bg-blue-500 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
+              >
+                Adicionar Novo Endereço
+              </button>
+
               <div className="flex justify-end space-x-4">
                 <button
                   onClick={() => setEditMode(false)}
@@ -142,7 +229,11 @@ export default function Dashboard() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Endereço:</label>
-                <p className="text-black">{user.address || 'Não informado'}</p>
+                <p className="text-black">
+                  {principalAddress
+                    ? `${principalAddress.rua}, ${principalAddress.numero}, ${principalAddress.cidade}, ${principalAddress.estado}`
+                    : 'Nenhum endereço principal cadastrado.'}
+                </p>
               </div>
               <div className="flex justify-end">
                 <button

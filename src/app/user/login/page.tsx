@@ -12,7 +12,7 @@ export default function Login() {
     const token = localStorage.getItem('user');
 
     if (token) {
-      window.location.href = '/home';
+      window.location.href = '/produtos';
     }
   });
 
@@ -23,7 +23,7 @@ export default function Login() {
 
     if (response.ok) {
       alert('Login realizado com sucesso!');
-      window.location.href = '/';
+      // window.location.href = '/';
     } else {
       setErrorMessage('Email ou senha incorretos');
     }

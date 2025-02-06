@@ -24,15 +24,18 @@ class UserService {
 
     if (response.ok) {
       const data = await response.json();
-      data.data = await this.getUser(data.access_token);
-      localStorage.setItem('user', JSON.stringify(data));
+      data.user = await this.getUser(data.access_token);
+      data.addresses = await this.getAddresses(data.access_token);
+      localStorage.setItem('token', data.access_token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('addresses', JSON.stringify(data.addresses));
+      localStorage.setItem('isLogged', 'true');
     }
 
     return response;
   }
 
   async getUser(token: string) {
-    console.log(token);
     try {
       const response = await fetch(BASE_URL + 'user/me', {
         method: 'GET',
@@ -41,6 +44,22 @@ class UserService {
         },
       });
 
+      console.log(response);
+
+      return response.json();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getAddresses(token: string) {
+    try {
+      const response = await fetch(BASE_URL + 'endereco/my', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.json();
     } catch (error) {
       console.log(error);
@@ -48,7 +67,24 @@ class UserService {
   }
 
   // still needs to be implemented
-  async updateUser(data: any) {}
+  async updateUser(data: any, token: string) {
+    try {
+      console.log('data:', data);
+      const response = await fetch(BASE_URL + 'user/update-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      console.log(response);
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
 const userService = new UserService();

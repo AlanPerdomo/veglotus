@@ -8,11 +8,9 @@ export const Header = () => {
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    console.log(storedUser);
     if (storedUser) {
       const user = JSON.parse(storedUser);
-      console.log(user);
-      setUserName(user.data.name);
+      setUserName(user.name);
       setIsLoggedIn(true);
     }
 
@@ -75,8 +73,12 @@ export const Header = () => {
                     className="absolute top-8 right-0 bg-gray-200 shadow-lg rounded-lg p-4 text-sm text-gray-700"
                   >
                     <li className="hover:text-[#e967a8]">
-                      <a href="/user/dashboard">Meu Perfil</a>
+                      <a href="/user/dashboard">Perfil</a>
                     </li>
+                    <li className="hover:text-[#e967a8]">
+                      <a href="/user/orders">Meus Pedidos</a>
+                    </li>
+
                     <li className="hover:text-[#e967a8]">
                       <a href="/settings">Configurações</a>
                     </li>
