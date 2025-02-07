@@ -24,11 +24,10 @@ class UserService {
 
     if (response.ok) {
       const data = await response.json();
-      data.user = await this.getUser(data.access_token);
-      data.addresses = await this.getAddresses(data.access_token);
+      await this.getUser(data.access_token);
+      await this.getAddresses(data.access_token);
+
       localStorage.setItem('token', data.access_token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      localStorage.setItem('addresses', JSON.stringify(data.addresses));
       localStorage.setItem('isLogged', 'true');
     }
 
@@ -43,10 +42,8 @@ class UserService {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      console.log(response);
-
-      return response.json();
+      localStorage.setItem('user', JSON.stringify(await response.json()));
+      return response;
     } catch (error) {
       console.log(error);
     }
@@ -60,10 +57,15 @@ class UserService {
           Authorization: `Bearer ${token}`,
         },
       });
-      return response.json();
+      localStorage.setItem('addresses', JSON.stringify(await response.json()));
+      return response;
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async saveAddress(data: any, token: string) {
+    try {
   }
 
   // still needs to be implemented
@@ -79,7 +81,6 @@ class UserService {
         body: JSON.stringify(data),
       });
 
-      console.log(response);
       return response;
     } catch (error) {
       console.log(error);

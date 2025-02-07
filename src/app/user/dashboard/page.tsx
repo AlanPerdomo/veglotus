@@ -2,6 +2,21 @@
 import { userService } from '@/service/user.service';
 import { useEffect, useState } from 'react';
 
+interface Address {
+  id: string;
+  cep: string;
+  rua: string;
+  numero: string;
+  complemento?: string;
+  bairro: string;
+  cidade: string;
+  estado: string;
+  pais?: string;
+  isPrincipal: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 interface User {
   id: string;
   name: string;
@@ -11,54 +26,64 @@ interface User {
   addresses?: Address[];
 }
 
-interface Address {
-  id: string;
-  cep: string;
-  rua: string;
-  numero: string;
-  cidade: string;
-  estado: string;
-  pais: string;
-  complemento: string;
-  isPrincipal: boolean;
-}
-
 export default function Dashboard() {
+  // Estados de informações pessoais
   const [user, setUser] = useState<User | null>(null);
-  const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState<User>({
     id: '',
     name: '',
     email: '',
     phone: '',
-    addresses: [],
+    cpf: '',
   });
-  const [principalAddress, setPrincipalAddress] = useState<Address | null>(null);
-  const [addressList, setAddressList] = useState<Address[]>([]);
+  const [editedFields, setEditedFields] = useState<Record<string, boolean>>({});
+  const [editingFields, setEditingFields] = useState({
+    name: false,
+    email: false,
+    phone: false,
+    cpf: false,
+  });
+
+  // Estados de endereços
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [principalAddressId, setPrincipalAddressId] = useState<string>('');
   const [showAddressForm, setShowAddressForm] = useState(false);
-  const [newAddress, setNewAddress] = useState<Partial<Address>>({});
+  const [addressFormData, setAddressFormData] = useState<Address>({
+    id: '',
+    cep: '',
+    rua: '',
+    numero: '',
+    complemento: '',
+    bairro: '',
+    cidade: '',
+    estado: '',
+    pais: '',
+    isPrincipal: false,
+  });
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const user = localStorage.getItem('user');
-      const addresses = localStorage.getItem('addresses');
-
-      if (user && addresses) {
-        const userData = JSON.parse(user);
-        const addressData = JSON.parse(addresses);
-
+    const fetchData = async () => {
+      // Carrega informações do usuário
+      const userStorage = localStorage.getItem('user');
+      if (userStorage) {
+        const userData = JSON.parse(userStorage);
         setUser(userData);
-        setAddressList(addressData);
-
-        const principalAddress = addressData.find((addr: Address) => addr.isPrincipal);
-        if (principalAddress) {
-          setPrincipalAddress(principalAddress);
+        setFormData(userData);
+      }
+      // Carrega os endereços do localStorage
+      const addressesStorage = localStorage.getItem('addresses');
+      if (addressesStorage) {
+        const addressesData: Address[] = JSON.parse(addressesStorage);
+        setAddresses(addressesData);
+        const principal = addressesData.find(addr => addr.isPrincipal);
+        if (principal) {
+          setPrincipalAddressId(String(principal.id));
+        } else if (addressesData.length > 0) {
+          setPrincipalAddressId(String(addressesData[0].id));
         }
-        setAddressList(addressData);
       }
     };
-
-    fetchUserData();
+    fetchData();
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,188 +92,461 @@ export default function Dashboard() {
       ...prev,
       [name]: value,
     }));
+    setEditedFields(prev => ({
+      ...prev,
+      [name]: true,
+    }));
   };
 
-  const handleAddressChange = (addressId: string) => {
-    const selectedAddress = addressList.find(addr => addr.id === addressId);
-    if (selectedAddress) {
-      setPrincipalAddress(selectedAddress);
+  // Função para mascarar o CPF: exibe apenas os 3 primeiros e os 2 últimos dígitos
+  const maskCPF = (cpf: string): string => {
+    if (!cpf || cpf.length < 5) return cpf;
+    const inicio = cpf.slice(0, 3);
+    const fim = cpf.slice(-2);
+    return `${inicio}.***.***-${fim}`;
+  };
+
+  // Função para formatar o telefone conforme seu tamanho (11 ou 10 dígitos)
+  const formatPhoneNumber = (phone: string): string => {
+    const digits = phone.replace(/\D/g, '');
+    if (digits.length === 11) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    } else if (digits.length === 10) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+    }
+    return phone;
+  };
+
+  // Atualiza a seleção do endereço principal
+  const handlePrincipalAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPrincipalAddressId(e.target.value);
+  };
+
+  // Deletar um endereço e atualizar o localStorage
+  const handleDeleteAddress = (id: string) => {
+    const updatedAddresses = addresses.filter(addr => String(addr.id) !== id);
+    setAddresses(updatedAddresses);
+    localStorage.setItem('addresses', JSON.stringify(updatedAddresses));
+    if (id === principalAddressId) {
+      if (updatedAddresses.length > 0) {
+        setPrincipalAddressId(String(updatedAddresses[0].id));
+      } else {
+        setPrincipalAddressId('');
+      }
     }
   };
 
-  const handleSaveNewAddress = async () => {
-    if (!newAddress.rua || !newAddress.numero || !newAddress.cidade || !newAddress.estado) {
-      alert('Preencha todos os campos obrigatórios.');
+  // Atualiza os campos do formulário de endereço
+  const handleAddressFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setAddressFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Adiciona um novo endereço e atualiza o localStorage
+  const handleAddAddress = () => {
+    if (
+      !addressFormData.rua ||
+      !addressFormData.numero ||
+      !addressFormData.bairro ||
+      !addressFormData.cidade ||
+      !addressFormData.estado
+    ) {
+      alert('Preencha os campos obrigatórios do endereço.');
       return;
     }
-
-    const updatedAddressList = [
-      ...addressList,
-      {
-        ...newAddress,
-        id: Date.now().toString(),
-        isPrincipal: false,
-      } as Address,
-    ];
-    setAddressList(updatedAddressList);
-    setNewAddress({});
+    const newAddress: Address = {
+      ...addressFormData,
+      id: Date.now().toString(),
+      isPrincipal: false,
+    };
+    const updatedAddresses = [...addresses, newAddress];
+    setAddresses(updatedAddresses);
+    localStorage.setItem('addresses', JSON.stringify(updatedAddresses));
+    setAddressFormData({
+      id: '',
+      cep: '',
+      rua: '',
+      numero: '',
+      complemento: '',
+      bairro: '',
+      cidade: '',
+      estado: '',
+      pais: '',
+      isPrincipal: false,
+    });
     setShowAddressForm(false);
+    if (updatedAddresses.length === 1) {
+      setPrincipalAddressId(newAddress.id);
+    }
   };
 
+  // Salva as informações pessoais e atualiza os endereços (definindo o endereço principal)
   const handleSave = async () => {
+    const updatedAddresses = addresses.map(addr => ({
+      ...addr,
+      isPrincipal: String(addr.id) === principalAddressId,
+    }));
+    // Atualiza o usuário com as informações pessoais e os endereços atualizados
     const updatedUser = {
       ...user,
       ...formData,
-      addresses: addressList.map(addr => ({
-        ...addr,
-        isPrincipal: addr.id === principalAddress?.id,
-      })),
+      addresses: updatedAddresses,
     };
 
     const response = await userService.updateUser(updatedUser, localStorage.getItem('token')!);
     if (response) {
       setUser(updatedUser);
-      setEditMode(false);
+      setEditingFields({
+        name: false,
+        email: false,
+        phone: false,
+        cpf: false,
+      });
+      setEditedFields({});
       alert('Informações atualizadas com sucesso!');
+      // Atualiza os endereços no localStorage
+      localStorage.setItem('addresses', JSON.stringify(updatedAddresses));
+      await userService.getUser(localStorage.getItem('token')!);
     } else {
       alert('Erro ao atualizar informações.');
     }
   };
 
+  const userHasChanges = () => Object.values(editedFields).some(field => field);
+
+  const cancelEditingField = (field: keyof typeof editingFields) => {
+    setEditingFields(prev => ({ ...prev, [field]: false }));
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        [field]: (user as any)[field],
+      }));
+    }
+    setEditedFields(prev => ({ ...prev, [field]: false }));
+  };
+
   return (
     <div className="container mx-auto px-4 p-6">
-      <h2 className="text-3xl font-bold text-center mb-6 text-black">Dashboard</h2>
+      <h2 className="text-3xl font-bold text-center mb-6 text-black">Informações Pessoais</h2>
       {user ? (
-        <div className="bg-white shadow-lg rounded-lg p-6 max-w-2xl mx-auto">
-          {editMode ? (
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  Nome:
-                </label>
+        <div className="bg-white shadow-lg rounded-lg p-6 max-w-2xl mx-auto space-y-6 text-black">
+          {/* Nome */}
+          <div className="flex items-center justify-between">
+            <div className="w-full">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                Nome:
+              </label>
+              {editingFields.name ? (
                 <input
                   type="text"
                   id="name"
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </div>
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  E-mail:
-                </label>
+              ) : (
+                <p>{user.name}</p>
+              )}
+            </div>
+            <div className="ml-2">
+              {editingFields.name ? (
+                <button onClick={() => cancelEditingField('name')} className="text-red-500" title="Cancelar edição">
+                  ✖️
+                </button>
+              ) : (
+                <button
+                  onClick={() => setEditingFields(prev => ({ ...prev, name: true }))}
+                  className="text-blue-500"
+                  title="Editar"
+                >
+                  <img className="max-w-[20px]" src="/edit_icon.png" alt="Editar" />
+                </button>
+              )}
+            </div>
+          </div>
+          {/* E-mail */}
+          <div className="flex items-center justify-between">
+            <div className="w-full">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                E-mail:
+              </label>
+              {editingFields.email ? (
                 <input
                   type="email"
                   id="email"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </div>
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                  Telefone:
-                </label>
+              ) : (
+                <p>{user.email}</p>
+              )}
+            </div>
+            <div className="ml-2">
+              {editingFields.email ? (
+                <button onClick={() => cancelEditingField('email')} className="text-red-500" title="Cancelar edição">
+                  ✖️
+                </button>
+              ) : (
+                <button
+                  onClick={() => setEditingFields(prev => ({ ...prev, email: true }))}
+                  className="text-blue-500"
+                  title="Editar"
+                >
+                  <img className="max-w-[20px]" src="/edit_icon.png" alt="Editar" />
+                </button>
+              )}
+            </div>
+          </div>
+          {/* Telefone */}
+          <div className="flex items-center justify-between">
+            <div className="w-full">
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                Telefone:
+              </label>
+              {editingFields.phone ? (
                 <input
                   type="text"
                   id="phone"
                   name="phone"
                   value={formData.phone || ''}
                   onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </div>
-              <div>
-                <label htmlFor="cpf" className="block text-sm font-medium text-gray-700 mb-1">
-                  CPF:
-                </label>
+              ) : (
+                <p>{user.phone ? formatPhoneNumber(user.phone) : 'Não informado'}</p>
+              )}
+            </div>
+            <div className="ml-2">
+              {editingFields.phone ? (
+                <button onClick={() => cancelEditingField('phone')} className="text-red-500" title="Cancelar edição">
+                  ✖️
+                </button>
+              ) : (
+                <button
+                  onClick={() => setEditingFields(prev => ({ ...prev, phone: true }))}
+                  className="text-blue-500"
+                  title="Editar"
+                >
+                  <img className="max-w-[20px]" src="/edit_icon.png" alt="Editar" />
+                </button>
+              )}
+            </div>
+          </div>
+          {/* CPF */}
+          <div className="flex items-center justify-between">
+            <div className="w-full">
+              <label htmlFor="cpf" className="block text-sm font-medium text-gray-700 mb-1">
+                CPF:
+              </label>
+              {editingFields.cpf ? (
                 <input
                   type="text"
                   id="cpf"
                   name="cpf"
                   value={formData.cpf || ''}
                   onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </div>
-              <div>
-                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-                  Endereço:
-                </label>
-                <select
-                  value={principalAddress?.id || ''}
-                  onChange={e => handleAddressChange(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
-                >
-                  <option value="">Selecione um endereço</option>
-                  {addressList.map(addr => (
-                    <option key={addr.id} value={addr.id}>
-                      {`${addr.rua}, ${addr.numero}, ${addr.cidade}, ${addr.estado}`}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <button
-                onClick={() => setShowAddressForm(true)}
-                className="bg-blue-500 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
-              >
-                Adicionar Novo Endereço
-              </button>
-
-              <div className="flex justify-end space-x-4">
-                <button
-                  onClick={() => setEditMode(false)}
-                  className="bg-gray-500 text-white font-medium py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-200"
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={handleSave}
-                  className="bg-green-500 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-600 transition duration-200"
-                >
-                  Salvar
-                </button>
-              </div>
+              ) : (
+                <p>{user.cpf ? maskCPF(user.cpf) : 'Não informado'}</p>
+              )}
             </div>
-          ) : (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nome:</label>
-                <p className="text-black">{user.name}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">E-mail:</label>
-                <p className="text-black">{user.email}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Telefone:</label>
-                <p className="text-black">{user.phone || 'Não informado'}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Endereço:</label>
-                <p className="text-black">
-                  {principalAddress
-                    ? `${principalAddress.rua}, ${principalAddress.numero}, ${principalAddress.cidade}, ${principalAddress.estado}`
-                    : 'Nenhum endereço principal cadastrado.'}
-                </p>
-              </div>
-              <div className="flex justify-end">
-                <button
-                  onClick={() => setEditMode(true)}
-                  className="bg-blue-500 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
-                >
-                  Editar
+            <div className="ml-2">
+              {editingFields.cpf ? (
+                <button onClick={() => cancelEditingField('cpf')} className="text-red-500" title="Cancelar edição">
+                  ✖️
                 </button>
-              </div>
+              ) : (
+                <button
+                  onClick={() => setEditingFields(prev => ({ ...prev, cpf: true }))}
+                  className="text-blue-500"
+                  title="Editar"
+                >
+                  <img className="max-w-[20px]" src="/edit_icon.png" alt="Editar" />
+                </button>
+              )}
+            </div>
+          </div>
+          {/* Botão para salvar alterações das informações pessoais */}
+          {userHasChanges() && (
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={handleSave}
+                disabled={!userHasChanges()}
+                className="bg-green-500 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-600 transition duration-200 disabled:bg-gray-400"
+              >
+                Salvar alterações
+              </button>
             </div>
           )}
         </div>
       ) : (
         <p className="text-center text-gray-500">Carregando...</p>
       )}
+
+      {/* Seção de Endereços */}
+      <h2 className="text-3xl font-bold text-center mb-6 mt-10 text-black">Endereços</h2>
+      <div className="bg-white shadow-lg rounded-lg p-6 max-w-2xl mx-auto space-y-6 text-black">
+        {addresses.length > 0 ? (
+          <>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Endereço Principal</label>
+              <select
+                value={principalAddressId}
+                onChange={handlePrincipalAddressChange}
+                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {addresses.map(addr => (
+                  <option key={addr.id} value={String(addr.id)}>
+                    {`${addr.rua}, ${addr.numero} - ${addr.bairro}, ${addr.cidade} - ${addr.estado}`}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <h3 className="text-lg font-medium mb-2">Meus Endereços</h3>
+              {addresses.map(addr => (
+                <div key={addr.id} className="flex items-center justify-between border p-2 rounded-lg mb-2">
+                  <div>
+                    <p className="text-sm">
+                      {`${addr.rua}, ${addr.numero}${addr.complemento ? `, ${addr.complemento}` : ''}`}
+                    </p>
+                    <p className="text-sm">{`${addr.bairro}, ${addr.cidade} - ${addr.estado}`}</p>
+                    <p className="text-sm">{`CEP: ${addr.cep}`}</p>
+                  </div>
+                  <div>
+                    <button
+                      onClick={() => handleDeleteAddress(String(addr.id))}
+                      className="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-600 transition duration-200"
+                    >
+                      Deletar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className="text-center text-gray-500">Nenhum endereço cadastrado.</p>
+        )}
+        <div>
+          <button
+            onClick={() => setShowAddressForm(prev => !prev)}
+            className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
+          >
+            {showAddressForm ? 'Cancelar' : 'Adicionar Novo Endereço'}
+          </button>
+          {showAddressForm && (
+            <div className="mt-4 space-y-4">
+              <div>
+                <label htmlFor="cep" className="block text-sm font-medium text-gray-700">
+                  CEP:
+                </label>
+                <input
+                  type="text"
+                  id="cep"
+                  name="cep"
+                  value={addressFormData.cep}
+                  onChange={handleAddressFormChange}
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label htmlFor="rua" className="block text-sm font-medium text-gray-700">
+                  Rua:
+                </label>
+                <input
+                  type="text"
+                  id="rua"
+                  name="rua"
+                  value={addressFormData.rua}
+                  onChange={handleAddressFormChange}
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label htmlFor="numero" className="block text-sm font-medium text-gray-700">
+                  Número:
+                </label>
+                <input
+                  type="text"
+                  id="numero"
+                  name="numero"
+                  value={addressFormData.numero}
+                  onChange={handleAddressFormChange}
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label htmlFor="complemento" className="block text-sm font-medium text-gray-700">
+                  Complemento:
+                </label>
+                <input
+                  type="text"
+                  id="complemento"
+                  name="complemento"
+                  value={addressFormData.complemento}
+                  onChange={handleAddressFormChange}
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label htmlFor="bairro" className="block text-sm font-medium text-gray-700">
+                  Bairro:
+                </label>
+                <input
+                  type="text"
+                  id="bairro"
+                  name="bairro"
+                  value={addressFormData.bairro}
+                  onChange={handleAddressFormChange}
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label htmlFor="cidade" className="block text-sm font-medium text-gray-700">
+                  Cidade:
+                </label>
+                <input
+                  type="text"
+                  id="cidade"
+                  name="cidade"
+                  value={addressFormData.cidade}
+                  onChange={handleAddressFormChange}
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label htmlFor="estado" className="block text-sm font-medium text-gray-700">
+                  Estado:
+                </label>
+                <input
+                  type="text"
+                  id="estado"
+                  name="estado"
+                  value={addressFormData.estado}
+                  onChange={handleAddressFormChange}
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <button
+                  onClick={handleAddAddress}
+                  className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-200"
+                >
+                  Salvar Endereço
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
