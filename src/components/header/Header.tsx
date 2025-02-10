@@ -1,4 +1,5 @@
 'use client';
+import { userService } from '@/service/user.service';
 import { useState, useEffect } from 'react';
 export const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);

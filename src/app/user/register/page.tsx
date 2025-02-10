@@ -86,14 +86,13 @@ export default function Register() {
 
     try {
       const response = await userService.cadastrar(data);
-      const responseData = await response.json();
 
       if (response.ok) {
         alert('Usuario cadastrado com sucesso!');
         await userService.login(email, password);
         window.location.href = '/user/login';
       } else {
-        setErrorMessage(responseData.message);
+        setErrorMessage(response.message);
       }
     } catch (error) {
       setErrorMessage('Erro ao registrar usuario: \n' + error);
