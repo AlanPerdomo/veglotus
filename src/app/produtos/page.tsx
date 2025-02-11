@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { productService } from '@/service/product.service';
+import Header from '@/components/header/Header';
 
 export default function Produtos() {
   interface Product {
@@ -66,11 +67,14 @@ export default function Produtos() {
     handleQuantityChange(productId, quantities[productId] - 1);
   };
 
+  const closeProductModal = () => {
+    setSelectedProduct(null);
+  };
+
   const handleAddToCart = (product: Product) => {
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    console.log(cart);
     const quantity = quantities[product.id];
-    const existingProductIndex = cart.findIndex((item: Product) => item.id === product.id);
+    const existingProductIndex = cart.findIndex((item: Product & { quantity?: number }) => item.id === product.id);
 
     if (existingProductIndex !== -1) {
       cart[existingProductIndex].quantity += quantity;
@@ -78,6 +82,10 @@ export default function Produtos() {
       cart.push({ ...product, quantity });
     }
     localStorage.setItem('cart', JSON.stringify(cart));
+
+    // Exibe o aviso para o usuário e fecha o popup
+    alert('Produto adicionado ao carrinho!');
+    closeProductModal();
   };
 
   const openProductModal = (product: Product) => {
@@ -86,10 +94,6 @@ export default function Produtos() {
       [product.id]: 1,
     }));
     setSelectedProduct(product);
-  };
-
-  const closeProductModal = () => {
-    setSelectedProduct(null);
   };
 
   const groupedProducts = filteredProducts.reduce<Record<string, Product[]>>((acc, product) => {
@@ -138,7 +142,7 @@ export default function Produtos() {
               {groupedProducts[categoria].map(product => (
                 <div
                   key={product.id}
-                  className="border rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow bg-white p-4 max-w-sm "
+                  className="border rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow bg-white p-4 max-w-sm"
                   onClick={() => openProductModal(product)}
                 >
                   <img src={product.image} alt={product.name} className="w-full h-32 object-cover" />

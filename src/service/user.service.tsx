@@ -66,8 +66,6 @@ class UserService {
         })
       ).json();
 
-      console.log(response.data.statusCode);
-
       localStorage.setItem('addresses', JSON.stringify(response));
 
       return response;
@@ -96,7 +94,48 @@ class UserService {
     }
   }
 
-  async updateAddress(data: any, token: string) {}
+  async registerAddress(data: any, token: string) {
+    const response = await (
+      await fetch(BASE_URL + 'endereco/cadastrar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      })
+    ).json();
+    return response;
+  }
+
+  async deleteAddress(addressID: string, token: string) {
+    console.log(addressID);
+    const response = await (
+      await fetch(BASE_URL + `endereco/${addressID}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+    ).json();
+
+    return response;
+  }
+
+  async setPrincipalAddress(addressID: string, token: string) {
+    const addressId = addressID;
+    const response = await (
+      await fetch(BASE_URL + `endereco/set-principal/${addressId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+    ).json();
+    return response;
+  }
 }
 
 const userService = new UserService();

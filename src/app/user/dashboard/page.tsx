@@ -44,7 +44,6 @@ export default function Dashboard() {
     cpf: false,
   });
 
-  // Estados de endereços
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [principalAddressId, setPrincipalAddressId] = useState<string>('');
   const [showAddressForm, setShowAddressForm] = useState(false);
@@ -58,19 +57,17 @@ export default function Dashboard() {
     cidade: '',
     estado: '',
     pais: '',
-    isPrincipal: false,
+    isPrincipal: true,
   });
 
   useEffect(() => {
     const fetchData = async () => {
-      // Carrega informações do usuário
       const userStorage = localStorage.getItem('user');
       if (userStorage) {
         const userData = JSON.parse(userStorage);
         setUser(userData);
         setFormData(userData);
       }
-      // Carrega os endereços do localStorage
       const addressesStorage = localStorage.getItem('addresses');
       if (addressesStorage) {
         const addressesData: Address[] = JSON.parse(addressesStorage);
@@ -98,15 +95,6 @@ export default function Dashboard() {
     }));
   };
 
-  // Função para mascarar o CPF: exibe apenas os 3 primeiros e os 2 últimos dígitos
-  const maskCPF = (cpf: string): string => {
-    if (!cpf || cpf.length < 5) return cpf;
-    const inicio = cpf.slice(0, 3);
-    const fim = cpf.slice(-2);
-    return `${inicio}.***.***-${fim}`;
-  };
-
-  // Função para formatar o telefone conforme seu tamanho (11 ou 10 dígitos)
   const formatPhoneNumber = (phone: string): string => {
     const digits = phone.replace(/\D/g, '');
     if (digits.length === 11) {
@@ -117,13 +105,13 @@ export default function Dashboard() {
     return phone;
   };
 
-  // Atualiza a seleção do endereço principal
-  const handlePrincipalAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setPrincipalAddressId(e.target.value);
-  };
-
-  // Deletar um endereço e atualizar o localStorage
-  const handleDeleteAddress = (id: string) => {
+  const handleDeleteAddress = async (id: string) => {
+    const token = localStorage.getItem('token')!;
+    const response = await userService.deleteAddress(id, token);
+    if (!response) {
+      alert('Erro ao deletar endereço.');
+      return;
+    }
     const updatedAddresses = addresses.filter(addr => String(addr.id) !== id);
     setAddresses(updatedAddresses);
     localStorage.setItem('addresses', JSON.stringify(updatedAddresses));
@@ -136,7 +124,6 @@ export default function Dashboard() {
     }
   };
 
-  // Atualiza os campos do formulário de endereço
   const handleAddressFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setAddressFormData(prev => ({
@@ -145,11 +132,12 @@ export default function Dashboard() {
     }));
   };
 
-  // Adiciona um novo endereço e atualiza o localStorage
-  const handleAddAddress = () => {
+  const handleAddAddress = async () => {
     if (
+      !addressFormData.cep ||
       !addressFormData.rua ||
       !addressFormData.numero ||
+      !addressFormData.complemento ||
       !addressFormData.bairro ||
       !addressFormData.cidade ||
       !addressFormData.estado
@@ -159,12 +147,19 @@ export default function Dashboard() {
     }
     const newAddress: Address = {
       ...addressFormData,
-      id: Date.now().toString(),
-      isPrincipal: false,
     };
-    const updatedAddresses = [...addresses, newAddress];
-    setAddresses(updatedAddresses);
-    localStorage.setItem('addresses', JSON.stringify(updatedAddresses));
+
+    const token = localStorage.getItem('token')!;
+    const response = await userService.registerAddress(newAddress, token);
+    if (!response) {
+      alert('Erro ao cadastrar endereço.');
+      return;
+    }
+    console.log('response', response.id);
+    await userService.setPrincipalAddress(response.id, token);
+    await userService.getAddresses(token);
+    setAddresses(prev => [...prev, response]);
+
     setAddressFormData({
       id: '',
       cep: '',
@@ -178,18 +173,17 @@ export default function Dashboard() {
       isPrincipal: false,
     });
     setShowAddressForm(false);
-    if (updatedAddresses.length === 1) {
+    if (addresses.length === 1) {
       setPrincipalAddressId(newAddress.id);
     }
+    window.location.href = '/user/dashboard';
   };
 
-  // Salva as informações pessoais e atualiza os endereços (definindo o endereço principal)
   const handleSave = async () => {
     const updatedAddresses = addresses.map(addr => ({
       ...addr,
       isPrincipal: String(addr.id) === principalAddressId,
     }));
-    // Atualiza o usuário com as informações pessoais e os endereços atualizados
     const updatedUser = {
       ...user,
       ...formData,
@@ -207,12 +201,15 @@ export default function Dashboard() {
       });
       setEditedFields({});
       alert('Informações atualizadas com sucesso!');
-      // Atualiza os endereços no localStorage
       localStorage.setItem('addresses', JSON.stringify(updatedAddresses));
       await userService.getUser(localStorage.getItem('token')!);
     } else {
       alert('Erro ao atualizar informações.');
     }
+  };
+
+  const handleSetPrincipalAddress = async (id: string) => {
+    await userService.setPrincipalAddress(id, localStorage.getItem('token')!);
   };
 
   const userHasChanges = () => Object.values(editedFields).some(field => field);
@@ -263,7 +260,7 @@ export default function Dashboard() {
                   className="text-blue-500"
                   title="Editar"
                 >
-                  <img className="max-w-[20px]" src="/edit_icon.png" alt="Editar" />
+                  <img className="max-w-[20px]" src="/icon_edit.png" alt="Editar" />
                 </button>
               )}
             </div>
@@ -298,7 +295,7 @@ export default function Dashboard() {
                   className="text-blue-500"
                   title="Editar"
                 >
-                  <img className="max-w-[20px]" src="/edit_icon.png" alt="Editar" />
+                  <img className="max-w-[20px]" src="/icon_edit.png" alt="Editar" />
                 </button>
               )}
             </div>
@@ -333,7 +330,7 @@ export default function Dashboard() {
                   className="text-blue-500"
                   title="Editar"
                 >
-                  <img className="max-w-[20px]" src="/edit_icon.png" alt="Editar" />
+                  <img className="max-w-[20px]" src="/icon_edit.png" alt="Editar" />
                 </button>
               )}
             </div>
@@ -354,7 +351,7 @@ export default function Dashboard() {
                   className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               ) : (
-                <p>{user.cpf ? maskCPF(user.cpf) : 'Não informado'}</p>
+                <p>{user.cpf ? user.cpf : 'Não informado'}</p>
               )}
             </div>
             <div className="ml-2">
@@ -364,16 +361,20 @@ export default function Dashboard() {
                 </button>
               ) : (
                 <button
-                  onClick={() => setEditingFields(prev => ({ ...prev, cpf: true }))}
-                  className="text-blue-500"
-                  title="Editar"
+                  onClick={() => {
+                    if (!user?.cpf) {
+                      setEditingFields(prev => ({ ...prev, cpf: true }));
+                    }
+                  }}
+                  disabled={!!user?.cpf}
+                  className={`text-blue-500 ${user?.cpf ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  title={user?.cpf ? 'CPF não pode ser editado' : 'Editar'}
                 >
-                  <img className="max-w-[20px]" src="/edit_icon.png" alt="Editar" />
+                  <img className="max-w-[20px]" src="/icon_edit.png" alt="Editar" />
                 </button>
               )}
             </div>
           </div>
-          {/* Botão para salvar alterações das informações pessoais */}
           {userHasChanges() && (
             <div className="flex justify-end mt-4">
               <button
@@ -394,25 +395,27 @@ export default function Dashboard() {
       <h2 className="text-3xl font-bold text-center mb-6 mt-10 text-black">Endereços</h2>
       <div className="bg-white shadow-lg rounded-lg p-6 max-w-2xl mx-auto space-y-6 text-black">
         {addresses.length > 0 ? (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Endereço Principal</label>
-              <select
-                value={principalAddressId}
-                onChange={handlePrincipalAddressChange}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          <div>
+            <h3 className="text-lg font-medium mb-2">Selecione seu endereço:</h3>
+            {addresses.map(addr => (
+              <div
+                key={addr.id}
+                className={`flex items-center justify-between border p-2 rounded-lg mb-2 ${
+                  principalAddressId === String(addr.id) ? 'bg-blue-100' : 'bg-white'
+                }`}
               >
-                {addresses.map(addr => (
-                  <option key={addr.id} value={String(addr.id)}>
-                    {`${addr.rua}, ${addr.numero} - ${addr.bairro}, ${addr.cidade} - ${addr.estado}`}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <h3 className="text-lg font-medium mb-2">Meus Endereços</h3>
-              {addresses.map(addr => (
-                <div key={addr.id} className="flex items-center justify-between border p-2 rounded-lg mb-2">
+                <div className="flex items-center">
+                  {/* Caixa de seleção (radio) para definir o endereço principal */}
+                  <input
+                    type="radio"
+                    name="principalAddress"
+                    checked={principalAddressId === String(addr.id)}
+                    onChange={async () => {
+                      setPrincipalAddressId(String(addr.id));
+                      await handleSetPrincipalAddress(String(addr.id));
+                    }}
+                    className="mr-2"
+                  />
                   <div>
                     <p className="text-sm">
                       {`${addr.rua}, ${addr.numero}${addr.complemento ? `, ${addr.complemento}` : ''}`}
@@ -420,18 +423,20 @@ export default function Dashboard() {
                     <p className="text-sm">{`${addr.bairro}, ${addr.cidade} - ${addr.estado}`}</p>
                     <p className="text-sm">{`CEP: ${addr.cep}`}</p>
                   </div>
-                  <div>
-                    <button
-                      onClick={() => handleDeleteAddress(String(addr.id))}
-                      className="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-600 transition duration-200"
-                    >
-                      Deletar
-                    </button>
-                  </div>
                 </div>
-              ))}
-            </div>
-          </>
+                <div>
+                  {/* Botão de deletar com ícone de lixeira */}
+                  <button
+                    onClick={() => handleDeleteAddress(String(addr.id))}
+                    className="text-red-500 hover:text-red-700 transition duration-200"
+                    title="Deletar endereço"
+                  >
+                    <img className="max-w-[20px]" src="/icon_trash.png" alt="Deletar" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         ) : (
           <p className="text-center text-gray-500">Nenhum endereço cadastrado.</p>
         )}

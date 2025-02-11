@@ -1,6 +1,7 @@
 'use client';
 import { orderService } from '@/service/order.service';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface CartItem {
   id: string;
@@ -11,9 +12,9 @@ interface CartItem {
   category?: string;
   quantity: number;
 }
-
 export default function Carrinho() {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const storedCart = localStorage.getItem('cart');
@@ -24,7 +25,6 @@ export default function Carrinho() {
     setCart(newCart);
     localStorage.setItem('cart', JSON.stringify(newCart));
   };
-
   const removeFromCart = (productId: string) => {
     const updatedCart = cart.filter(item => item.id !== productId);
     updateCart(updatedCart);
@@ -42,19 +42,18 @@ export default function Carrinho() {
     updateCart(updatedCart);
   };
 
-  const concluirPedido = () => {};
-
   const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.quantity) / 100, 0);
 
-  const handlePayment = async () => {
+  // Função para fechar o pedido e redirecionar para a página de pagamento
+  const handleCloseOrder = async () => {
     const user = localStorage.getItem('user');
     if (!user) {
       alert('Usuário não autenticado!');
-      window.location.href = '/user/login';
+      router.push('/user/login');
       return;
     }
-    const userId = JSON.parse(user)?.user?.id;
-
+    // Supondo que a estrutura do objeto de usuário esteja aninhada (ajuste se necessário)
+    const userId = JSON.parse(user)?.user?.id || JSON.parse(user)?.id;
     if (!userId) {
       alert('Erro ao obter dados do usuário.');
       return;
@@ -66,45 +65,25 @@ export default function Carrinho() {
       paymentStatus: 'PENDENTE',
     };
 
-    orderService
-      .save(data)
-      .then(() => {
+    try {
+      const orderResponse = await orderService.save(data);
+      if (orderResponse && orderResponse.id) {
         alert('Pedido realizado com sucesso!');
+        // Salva os dados do pedido para a página de pagamento
+        localStorage.setItem('order', JSON.stringify(orderResponse));
+        // Limpa o carrinho
         setCart([]);
         localStorage.removeItem('cart');
-      })
-      .catch(() => {
+        // Redireciona para a página de pagamento
+        router.push('/pagamento');
+      } else {
         alert('Erro ao realizar o pedido.');
-      });
-    // console.log(cart);
-    // console.log(user);
-    // const response = await fetch('http://localhost:3000/pagamento/criar-preferencia', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //     userId: userId,
-    //     produtos: cart.map(item => ({
-    //       id: item.id,
-    //       nome: item.nome,
-    //       quantity: item.quantity,
-    //       preco: item.preco,
-    //       category: item.categoria,
-    //       description: item.descricao,
-    //     })),
-    //   }),
-    // });
-
-    // const responseData = await response.json();
-    // // console.log(data);
-    // if (responseData.id) {
-    //   // window.location.href = data.init_point;
-    //   // window.location.href = data.sandbox_init_point;
-    //   // 6666336041257509
-    //   // 6666336041257509
-    //   // 2240991837
-    // }
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Erro ao realizar o pedido.');
+    }
   };
-
   return (
     <div className="container mx-auto px-4 p-6">
       <h2 className="text-3xl font-bold text-center mb-6 text-black">Carrinho</h2>
@@ -117,7 +96,7 @@ export default function Carrinho() {
               <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-md" />
               <div className="flex-1 ml-4">
                 <h3 className="text-black font-semibold">{item.name}</h3>
-                <p className="text-green-600 font-bold">R${(item.price / 100).toFixed(2)}</p>
+                <p className="text-green-600 font-bold">R$ {(item.price / 100).toFixed(2)}</p>
               </div>
               <div className="flex items-center">
                 <button
@@ -148,11 +127,12 @@ export default function Carrinho() {
             </div>
           ))}
           <div className="text-right font-bold text-xl text-black">Total: R$ {totalPrice.toFixed(2)}</div>
+          {/* Botão para fechar o pedido e ir para a página de pagamento */}
           <button
-            onClick={handlePayment}
+            onClick={handleCloseOrder}
             className="w-full bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold py-3 rounded-md"
           >
-            Pagar com Mercado Pago
+            Fechar Pedido
           </button>
         </div>
       )}

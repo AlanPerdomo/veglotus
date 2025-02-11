@@ -1,36 +1,67 @@
 'use client';
-import { userService } from '@/service/user.service';
 import { useState, useEffect } from 'react';
-export const Header = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState('');
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
 
-  useEffect(() => {
+export const Header = () => {
+  // Inicializa imediatamente os estados lendo do localStorage
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    try {
+      const user = localStorage.getItem('user');
+      return !!user;
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  });
+
+  const [userName, setUserName] = useState(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const user = JSON.parse(storedUser);
-      setUserName(user.name);
-      setIsLoggedIn(true);
+      return user.name;
     }
+    return '';
+  });
 
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  const [cartCount, setCartCount] = useState(() => {
+    const storedCart = localStorage.getItem('cart');
+    if (storedCart) {
+      const cart = JSON.parse(storedCart);
+      return cart.reduce((acc: number, item: { quantity: number }) => acc + item.quantity, 0);
+    }
+    return 0;
+  });
+
+  useEffect(() => {
+    // Função para atualizar o contador do carrinho
     const updateCartCount = () => {
       const storedCart = localStorage.getItem('cart');
       if (storedCart) {
         const cart = JSON.parse(storedCart);
-        const totalItems = cart.reduce((acc: any, item: { quantity: any }) => acc + item.quantity, 0);
+        const totalItems = cart.reduce((acc: number, item: { quantity: number }) => acc + item.quantity, 0);
         setCartCount(totalItems);
       } else {
         setCartCount(0);
       }
     };
-    updateCartCount();
+
+    // Adiciona o event listener para alterações vindas de outras abas
     window.addEventListener('storage', updateCartCount);
+
+    // Opcional: se desejar atualizar periodicamente ou após certas ações na mesma aba,
+    // você pode chamar updateCartCount diretamente no código que altera o carrinho
+    // ou usar uma abordagem baseada em Context API.
+
+    // Limpeza do event listener
+    return () => window.removeEventListener('storage', updateCartCount);
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('addresses');
+    localStorage.setItem('isLogged', 'false');
     setIsLoggedIn(false);
     setUserName('');
     setDropdownVisible(false);
@@ -41,11 +72,11 @@ export const Header = () => {
   };
 
   return (
-    <header className="bg-[#f0ad31] p-3 px-8 flex justify-between items-center ">
+    <header className="bg-[#f0ad31] p-3 px-8 flex justify-between items-center">
       <div>
-        <a className="flex items-center gap-4 " href="/">
+        <a className="flex items-center gap-4" href="/">
           <img className="w-14 h-14" src="/logo.png" alt="Veglótus" />
-          <h1 className="text-3xl font-bold drop-shadow-xl ">
+          <h1 className="text-3xl font-bold drop-shadow-xl">
             <span className="text-[#378b3a]">Veg</span>
             <span className="text-[#e967a8]">lótus</span>
           </h1>
@@ -53,10 +84,10 @@ export const Header = () => {
       </div>
       <nav>
         <ul className="flex gap-4 text-[#000000] font-bold drop-shadow-sm">
-          <li className=" hover:text-[#e967a8]">
+          <li className="hover:text-[#e967a8]">
             <a href="/">Home</a>
           </li>
-          <li className=" hover:text-[#e967a8]">
+          <li className="hover:text-[#e967a8]">
             <a href="/produtos">Produtos</a>
           </li>
           <li className="text-[#378b3a] hover:text-[#30b646]">
@@ -79,7 +110,6 @@ export const Header = () => {
                     <li className="hover:text-[#e967a8]">
                       <a href="/user/orders">Meus Pedidos</a>
                     </li>
-
                     <li className="hover:text-[#e967a8]">
                       <a href="/settings">Configurações</a>
                     </li>
