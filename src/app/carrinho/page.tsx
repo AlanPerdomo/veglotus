@@ -2,88 +2,50 @@
 import { orderService } from '@/service/order.service';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import MercadoPago from '../pagamento/mercado-pago/page';
 
 interface CartItem {
   id: string;
   name: string;
   price: number;
-  description?: string;
   image: string;
-  category?: string;
   quantity: number;
+  description?: string;
+  category?: string;
 }
+
 export default function Carrinho() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const router = useRouter();
+  const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.quantity) / 100, 0);
 
   useEffect(() => {
     const storedCart = localStorage.getItem('cart');
     setCart(storedCart ? JSON.parse(storedCart) : []);
   }, []);
 
-  const updateCart = (newCart: CartItem[]) => {
+  async function updateCart(newCart: CartItem[]) {
     setCart(newCart);
     localStorage.setItem('cart', JSON.stringify(newCart));
-  };
+  }
+
+  async function decrementQuantity(productId: string) {
+    const updatedCart = cart.map(item =>
+      item.id === productId && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item,
+    );
+    updateCart(updatedCart);
+  }
+
+  async function incrementQuantity(productId: string) {
+    const updatedCart = cart.map(item => (item.id === productId ? { ...item, quantity: item.quantity + 1 } : item));
+    updateCart(updatedCart);
+  }
+
   const removeFromCart = (productId: string) => {
     const updatedCart = cart.filter(item => item.id !== productId);
     updateCart(updatedCart);
   };
 
-  const incrementQuantity = (productId: string) => {
-    const updatedCart = cart.map(item => (item.id === productId ? { ...item, quantity: item.quantity + 1 } : item));
-    updateCart(updatedCart);
-  };
-
-  const decrementQuantity = (productId: string) => {
-    const updatedCart = cart
-      .map(item => (item.id === productId && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item))
-      .filter(item => item.quantity > 0);
-    updateCart(updatedCart);
-  };
-
-  const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.quantity) / 100, 0);
-
-  // Função para fechar o pedido e redirecionar para a página de pagamento
-  const handleCloseOrder = async () => {
-    const user = localStorage.getItem('user');
-    if (!user) {
-      alert('Usuário não autenticado!');
-      router.push('/user/login');
-      return;
-    }
-    // Supondo que a estrutura do objeto de usuário esteja aninhada (ajuste se necessário)
-    const userId = JSON.parse(user)?.user?.id || JSON.parse(user)?.id;
-    if (!userId) {
-      alert('Erro ao obter dados do usuário.');
-      return;
-    }
-
-    const data = {
-      userId: userId,
-      produtos: cart,
-      paymentStatus: 'PENDENTE',
-    };
-
-    try {
-      const orderResponse = await orderService.save(data);
-      if (orderResponse && orderResponse.id) {
-        alert('Pedido realizado com sucesso!');
-        // Salva os dados do pedido para a página de pagamento
-        localStorage.setItem('order', JSON.stringify(orderResponse));
-        // Limpa o carrinho
-        setCart([]);
-        localStorage.removeItem('cart');
-        // Redireciona para a página de pagamento
-        router.push('/pagamento');
-      } else {
-        alert('Erro ao realizar o pedido.');
-      }
-    } catch (error) {
-      console.error(error);
-      alert('Erro ao realizar o pedido.');
-    }
-  };
   return (
     <div className="container mx-auto px-4 p-6">
       <h2 className="text-3xl font-bold text-center mb-6 text-black">Carrinho</h2>
@@ -128,14 +90,92 @@ export default function Carrinho() {
           ))}
           <div className="text-right font-bold text-xl text-black">Total: R$ {totalPrice.toFixed(2)}</div>
           {/* Botão para fechar o pedido e ir para a página de pagamento */}
-          <button
-            onClick={handleCloseOrder}
-            className="w-full bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold py-3 rounded-md"
-          >
-            Fechar Pedido
-          </button>
+          <div className="flex justify-end space-x-4 ">
+            <button
+              // onClick={'pixPago'}
+              className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold  rounded-md py-2 px-4"
+            >
+              <img src="/icon_pix.png" alt="Pix" className="w-6 h-6 mr-2" />
+              Pix
+            </button>
+            <button
+              // onClick={'mercadoPago'}
+              className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold rounded-md py-2 px-4"
+            >
+              <img src="/icon_mercadoPago.png" alt="Mercado Pago" className="w-8 h-8 mr-2" />
+              Mercado Pago
+            </button>
+          </div>
         </div>
       )}
     </div>
   );
+}
+
+export function CarrinhoOld() {
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    const storedCart = localStorage.getItem('cart');
+    setCart(storedCart ? JSON.parse(storedCart) : []);
+  }, []);
+
+  const updateCart = (newCart: CartItem[]) => {
+    setCart(newCart);
+    localStorage.setItem('cart', JSON.stringify(newCart));
+  };
+
+  const incrementQuantity = (productId: string) => {
+    const updatedCart = cart.map(item => (item.id === productId ? { ...item, quantity: item.quantity + 1 } : item));
+    updateCart(updatedCart);
+  };
+
+  const decrementQuantity = (productId: string) => {
+    const updatedCart = cart
+      .map(item => (item.id === productId && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item))
+      .filter(item => item.quantity > 0);
+    updateCart(updatedCart);
+  };
+
+  // Função para fechar o pedido e redirecionar para a página de pagamento
+  const handleCloseOrder = async () => {
+    const user = localStorage.getItem('user');
+    if (!user) {
+      alert('Usuário não autenticado!');
+      router.push('/user/login');
+      return;
+    }
+    // Supondo que a estrutura do objeto de usuário esteja aninhada (ajuste se necessário)
+    const userId = JSON.parse(user)?.user?.id || JSON.parse(user)?.id;
+    if (!userId) {
+      alert('Erro ao obter dados do usuário.');
+      return;
+    }
+
+    const data = {
+      userId: userId,
+      produtos: cart,
+      paymentStatus: 'PENDENTE',
+    };
+
+    try {
+      const orderResponse = await orderService.save(data);
+      if (orderResponse && orderResponse.id) {
+        alert('Pedido realizado com sucesso!');
+        // Salva os dados do pedido para a página de pagamento
+        localStorage.setItem('order', JSON.stringify(orderResponse));
+        // Limpa o carrinho
+        setCart([]);
+        localStorage.removeItem('cart');
+        // Redireciona para a página de pagamento
+        router.push('/pagamento');
+      } else {
+        alert('Erro ao realizar o pedido.');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Erro ao realizar o pedido.');
+    }
+  };
 }

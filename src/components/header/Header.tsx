@@ -2,66 +2,67 @@
 import { useState, useEffect } from 'react';
 
 export const Header = () => {
-  // Inicializa imediatamente os estados lendo do localStorage
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    try {
-      const user = localStorage.getItem('user');
-      return !!user;
-    } catch (error) {
-      console.log(error);
-      return;
-    }
-  });
-
-  const [userName, setUserName] = useState(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      return user.name;
-    }
-    return '';
-  });
-
+  // Inicializa os estados com valores padrão
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
   const [dropdownVisible, setDropdownVisible] = useState(false);
-
-  const [cartCount, setCartCount] = useState(() => {
-    const storedCart = localStorage.getItem('cart');
-    if (storedCart) {
-      const cart = JSON.parse(storedCart);
-      return cart.reduce((acc: number, item: { quantity: number }) => acc + item.quantity, 0);
-    }
-    return 0;
-  });
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
-    // Função para atualizar o contador do carrinho
-    const updateCartCount = () => {
-      const storedCart = localStorage.getItem('cart');
-      if (storedCart) {
-        const cart = JSON.parse(storedCart);
-        const totalItems = cart.reduce((acc: number, item: { quantity: number }) => acc + item.quantity, 0);
-        setCartCount(totalItems);
-      } else {
-        setCartCount(0);
+    // Verifica se estamos no ambiente do navegador
+    if (typeof window !== 'undefined') {
+      // Atualiza o estado do usuário
+      try {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          const user = JSON.parse(storedUser);
+          setIsLoggedIn(true);
+          setUserName(user.name);
+        }
+      } catch (error) {
+        console.log('Erro ao ler o usuário do localStorage:', error);
       }
-    };
 
-    // Adiciona o event listener para alterações vindas de outras abas
-    window.addEventListener('storage', updateCartCount);
+      // Atualiza o contador do carrinho
+      try {
+        const storedCart = localStorage.getItem('cart');
+        if (storedCart) {
+          const cart = JSON.parse(storedCart);
+          const totalItems = cart.reduce((acc: number, item: { quantity: number }) => acc + item.quantity, 0);
+          setCartCount(totalItems);
+        }
+      } catch (error) {
+        console.log('Erro ao ler o carrinho do localStorage:', error);
+      }
 
-    // Opcional: se desejar atualizar periodicamente ou após certas ações na mesma aba,
-    // você pode chamar updateCartCount diretamente no código que altera o carrinho
-    // ou usar uma abordagem baseada em Context API.
+      // Função para atualizar o contador do carrinho quando ocorrer mudanças em outras abas
+      const updateCartCount = () => {
+        try {
+          const storedCart = localStorage.getItem('cart');
+          if (storedCart) {
+            const cart = JSON.parse(storedCart);
+            const totalItems = cart.reduce((acc: number, item: { quantity: number }) => acc + item.quantity, 0);
+            setCartCount(totalItems);
+          } else {
+            setCartCount(0);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      };
 
-    // Limpeza do event listener
-    return () => window.removeEventListener('storage', updateCartCount);
+      window.addEventListener('storage', updateCartCount);
+      return () => window.removeEventListener('storage', updateCartCount);
+    }
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    localStorage.removeItem('addresses');
-    localStorage.setItem('isLogged', 'false');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      localStorage.removeItem('addresses');
+      localStorage.setItem('isLogged', 'false');
+    }
     setIsLoggedIn(false);
     setUserName('');
     setDropdownVisible(false);
