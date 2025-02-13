@@ -15,11 +15,14 @@ class OrderService {
   }
 
   async save(data: any) {
-    return {
-      teste: 'testando',
-      id: 1,
-      tudo: 'asdf',
-    };
+    // const response = await fetch(BASE_URL + 'pedidos/cadastrar', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     authorization: 'Bearer ' + localStorage.getItem('token'),
+    //   },
+    //   body: JSON.stringify(data),
+    // });
   }
 
   async createPaymentPreference() {

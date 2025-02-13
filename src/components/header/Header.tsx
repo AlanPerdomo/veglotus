@@ -109,7 +109,7 @@ export const Header = () => {
                       <a href="/user/dashboard">Perfil</a>
                     </li>
                     <li className="hover:text-[#e967a8]">
-                      <a href="/user/orders">Meus Pedidos</a>
+                      <a href="/pedidos">Meus Pedidos</a>
                     </li>
                     <li className="hover:text-[#e967a8]">
                       <a href="/settings">Configurações</a>

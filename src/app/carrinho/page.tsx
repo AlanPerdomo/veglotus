@@ -112,70 +112,70 @@ export default function Carrinho() {
   );
 }
 
-export function CarrinhoOld() {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const router = useRouter();
+// export function CarrinhoOld() {
+//   const [cart, setCart] = useState<CartItem[]>([]);
+//   const router = useRouter();
 
-  useEffect(() => {
-    const storedCart = localStorage.getItem('cart');
-    setCart(storedCart ? JSON.parse(storedCart) : []);
-  }, []);
+//   useEffect(() => {
+//     const storedCart = localStorage.getItem('cart');
+//     setCart(storedCart ? JSON.parse(storedCart) : []);
+//   }, []);
 
-  const updateCart = (newCart: CartItem[]) => {
-    setCart(newCart);
-    localStorage.setItem('cart', JSON.stringify(newCart));
-  };
+//   const updateCart = (newCart: CartItem[]) => {
+//     setCart(newCart);
+//     localStorage.setItem('cart', JSON.stringify(newCart));
+//   };
 
-  const incrementQuantity = (productId: string) => {
-    const updatedCart = cart.map(item => (item.id === productId ? { ...item, quantity: item.quantity + 1 } : item));
-    updateCart(updatedCart);
-  };
+//   const incrementQuantity = (productId: string) => {
+//     const updatedCart = cart.map(item => (item.id === productId ? { ...item, quantity: item.quantity + 1 } : item));
+//     updateCart(updatedCart);
+//   };
 
-  const decrementQuantity = (productId: string) => {
-    const updatedCart = cart
-      .map(item => (item.id === productId && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item))
-      .filter(item => item.quantity > 0);
-    updateCart(updatedCart);
-  };
+//   const decrementQuantity = (productId: string) => {
+//     const updatedCart = cart
+//       .map(item => (item.id === productId && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item))
+//       .filter(item => item.quantity > 0);
+//     updateCart(updatedCart);
+//   };
 
-  // Função para fechar o pedido e redirecionar para a página de pagamento
-  const handleCloseOrder = async () => {
-    const user = localStorage.getItem('user');
-    if (!user) {
-      alert('Usuário não autenticado!');
-      router.push('/user/login');
-      return;
-    }
-    // Supondo que a estrutura do objeto de usuário esteja aninhada (ajuste se necessário)
-    const userId = JSON.parse(user)?.user?.id || JSON.parse(user)?.id;
-    if (!userId) {
-      alert('Erro ao obter dados do usuário.');
-      return;
-    }
+//   // Função para fechar o pedido e redirecionar para a página de pagamento
+//   const handleCloseOrder = async () => {
+//     const user = localStorage.getItem('user');
+//     if (!user) {
+//       alert('Usuário não autenticado!');
+//       router.push('/user/login');
+//       return;
+//     }
+//     // Supondo que a estrutura do objeto de usuário esteja aninhada (ajuste se necessário)
+//     const userId = JSON.parse(user)?.user?.id || JSON.parse(user)?.id;
+//     if (!userId) {
+//       alert('Erro ao obter dados do usuário.');
+//       return;
+//     }
 
-    const data = {
-      userId: userId,
-      produtos: cart,
-      paymentStatus: 'PENDENTE',
-    };
+//     const data = {
+//       userId: userId,
+//       produtos: cart,
+//       paymentStatus: 'PENDENTE',
+//     };
 
-    try {
-      const orderResponse = await orderService.save(data);
-      if (orderResponse && orderResponse.id) {
-        alert('Pedido realizado com sucesso!');
-        // Salva os dados do pedido para a página de pagamento
-        localStorage.setItem('order', JSON.stringify(orderResponse));
-        // Limpa o carrinho
-        setCart([]);
-        localStorage.removeItem('cart');
-        // Redireciona para a página de pagamento
-        router.push('/pagamento');
-      } else {
-        alert('Erro ao realizar o pedido.');
-      }
-    } catch (error) {
-      console.error(error);
-      alert('Erro ao realizar o pedido.');
-    }
-  };
-}
+//     try {
+//       const orderResponse = await orderService.save(data);
+//       if (orderResponse && orderResponse.id) {
+//         alert('Pedido realizado com sucesso!');
+//         // Salva os dados do pedido para a página de pagamento
+//         localStorage.setItem('order', JSON.stringify(orderResponse));
+//         // Limpa o carrinho
+//         setCart([]);
+//         localStorage.removeItem('cart');
+//         // Redireciona para a página de pagamento
+//         router.push('/pagamento');
+//       } else {
+//         alert('Erro ao realizar o pedido.');
+//       }
+//     } catch (error) {
+//       console.error(error);
+//       alert('Erro ao realizar o pedido.');
+//     }
+//   };
+// }

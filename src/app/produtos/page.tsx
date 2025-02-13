@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { productService } from '@/service/product.service';
-import Header from '@/components/header/Header';
 
 export default function Produtos() {
   interface Product {
@@ -83,7 +82,6 @@ export default function Produtos() {
     }
     localStorage.setItem('cart', JSON.stringify(cart));
 
-    // Exibe o aviso para o usuário e fecha o popup
     alert('Produto adicionado ao carrinho!');
     closeProductModal();
   };
