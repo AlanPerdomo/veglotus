@@ -15,14 +15,19 @@ class OrderService {
   }
 
   async save(data: any) {
-    // const response = await fetch(BASE_URL + 'pedidos/cadastrar', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     authorization: 'Bearer ' + localStorage.getItem('token'),
-    //   },
-    //   body: JSON.stringify(data),
-    // });
+    console.log(data);
+
+    const response = await fetch(BASE_URL + 'pedidos/cadastrar', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: 'Bearer ' + localStorage.getItem('token'),
+      },
+      body: JSON.stringify(data),
+    });
+
+    console.log(response);
+    return 'ok!';
   }
 
   async createPaymentPreference() {

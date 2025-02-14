@@ -46,6 +46,13 @@ export default function Carrinho() {
     updateCart(updatedCart);
   };
 
+  const checkout = async () => {
+    const response = await orderService.save(cart);
+    if (response) {
+      console.log('Pedido criado com sucesso!');
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 p-6">
       <h2 className="text-3xl font-bold text-center mb-6 text-black">Carrinho</h2>
@@ -88,10 +95,16 @@ export default function Carrinho() {
               </button>
             </div>
           ))}
-          <div className="text-right font-bold text-xl text-black">Total: R$ {totalPrice.toFixed(2)}</div>
+          <div className="text-right font-bold text-xl text-black">Subtotal: R$ {totalPrice.toFixed(2)}</div>
           {/* Botão para fechar o pedido e ir para a página de pagamento */}
           <div className="flex justify-end space-x-4 ">
             <button
+              onClick={checkout}
+              className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold  rounded-md py-2 px-4"
+            >
+              Fechar pedido
+            </button>
+            {/* <button
               // onClick={'pixPago'}
               className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold  rounded-md py-2 px-4"
             >
@@ -104,7 +117,7 @@ export default function Carrinho() {
             >
               <img src="/icon_mercadoPago.png" alt="Mercado Pago" className="w-8 h-8 mr-2" />
               Mercado Pago
-            </button>
+            </button> */}
           </div>
         </div>
       )}

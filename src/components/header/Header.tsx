@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export const Header = () => {
   // Inicializa os estados com valores padrão
@@ -7,6 +7,7 @@ export const Header = () => {
   const [userName, setUserName] = useState('');
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const dropdownRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     // Verifica se estamos no ambiente do navegador
@@ -56,6 +57,20 @@ export const Header = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownVisible(false);
+      }
+    };
+    if (dropdownVisible) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownVisible]);
+
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('user');
@@ -102,18 +117,19 @@ export const Header = () => {
                 </button>
                 {dropdownVisible && (
                   <ul
+                    ref={dropdownRef}
                     id="dropdown-menu"
-                    className="absolute top-8 right-0 bg-gray-200 shadow-lg rounded-lg p-4 text-sm text-gray-700"
+                    className="absolute top-8 right-0 bg-gray-200 shadow-lg rounded-lg p-4 w-40 text-md text-gray-700"
                   >
                     <li className="hover:text-[#e967a8]">
                       <a href="/user/dashboard">Perfil</a>
                     </li>
-                    <li className="hover:text-[#e967a8]">
+                    <li className="hover:text-[#e967a8] ">
                       <a href="/pedidos">Meus Pedidos</a>
                     </li>
-                    <li className="hover:text-[#e967a8]">
+                    {/* <li className="hover:text-[#e967a8]">
                       <a href="/settings">Configurações</a>
-                    </li>
+                    </li> */}
                     <li className="hover:text-red-500">
                       <button onClick={handleLogout}>Sair</button>
                     </li>
