@@ -1,7 +1,5 @@
-import { json } from 'stream/consumers';
-
-const BASE_URL_NGROK = 'https://winning-lately-dodo.ngrok-free.app/';
-const BASE_URL = 'http://localhost:3000/';
+// const BASE_URL_NGROK = 'https://winning-lately-dodo.ngrok-free.app/';
+const BASE_URL = 'http://localhost:3001/';
 class UserService {
   async cadastrar(data: any) {
     const response = await (
@@ -74,7 +72,7 @@ class UserService {
     }
   }
 
-  async saveAddress(data: any, token: string) {}
+  // async saveAddress(data: any, token: string) {}
 
   async updateUser(data: any, token: string) {
     try {

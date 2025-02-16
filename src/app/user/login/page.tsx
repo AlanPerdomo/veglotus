@@ -1,7 +1,6 @@
 'use client';
 import { userService } from '@/service/user.service';
 import { useState, useEffect } from 'react';
-const BASE_URL = 'http://localhost:3000/';
 
 export default function Login() {
   const [email, setEmail] = useState('');

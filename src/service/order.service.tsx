@@ -1,5 +1,5 @@
-const BASE_URL_NGROK = 'https://winning-lately-dodo.ngrok-free.app/';
-const BASE_URL = 'http://localhost:3000/';
+// const BASE_URL_NGROK = 'https://winning-lately-dodo.ngrok-free.app/';
+const BASE_URL = 'http://localhost:3001/';
 
 class OrderService {
   async listar() {

@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { userService } from '@/service/user.service';
-const BASE_URL = 'http://localhost:3000/';
 
 export default function Register() {
   const [name, setName] = useState('');
