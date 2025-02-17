@@ -2,8 +2,7 @@
 import { orderService } from '@/service/order.service';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import MercadoPago from '../pagamento/mercado-pago/page';
-
+import { FaTrash } from 'react-icons/fa';
 interface CartItem {
   id: string;
   name: string;
@@ -68,12 +67,21 @@ export default function Carrinho() {
                 <p className="text-green-600 font-bold">R$ {(item.price / 100).toFixed(2)}</p>
               </div>
               <div className="flex items-center">
-                <button
-                  onClick={() => decrementQuantity(item.id)}
-                  className="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-1 px-3 rounded-l-lg"
-                >
-                  -
-                </button>
+                {item.quantity === 1 ? (
+                  <button
+                    onClick={() => removeFromCart(item.id)}
+                    className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-3 rounded-md"
+                  >
+                    <FaTrash />
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => decrementQuantity(item.id)}
+                    className="bg-green-300 hover:bg-green-400 text-black font-semibold py-1 px-3 rounded-l-lg"
+                  >
+                    -
+                  </button>
+                )}
                 <input
                   type="text"
                   value={item.quantity}
@@ -82,7 +90,7 @@ export default function Carrinho() {
                 />
                 <button
                   onClick={() => incrementQuantity(item.id)}
-                  className="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-1 px-3 rounded-r-lg"
+                  className="bg-green-300 hover:bg-green-400 text-black font-semibold py-1 px-3 rounded-r-lg"
                 >
                   +
                 </button>
@@ -96,7 +104,6 @@ export default function Carrinho() {
             </div>
           ))}
           <div className="text-right font-bold text-xl text-black">Subtotal: R$ {totalPrice.toFixed(2)}</div>
-          {/* Botão para fechar o pedido e ir para a página de pagamento */}
           <div className="flex justify-end space-x-4 ">
             <button
               onClick={checkout}
@@ -104,25 +111,28 @@ export default function Carrinho() {
             >
               Fechar pedido
             </button>
-            {/* <button
-              // onClick={'pixPago'}
-              className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold  rounded-md py-2 px-4"
-            >
-              <img src="/icon_pix.png" alt="Pix" className="w-6 h-6 mr-2" />
-              Pix
-            </button>
-            <button
-              // onClick={'mercadoPago'}
-              className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold rounded-md py-2 px-4"
-            >
-              <img src="/icon_mercadoPago.png" alt="Mercado Pago" className="w-8 h-8 mr-2" />
-              Mercado Pago
-            </button> */}
           </div>
         </div>
       )}
     </div>
   );
+}
+
+{
+  /* <button
+    // onClick={'pixPago'}
+    className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold  rounded-md py-2 px-4"
+  >
+    <img src="/icon_pix.png" alt="Pix" className="w-6 h-6 mr-2" />
+    Pix
+  </button>
+  <button
+    // onClick={'mercadoPago'}
+    className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold rounded-md py-2 px-4"
+  >
+    <img src="/icon_mercadoPago.png" alt="Mercado Pago" className="w-8 h-8 mr-2" />
+    Mercado Pago
+  </button> */
 }
 
 // export function CarrinhoOld() {

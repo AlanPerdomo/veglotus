@@ -1,3 +1,5 @@
+import { get } from 'http';
+
 // const BASE_URL_NGROK = 'https://winning-lately-dodo.ngrok-free.app/';
 const BASE_URL = 'http://localhost:3001/';
 class UserService {
@@ -66,6 +68,9 @@ class UserService {
 
       localStorage.setItem('addresses', JSON.stringify(response));
 
+      const address = JSON.parse(localStorage.getItem('addresses')!).find((address: any) => address.isPrincipal);
+      localStorage.setItem('address', JSON.stringify(address));
+
       return response;
     } catch (error) {
       console.log(error);
@@ -121,8 +126,7 @@ class UserService {
     return response;
   }
 
-  async setPrincipalAddress(addressID: string, token: string) {
-    const addressId = addressID;
+  async setPrincipalAddress(addressId: string, token: string) {
     const response = await (
       await fetch(BASE_URL + `endereco/set-principal/${addressId}`, {
         method: 'PATCH',
@@ -132,6 +136,9 @@ class UserService {
         },
       })
     ).json();
+
+    await this.getAddresses(token);
+
     return response;
   }
 }

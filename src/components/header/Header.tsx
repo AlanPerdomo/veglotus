@@ -73,10 +73,7 @@ export const Header = () => {
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
-      localStorage.removeItem('addresses');
-      localStorage.setItem('isLogged', 'false');
+      localStorage.clear();
     }
     setIsLoggedIn(false);
     setUserName('');
