@@ -12,15 +12,41 @@ interface CartItem {
   description?: string;
   category?: string;
 }
+interface Address {
+  bairro: string;
+  cep: string;
+  cidade: string;
+  complemento: string;
+  estado: string;
+  id: string;
+  isPrincipal: boolean;
+  numero: string;
+  pais: string;
+  rua: string;
+}
 
 export default function Carrinho() {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const router = useRouter();
+  const [address, setAddress] = useState<Address | null>(null);
+  const [deliveryFee, setDeliveryFee] = useState<number>(0);
   const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.quantity) / 100, 0);
 
   useEffect(() => {
     const storedCart = localStorage.getItem('cart');
     setCart(storedCart ? JSON.parse(storedCart) : []);
+
+    const storedAddress = localStorage.getItem('address');
+    setAddress(storedAddress ? JSON.parse(storedAddress) : null);
+
+    const calculateDeliveryFee = async () => {
+      const quotation = await orderService.getQuotation(localStorage.getItem('address'));
+
+      const fee = parseFloat(quotation.valorFrete.priceBreakdown.total);
+      console.log(typeof fee);
+
+      setDeliveryFee(fee);
+    };
+    calculateDeliveryFee();
   }, []);
 
   async function updateCart(newCart: CartItem[]) {
@@ -104,7 +130,23 @@ export default function Carrinho() {
             </div>
           ))}
           <div className="text-right font-bold text-xl text-black">Subtotal: R$ {totalPrice.toFixed(2)}</div>
-          <div className="flex justify-end space-x-4 ">
+          {address ? (
+            <div className="mt-4 text-right text-black">
+              <p className="text-sm">{`${address.rua}, ${address.numero}${
+                address.complemento ? `, ${address.complemento}` : ''
+              }`}</p>
+              <p className="text-sm">{`${address.bairro}, ${address.cidade} - ${address.estado}`}</p>
+              <p className="text-sm">{`CEP: ${address.cep}`}</p>
+            </div>
+          ) : (
+            <div className="text-right text-sm text-gray-500">Nenhum endereço principal cadastrado.</div>
+          )}
+
+          <div className="text-right font-bold text-xl text-black">Frete: R$ {deliveryFee.toFixed(2)}</div>
+          <div className="flex justify-end items-center space-x-4">
+            <div className="text-right font-bold text-xl text-black">
+              Total: R$ {(totalPrice + deliveryFee).toFixed(2)}
+            </div>
             <button
               onClick={checkout}
               className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold  rounded-md py-2 px-4"

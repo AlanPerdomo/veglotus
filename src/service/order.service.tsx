@@ -30,6 +30,22 @@ class OrderService {
     return 'ok!';
   }
 
+  async getQuotation(address: any) {
+    const response = await (
+      await fetch(BASE_URL + 'frete/calcular', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: address,
+      })
+    ).json();
+
+    console.log(response);
+
+    return response;
+  }
+
   async createPaymentPreference() {
     const response = await fetch(BASE_URL + 'pagamento/criar-preferencia');
   }
