@@ -15,7 +15,15 @@ class OrderService {
   }
 
   async save(data: any) {
-    console.log(data);
+    const order = {
+      orderProducts: data.cart,
+      status: 'Aguardando Pagamento',
+      paymentStatus: 'Pendente',
+      subTotal: data.totalPrice,
+      deliveryFee: data.deliveryFee,
+      total: data.totalPrice + data.deliveryFee,
+      address: data.address,
+    };
 
     const response = await fetch(BASE_URL + 'pedidos/cadastrar', {
       method: 'POST',
@@ -23,7 +31,7 @@ class OrderService {
         'Content-Type': 'application/json',
         authorization: 'Bearer ' + localStorage.getItem('token'),
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(order),
     });
 
     console.log(response);
@@ -40,8 +48,6 @@ class OrderService {
         body: address,
       })
     ).json();
-
-    console.log(response);
 
     return response;
   }

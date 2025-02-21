@@ -1,7 +1,6 @@
 'use client';
 import { orderService } from '@/service/order.service';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { FaTrash } from 'react-icons/fa';
 interface CartItem {
   id: string;
@@ -72,7 +71,14 @@ export default function Carrinho() {
   };
 
   const checkout = async () => {
-    const response = await orderService.save(cart);
+    const order = {
+      address,
+      deliveryFee,
+      totalPrice,
+      cart,
+    };
+
+    const response = await orderService.save(order);
     if (response) {
       console.log('Pedido criado com sucesso!');
     }
