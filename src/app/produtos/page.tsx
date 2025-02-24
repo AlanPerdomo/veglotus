@@ -146,7 +146,9 @@ export default function Produtos() {
                   <img src={product.image} alt={product.name} className="w-full h-32 object-cover" />
                   <div className="p-2">
                     <h3 className="text-sm text-black font-semibold truncate">{product.name}</h3>
-                    <p className="text-green-600 font-bold text-sm">R$ {(product.price / 100).toFixed(2)}</p>
+                    <p className="text-green-600 font-bold text-sm">
+                      R$ {(Math.trunc(product.price * 100) / 100).toFixed(2)}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -169,7 +171,9 @@ export default function Produtos() {
             />
             <h3 className="text-xl font-bold text-black mb-2">{selectedProduct.name}</h3>
             <p className="text-gray-700 mb-4">{selectedProduct.description}</p>
-            <p className="text-green-600 font-bold text-lg">R$ {(selectedProduct.price / 100).toFixed(2)}</p>
+            <p className="text-green-600 font-bold text-lg">
+              R$ {(Math.trunc(selectedProduct.price * 100) / 100).toFixed(2)}
+            </p>
             <div className="flex items-center mb-4">
               <button
                 onClick={() => decrementQuantity(selectedProduct.id)}
@@ -196,7 +200,8 @@ export default function Produtos() {
               onClick={() => handleAddToCart(selectedProduct)}
               className="w-full bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold py-2 rounded-md"
             >
-              Adicionar ao Carrinho R$ {((quantities[selectedProduct.id] * selectedProduct.price) / 100).toFixed(2)}
+              Adicionar ao Carrinho R${''}
+              {((quantities[selectedProduct.id] * Math.trunc(selectedProduct.price * 100)) / 100).toFixed(2)}
             </button>
           </div>
         </div>

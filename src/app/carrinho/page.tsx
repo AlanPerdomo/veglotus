@@ -28,7 +28,7 @@ export default function Carrinho() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [address, setAddress] = useState<Address | null>(null);
   const [deliveryFee, setDeliveryFee] = useState<number>(0);
-  const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.quantity) / 100, 0);
+  const totalPrice = cart.reduce((acc, item) => acc + (Math.trunc(item.price * 100) / 100) * item.quantity, 0);
 
   useEffect(() => {
     const storedCart = localStorage.getItem('cart');
@@ -96,7 +96,7 @@ export default function Carrinho() {
               <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-md" />
               <div className="flex-1 ml-4">
                 <h3 className="text-black font-semibold">{item.name}</h3>
-                <p className="text-green-600 font-bold">R$ {(item.price / 100).toFixed(2)}</p>
+                <p className="text-green-600 font-bold">R$ {Math.trunc(item.price * 100) / 100}</p>
               </div>
               <div className="flex items-center">
                 {item.quantity === 1 ? (
@@ -135,14 +135,19 @@ export default function Carrinho() {
               </button>
             </div>
           ))}
-          <div className="text-right font-bold text-xl text-black">Subtotal: R$ {totalPrice.toFixed(2)}</div>
+          <div className="text-right font-bold text-xl text-black">
+            Subtotal: R$ {(Math.trunc(totalPrice * 100) / 100).toFixed(2)}
+          </div>
           {address ? (
             <div className="mt-4 text-right text-black">
-              <p className="text-sm">{`${address.rua}, ${address.numero}${
-                address.complemento ? `, ${address.complemento}` : ''
-              }`}</p>
-              <p className="text-sm">{`${address.bairro}, ${address.cidade} - ${address.estado}`}</p>
-              <p className="text-sm">{`CEP: ${address.cep}`}</p>
+              <div>
+                <p className="font-semibold">Endereço de entrega:</p>
+                <p className="text-sm">{`${address.rua}, ${address.numero}${
+                  address.complemento ? `, ${address.complemento}` : ''
+                }`}</p>
+                <p className="text-sm">{`${address.bairro}, ${address.cidade} - ${address.estado}`}</p>
+                <p className="text-sm">{`CEP: ${address.cep}`}</p>
+              </div>
             </div>
           ) : (
             <div className="text-right text-sm text-gray-500">Nenhum endereço principal cadastrado.</div>

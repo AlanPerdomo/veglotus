@@ -3,13 +3,15 @@ const BASE_URL = 'http://localhost:3001/';
 
 class OrderService {
   async listar() {
-    const response = await fetch(BASE_URL + 'pedidos/listar', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true',
-      },
-    });
+    const response = await (
+      await fetch(BASE_URL + 'pedidos/my', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: 'Bearer ' + localStorage.getItem('token'),
+        },
+      })
+    ).json();
 
     return response;
   }
@@ -25,17 +27,18 @@ class OrderService {
       address: data.address,
     };
 
-    const response = await fetch(BASE_URL + 'pedidos/cadastrar', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: 'Bearer ' + localStorage.getItem('token'),
-      },
-      body: JSON.stringify(order),
-    });
+    const response = await (
+      await fetch(BASE_URL + 'pedidos/cadastrar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: 'Bearer ' + localStorage.getItem('token'),
+        },
+        body: JSON.stringify(order),
+      })
+    ).json();
 
-    console.log(response);
-    return 'ok!';
+    return response;
   }
 
   async getQuotation(address: any) {
