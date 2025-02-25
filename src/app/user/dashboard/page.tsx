@@ -229,7 +229,7 @@ export default function Dashboard() {
     <div className="container mx-auto px-4 p-6">
       <h2 className="text-3xl font-bold text-center mb-6 text-black">Informações Pessoais</h2>
       {user ? (
-        <div className="bg-white shadow-lg rounded-lg p-6 max-w-2xl mx-auto space-y-6 text-black">
+        <div className="bg-white shadow-lg rounded-lg p-6 max-w-4xl mx-auto space-y-6 text-black">
           {/* Nome */}
           <div className="flex items-center justify-between">
             <div className="w-full">
@@ -393,7 +393,7 @@ export default function Dashboard() {
 
       {/* Seção de Endereços */}
       <h2 className="text-3xl font-bold text-center mb-6 mt-10 text-black">Endereços</h2>
-      <div className="bg-white shadow-lg rounded-lg p-6 max-w-2xl mx-auto space-y-6 text-black">
+      <div className="bg-white shadow-lg rounded-lg p-6 max-w-3xl mx-auto space-y-6 text-black">
         {addresses.length > 0 ? (
           <div>
             <h3 className="text-lg font-medium mb-2">Selecione seu endereço:</h3>

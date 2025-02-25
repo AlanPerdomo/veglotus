@@ -3,6 +3,7 @@ const BASE_URL = 'http://localhost:3001/';
 
 class OrderService {
   async listar() {
+    console.log('listar');
     const response = await (
       await fetch(BASE_URL + 'pedidos/my', {
         method: 'GET',
@@ -12,6 +13,8 @@ class OrderService {
         },
       })
     ).json();
+
+    localStorage.setItem('orders', JSON.stringify(response));
 
     return response;
   }
@@ -52,6 +55,10 @@ class OrderService {
       })
     ).json();
 
+    response.addressId = JSON.parse(address).id;
+    response.createdAt = new Date().toISOString();
+    localStorage.setItem('quotation', JSON.stringify(response));
+
     return response;
   }
 
@@ -63,8 +70,6 @@ class OrderService {
 const orderService = new OrderService();
 export { orderService };
 
-// const orderService = new OrderService();
-// export { orderService };
 //  const response = await fetch('http://localhost:3000/pagamento/criar-preferencia', {
 //       method: 'POST',
 //       headers: { 'Content-Type': 'application/json' },

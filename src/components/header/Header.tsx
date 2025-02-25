@@ -127,7 +127,7 @@ export const Header = () => {
                     {/* <li className="hover:text-[#e967a8]">
                       <a href="/settings">Configurações</a>
                     </li> */}
-                    <li className="hover:text-red-500">
+                    <li className="text-red-500 hover:text-red-700">
                       <button onClick={handleLogout}>Sair</button>
                     </li>
                   </ul>

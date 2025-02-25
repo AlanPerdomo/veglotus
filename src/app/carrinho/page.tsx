@@ -37,15 +37,22 @@ export default function Carrinho() {
     const storedAddress = localStorage.getItem('address');
     setAddress(storedAddress ? JSON.parse(storedAddress) : null);
 
-    const calculateDeliveryFee = async () => {
-      const quotation = await orderService.getQuotation(localStorage.getItem('address'));
+    const quotation = JSON.parse(localStorage.getItem('quotation')!);
+    const address = JSON.parse(localStorage.getItem('address')!);
 
-      const fee = parseFloat(quotation.valorFrete.priceBreakdown.total);
-      console.log(typeof fee);
-
-      setDeliveryFee(fee);
-    };
-    calculateDeliveryFee();
+    if (
+      quotation &&
+      quotation.addressId === address?.id &&
+      new Date().getTime() - new Date(quotation.createdAt).getTime() <= 20 * 60 * 1000
+    ) {
+      setDeliveryFee(parseFloat(quotation.valorFrete.priceBreakdown.total));
+    } else {
+      const calculateDeliveryFee = async () => {
+        const quotation = await orderService.getQuotation(localStorage.getItem('address'));
+        setDeliveryFee(parseFloat(quotation.valorFrete.priceBreakdown.total));
+      };
+      calculateDeliveryFee();
+    }
   }, []);
 
   async function updateCart(newCart: CartItem[]) {
@@ -79,8 +86,9 @@ export default function Carrinho() {
     };
 
     const response = await orderService.save(order);
+
     if (response) {
-      console.log('Pedido criado com sucesso!');
+      console.log(response);
     }
   };
 
