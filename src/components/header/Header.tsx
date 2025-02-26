@@ -78,6 +78,7 @@ export const Header = () => {
     setIsLoggedIn(false);
     setUserName('');
     setDropdownVisible(false);
+    window.location.href = '/';
   };
 
   const toggleDropdown = () => {

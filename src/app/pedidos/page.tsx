@@ -1,25 +1,63 @@
 'use client';
 import { orderService } from '@/service/order.service';
+import { paymentService } from '@/service/payment.service';
 import { useEffect, useState } from 'react';
+
+interface order {
+  id: number;
+  total: number;
+  status: string;
+  address: string;
+  orderProducts: orderProduct[];
+  paymentStatus: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface orderProduct {
+  id: number;
+  quantity: number;
+  product: product;
+}
+
+interface product {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default function Pedidos() {
   const [pedidos, setPedidos] = useState([]);
   const [selectedPedido, setSelectedPedido] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(10);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const pedidos = localStorage.getItem('orders');
+    const pedidos = JSON.parse(localStorage.getItem('orders')!);
     if (pedidos) {
-      setPedidos(JSON.parse(pedidos));
+      sortOrders(pedidos);
     } else {
       meusPedidos();
     }
   }, []);
 
   const meusPedidos = async () => {
-    const pedidos = await orderService.listar();
-    setPedidos(pedidos);
+    if (localStorage.getItem('isLogged') === 'true') {
+      const pedidos = await orderService.listar();
+      sortOrders(pedidos);
+    } else {
+      window.location.href = '/user/login';
+    }
+  };
+
+  const sortOrders = (pedidos: any) => {
+    const sortedPedidos = pedidos.sort((a, b) => b.id - a.id);
+    setPedidos(sortedPedidos);
   };
 
   const openModal = pedido => {
@@ -41,6 +79,18 @@ export default function Pedidos() {
       return JSON.parse(enderecoStr);
     } catch (error) {
       return null;
+    }
+  };
+
+  const handleMercadoPago = async () => {
+    setLoading(true);
+    try {
+      const response = await paymentService.createMLPayment(selectedPedido!.id);
+      // if (response) window.location.href = response.sandbox_init_point;
+    } catch (error) {
+      console.error('Erro ao processar pagamento:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -155,7 +205,7 @@ export default function Pedidos() {
                       Pix
                     </button>
                     <button
-                      onClick={() => {}}
+                      onClick={handleMercadoPago}
                       className="flex items-center bg-[#f0ad31]  hover:bg-[#e6942c] text-white font-semibold rounded-md py-2 px-4"
                     >
                       <img src="/icon_mercadoPago.png" alt="Mercado Pago" className="w-6 h-6 mr-2" />

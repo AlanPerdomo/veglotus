@@ -18,7 +18,6 @@ export default function Register() {
       .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
       .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3-$4');
 
-    console.log(formattedValue);
     return formattedValue;
   };
 
@@ -85,8 +84,7 @@ export default function Register() {
 
     try {
       const response = await userService.cadastrar(data);
-
-      if (response.ok) {
+      if (response.status) {
         alert('Usuario cadastrado com sucesso!');
         await userService.login(email, password);
         window.location.href = '/user/login';
