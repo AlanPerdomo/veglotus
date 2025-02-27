@@ -85,12 +85,17 @@ export default function Pedidos() {
   const handleMercadoPago = async () => {
     setLoading(true);
     try {
-      const response = await paymentService.createMLPayment(selectedPedido!.id);
-      // if (response) window.location.href = response.sandbox_init_point;
+      const response = await paymentService.createMPPayment(selectedPedido!.id);
+      console.log(response);
+      console.log(response.result.sandbox_init_point);
+      if (response) {
+        setLoading(false);
+
+        window.location.href = response.result.sandbox_init_point;
+      }
     } catch (error) {
       console.error('Erro ao processar pagamento:', error);
     } finally {
-      setLoading(false);
     }
   };
 
