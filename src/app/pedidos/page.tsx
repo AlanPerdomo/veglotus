@@ -2,9 +2,11 @@
 import { orderService } from '@/service/order.service';
 import { paymentService } from '@/service/payment.service';
 import { useEffect, useState } from 'react';
+import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 
 interface order {
   id: number;
+  deliveryFee: number;
   total: number;
   status: string;
   address: string;
@@ -18,6 +20,7 @@ interface orderProduct {
   id: number;
   quantity: number;
   product: product;
+  price: number;
 }
 
 interface product {
@@ -31,19 +34,36 @@ interface product {
 }
 
 export default function Pedidos() {
-  const [pedidos, setPedidos] = useState([]);
-  const [selectedPedido, setSelectedPedido] = useState(null);
+  const [pedidos, setPedidos] = useState<order[]>([]);
+  const [selectedPedido, setSelectedPedido] = useState<order | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(10);
   const [loading, setLoading] = useState(false);
 
+  initMercadoPago(process.env.MERCADO_PAGO_PUBLIC_KEY!);
+
   useEffect(() => {
-    const pedidos = JSON.parse(localStorage.getItem('orders')!);
-    if (pedidos) {
+    const fetchData = async () => {
+      const newOrder = localStorage.getItem('newOrder');
+      let pedidos = JSON.parse(localStorage.getItem('orders')!);
       sortOrders(pedidos);
-    } else {
-      meusPedidos();
-    }
+
+      if (!pedidos) {
+        await meusPedidos();
+        pedidos = JSON.parse(localStorage.getItem('orders')!);
+      }
+
+      if (newOrder && pedidos) {
+        console.log('newOrder:', newOrder);
+        await meusPedidos();
+        const pedidoId = JSON.parse(newOrder);
+        const pedido = pedidos.find((pedido: order) => pedido.id === pedidoId);
+        setSelectedPedido(pedido);
+        setModalOpen(true);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const meusPedidos = async () => {
@@ -55,17 +75,18 @@ export default function Pedidos() {
     }
   };
 
-  const sortOrders = (pedidos: any) => {
+  const sortOrders = (pedidos: order[]) => {
     const sortedPedidos = pedidos.sort((a, b) => b.id - a.id);
     setPedidos(sortedPedidos);
   };
 
-  const openModal = pedido => {
+  const openModal = (pedido: order) => {
     setSelectedPedido(pedido);
     setModalOpen(true);
   };
 
   const closeModal = () => {
+    localStorage.removeItem('newOrder');
     setSelectedPedido(null);
     setModalOpen(false);
   };
@@ -74,7 +95,7 @@ export default function Pedidos() {
     setVisibleCount(prevCount => prevCount + 10);
   };
 
-  const parseEndereco = enderecoStr => {
+  const parseEndereco = (enderecoStr: string) => {
     try {
       return JSON.parse(enderecoStr);
     } catch (error) {
@@ -82,16 +103,24 @@ export default function Pedidos() {
     }
   };
 
+  function formatDate(dateString: string) {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${day}/${month}/${year} às ${hours}:${minutes}h`;
+  }
+
   const handleMercadoPago = async () => {
     setLoading(true);
     try {
       const response = await paymentService.createMPPayment(selectedPedido!.id);
-      console.log(response);
-      console.log(response.result.sandbox_init_point);
+
       if (response) {
         setLoading(false);
-
-        window.location.href = response.result.sandbox_init_point;
+        window.location.href = response.sandbox_init_point;
       }
     } catch (error) {
       console.error('Erro ao processar pagamento:', error);
@@ -114,9 +143,18 @@ export default function Pedidos() {
                   onClick={() => openModal(pedido)}
                   className="cursor-pointer border p-4 rounded-lg hover:shadow-xl transition-all bg-white"
                 >
-                  <h3 className="text-black font-semibold">Pedido #{pedido.id}</h3>
-                  <p className="text-green-600 font-bold">R$ {pedido.total}</p>
-                  <p className="text-gray-500">Status: {pedido.status}</p>
+                  <div className="flex justify-between items-center">
+                    <div className="flex flex-col gap-auto">
+                      <h3 className="text-black font-semibold">Pedido #{pedido.id}</h3>
+                      <p className="text-black  ">Pedido realizado em {formatDate(pedido.createdAt)}</p>
+                    </div>
+                    <div className="flex flex-col items-end text-black gap-auto">
+                      <p className="text-gray-500">Status: {pedido.status}</p>
+                      <p className="text-green-800 font-bold ">
+                        <span className="text-black">Total: </span> R$ {pedido.total.toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -124,7 +162,7 @@ export default function Pedidos() {
           {pedidos.length > visibleCount && (
             <button
               onClick={loadMore}
-              className="mt-6 w-full flex justify-center items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md py-2"
+              className="mt-6 w-full flex justify-center items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold rounded-md py-2"
             >
               Exibir Mais Pedidos
             </button>
@@ -147,18 +185,21 @@ export default function Pedidos() {
               </button>
             </div>
             <div className="text-black mb-4 ">
+              <span className="font-semibold">Pedido feito:</span> {formatDate(selectedPedido.createdAt)}
               <p>
                 <span className="font-semibold">Status do Pedido:</span> {selectedPedido.status}
               </p>
-              <p>
-                <span className="font-semibold">Total:</span> R$ {selectedPedido.total}
+              <p className="mt-4">
+                <span className="font-semibold">Entrega:</span> R$ {selectedPedido.deliveryFee.toFixed(2)}
               </p>
-
+              <p>
+                <span className="font-semibold">Total:</span> R$ {selectedPedido.total.toFixed(2)}
+              </p>
               {selectedPedido.address &&
                 (() => {
                   const endereco = parseEndereco(selectedPedido.address);
                   return endereco ? (
-                    <div className=" mt-4">
+                    <div className="mt-4">
                       <p className="font-bold">Endereço:</p>
                       <p>
                         {endereco.rua.toUpperCase()}, {endereco.numero}
@@ -181,50 +222,33 @@ export default function Pedidos() {
                 <div className="mt-4">
                   <p className="font-semibold">Produtos do Pedido:</p>
                   <ul>
-                    {selectedPedido.orderProducts.map(op => (
-                      <li key={op.id} className="mb-2 flex justify-between">
-                        <div>{op.product.name.toUpperCase()}</div>
+                    {selectedPedido.orderProducts.map(orderProduct => (
+                      <li key={orderProduct.id} className="flex justify-between">
+                        <div>{orderProduct.product.name.toUpperCase()}</div>
                         <div className="flex gap-4">
-                          <p>Quantidade: {op.quantity}</p>
-                          <p>| Preço Unitário: R$ {op.price.toFixed(2)}</p>
-                          <p>| Subtotal: R$ {(op.price * op.quantity).toFixed(2)}</p>
+                          <p>Quantidade: {orderProduct.quantity}</p>
+                          <p>| Preço Unitário: R$ {orderProduct.price.toFixed(2)}</p>
+                          <p>| Subtotal: R$ {(orderProduct.price * orderProduct.quantity).toFixed(2)}</p>
                         </div>
                       </li>
                     ))}
-                    {/* <li className="font-bold">frete: R$ {selectedPedido.deliveryfee.toFixed(2)}</li> */}
                   </ul>
                 </div>
               )}
             </div>
-            <div className="flex flex-col space-y-3">
-              {selectedPedido.status === 'Aguardando Pagamento' && (
-                <div className="flex flex-col space-y-3 ">
-                  <p className="text-end font-semibold"> Selecione a forma de pagamento:</p>
-                  <div className="flex items-center justify-end space-x-4">
-                    <p className=" font-bold">Total: R$ {selectedPedido.total.toFixed(2)}</p>
-                    <button
-                      onClick={() => {}}
-                      className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold rounded-md py-2 px-4"
-                    >
-                      <img src="/icon_pix.png" alt="Pix" className="w-6 h-6 mr-2" />
-                      Pix
-                    </button>
-                    <button
-                      onClick={handleMercadoPago}
-                      className="flex items-center bg-[#f0ad31]  hover:bg-[#e6942c] text-white font-semibold rounded-md py-2 px-4"
-                    >
-                      <img src="/icon_mercadoPago.png" alt="Mercado Pago" className="w-6 h-6 mr-2" />
-                      Mercado Pago
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* <button className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded">Cancelar Pedido</button> */}
-              {/* <button className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded">
-                Acompanhar Entrega
-              </button> */}
-            </div>
+            {selectedPedido.status === 'Aguardando Pagamento' && (
+              <div className="flex flex-col justify-end items-end">
+                <button
+                  onClick={handleMercadoPago}
+                  className="flex justify-center items-center bg-[#f0ad31]  hover:bg-[#e6942c] text-white font-semibold rounded-md py-2 px-4"
+                >
+                  <img src="/icon_mercadoPago.png" alt="Mercado Pago" className="w-6 h-6 mr-2" />
+                  Pagar com Mercado Pago
+                </button>
+              </div>
+            )}
+            {/* <button className="text-black hover:text-red-600">Cancelar Pedido</button>
+            <button className=" text-black hover:text-blue-600  ">Acompanhar Entrega</button> */}
           </div>
         </div>
       )}

@@ -3,7 +3,6 @@ const BASE_URL = 'http://localhost:3001/';
 
 class OrderService {
   async listar() {
-    console.log('listar');
     const response = await (
       await fetch(BASE_URL + 'pedidos/my', {
         method: 'GET',

@@ -91,7 +91,7 @@ export const Header = () => {
         <a className="flex items-center gap-4" href="/">
           <img className="w-14 h-14" src="/logo.png" alt="Veglótus" />
           <h1 className="text-3xl font-bold drop-shadow-xl">
-            <span className="text-[#378b3a]">Veg</span>
+            <span className="text-green-600">Veg</span>
             <span className="text-[#e967a8]">lótus</span>
           </h1>
         </a>
@@ -104,7 +104,7 @@ export const Header = () => {
           <li className="hover:text-[#e967a8]">
             <a href="/produtos">Produtos</a>
           </li>
-          <li className="text-[#378b3a] hover:text-[#30b646]">
+          <li className="text-green-600 hover:text-green-500">
             <a href="https://wa.me/5521990808515">WhatsApp</a>
           </li>
           <li className="relative">

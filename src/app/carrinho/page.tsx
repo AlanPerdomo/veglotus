@@ -1,5 +1,6 @@
 'use client';
 import { orderService } from '@/service/order.service';
+import { paymentService } from '@/service/payment.service';
 import { useEffect, useState } from 'react';
 import { FaTrash } from 'react-icons/fa';
 interface CartItem {
@@ -28,6 +29,7 @@ export default function Carrinho() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [address, setAddress] = useState<Address | null>(null);
   const [deliveryFee, setDeliveryFee] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(false);
   const totalPrice = cart.reduce((acc, item) => acc + (Math.trunc(item.price * 100) / 100) * item.quantity, 0);
 
   useEffect(() => {
@@ -47,9 +49,11 @@ export default function Carrinho() {
     ) {
       setDeliveryFee(parseFloat(quotation.valorFrete.priceBreakdown.total));
     } else {
+      setIsLoading(true);
       const calculateDeliveryFee = async () => {
         const quotation = await orderService.getQuotation(localStorage.getItem('address'));
         setDeliveryFee(parseFloat(quotation.valorFrete.priceBreakdown.total));
+        setIsLoading(false);
       };
       calculateDeliveryFee();
     }
@@ -86,9 +90,14 @@ export default function Carrinho() {
     };
 
     const response = await orderService.save(order);
+    await paymentService.createMPPayment(response.id);
 
     if (response) {
+      localStorage.setItem('newOrder', JSON.stringify(response.id));
       console.log(response);
+      await orderService.listar();
+      localStorage.removeItem('cart');
+      window.location.href = '/pedidos';
     }
   };
 
@@ -96,7 +105,15 @@ export default function Carrinho() {
     <div className="container mx-auto px-4 p-6">
       <h2 className="text-3xl font-bold text-center mb-6 text-black">Carrinho</h2>
       {cart.length === 0 ? (
-        <div className="text-center text-gray-500">Seu carrinho está vazio.</div>
+        <div className="text-center text-gray-500">
+          <h3>Seu carrinho está vazio.</h3>
+          <button
+            className="bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold rounded-md py-2 px-4"
+            onClick={() => (window.location.href = '/produtos')}
+          >
+            Continuar comprando
+          </button>
+        </div>
       ) : (
         <div className="space-y-6">
           {cart.map(item => (
@@ -149,7 +166,7 @@ export default function Carrinho() {
           {address ? (
             <div className="mt-4 text-right text-black">
               <div>
-                <p className="font-semibold">Endereço de entrega:</p>
+                <p className="font-semibold">Endereço de entrega</p>
                 <p className="text-sm">{`${address.rua}, ${address.numero}${
                   address.complemento ? `, ${address.complemento}` : ''
                 }`}</p>
@@ -160,106 +177,45 @@ export default function Carrinho() {
           ) : (
             <div className="text-right text-sm text-gray-500">Nenhum endereço principal cadastrado.</div>
           )}
-
-          <div className="text-right font-bold text-xl text-black">Frete: R$ {deliveryFee.toFixed(2)}</div>
+          <div className="text-right text-black">
+            <p className="font-semibold">Entrega: R$ {deliveryFee.toFixed(2)}</p>
+            <p className="font-bold text-xl">Total: R$ {(totalPrice + deliveryFee).toFixed(2)}</p>
+          </div>
           <div className="flex justify-end items-center space-x-4">
-            <div className="text-right font-bold text-xl text-black">
-              Total: R$ {(totalPrice + deliveryFee).toFixed(2)}
-            </div>
             <button
-              onClick={checkout}
-              className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold  rounded-md py-2 px-4"
+              className="flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold  rounded-md py-2 px-4"
+              onClick={() => (window.location.href = '/produtos')}
             >
-              Fechar pedido
+              Continuar comprando
             </button>
+            {isLoading ? (
+              <button className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold  rounded-md py-2 px-4">
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Carregando...
+              </button>
+            ) : (
+              <button
+                onClick={checkout}
+                className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold  rounded-md py-2 px-4"
+              >
+                Fechar pedido
+              </button>
+            )}
           </div>
         </div>
       )}
     </div>
   );
 }
-
-{
-  /* <button
-    // onClick={'pixPago'}
-    className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold  rounded-md py-2 px-4"
-  >
-    <img src="/icon_pix.png" alt="Pix" className="w-6 h-6 mr-2" />
-    Pix
-  </button>
-  <button
-    // onClick={'mercadoPago'}
-    className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold rounded-md py-2 px-4"
-  >
-    <img src="/icon_mercadoPago.png" alt="Mercado Pago" className="w-8 h-8 mr-2" />
-    Mercado Pago
-  </button> */
-}
-
-// export function CarrinhoOld() {
-//   const [cart, setCart] = useState<CartItem[]>([]);
-//   const router = useRouter();
-
-//   useEffect(() => {
-//     const storedCart = localStorage.getItem('cart');
-//     setCart(storedCart ? JSON.parse(storedCart) : []);
-//   }, []);
-
-//   const updateCart = (newCart: CartItem[]) => {
-//     setCart(newCart);
-//     localStorage.setItem('cart', JSON.stringify(newCart));
-//   };
-
-//   const incrementQuantity = (productId: string) => {
-//     const updatedCart = cart.map(item => (item.id === productId ? { ...item, quantity: item.quantity + 1 } : item));
-//     updateCart(updatedCart);
-//   };
-
-//   const decrementQuantity = (productId: string) => {
-//     const updatedCart = cart
-//       .map(item => (item.id === productId && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item))
-//       .filter(item => item.quantity > 0);
-//     updateCart(updatedCart);
-//   };
-
-//   // Função para fechar o pedido e redirecionar para a página de pagamento
-//   const handleCloseOrder = async () => {
-//     const user = localStorage.getItem('user');
-//     if (!user) {
-//       alert('Usuário não autenticado!');
-//       router.push('/user/login');
-//       return;
-//     }
-//     // Supondo que a estrutura do objeto de usuário esteja aninhada (ajuste se necessário)
-//     const userId = JSON.parse(user)?.user?.id || JSON.parse(user)?.id;
-//     if (!userId) {
-//       alert('Erro ao obter dados do usuário.');
-//       return;
-//     }
-
-//     const data = {
-//       userId: userId,
-//       produtos: cart,
-//       paymentStatus: 'PENDENTE',
-//     };
-
-//     try {
-//       const orderResponse = await orderService.save(data);
-//       if (orderResponse && orderResponse.id) {
-//         alert('Pedido realizado com sucesso!');
-//         // Salva os dados do pedido para a página de pagamento
-//         localStorage.setItem('order', JSON.stringify(orderResponse));
-//         // Limpa o carrinho
-//         setCart([]);
-//         localStorage.removeItem('cart');
-//         // Redireciona para a página de pagamento
-//         router.push('/pagamento');
-//       } else {
-//         alert('Erro ao realizar o pedido.');
-//       }
-//     } catch (error) {
-//       console.error(error);
-//       alert('Erro ao realizar o pedido.');
-//     }
-//   };
-// }
