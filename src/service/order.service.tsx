@@ -18,6 +18,20 @@ class OrderService {
     return response;
   }
 
+  async cancel(id: number) {
+    const response = await (
+      await fetch(BASE_URL + 'pedidos/cancelar/' + id, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: 'Bearer ' + localStorage.getItem('token'),
+        },
+      })
+    ).json();
+
+    return response;
+  }
+
   async save(data: any) {
     const order = {
       orderProducts: data.cart,

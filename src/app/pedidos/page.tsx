@@ -12,6 +12,7 @@ interface order {
   address: string;
   orderProducts: orderProduct[];
   paymentStatus: string;
+  MLpaymentId: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -40,17 +41,17 @@ export default function Pedidos() {
   const [visibleCount, setVisibleCount] = useState(10);
   const [loading, setLoading] = useState(false);
 
-  initMercadoPago(process.env.MERCADO_PAGO_PUBLIC_KEY!);
-
   useEffect(() => {
     const fetchData = async () => {
+      initMercadoPago(process.env.MERCADO_PAGO_PUBLIC_KEY!, {});
       const newOrder = localStorage.getItem('newOrder');
       let pedidos = JSON.parse(localStorage.getItem('orders')!);
-      sortOrders(pedidos);
 
       if (!pedidos) {
         await meusPedidos();
         pedidos = JSON.parse(localStorage.getItem('orders')!);
+      } else {
+        sortOrders(pedidos);
       }
 
       if (newOrder && pedidos) {
@@ -113,18 +114,12 @@ export default function Pedidos() {
     return `${day}/${month}/${year} às ${hours}:${minutes}h`;
   }
 
-  const handleMercadoPago = async () => {
-    setLoading(true);
+  const cancelarPedido = async (pedidoId: number) => {
     try {
-      const response = await paymentService.createMPPayment(selectedPedido!.id);
-
-      if (response) {
-        setLoading(false);
-        window.location.href = response.sandbox_init_point;
-      }
+      await orderService.cancel(pedidoId);
+      await meusPedidos();
     } catch (error) {
-      console.error('Erro ao processar pagamento:', error);
-    } finally {
+      console.error('Erro ao cancelar o pedido:', error);
     }
   };
 
@@ -235,20 +230,16 @@ export default function Pedidos() {
                   </ul>
                 </div>
               )}
+              {selectedPedido.status === 'Aguardando Pagamento' && (
+                <div>
+                  <Wallet initialization={{ preferenceId: selectedPedido.MLpaymentId, redirectMode: 'self' }} />
+                </div>
+              )}
+              <button className="text-black hover:text-red-600" onClick={() => cancelarPedido(selectedPedido.id)}>
+                Cancelar Pedido
+              </button>
+              {/* <button className=" text-black hover:text-blue-600  ">Acompanhar Entrega</button>  */}
             </div>
-            {selectedPedido.status === 'Aguardando Pagamento' && (
-              <div className="flex flex-col justify-end items-end">
-                <button
-                  onClick={handleMercadoPago}
-                  className="flex justify-center items-center bg-[#f0ad31]  hover:bg-[#e6942c] text-white font-semibold rounded-md py-2 px-4"
-                >
-                  <img src="/icon_mercadoPago.png" alt="Mercado Pago" className="w-6 h-6 mr-2" />
-                  Pagar com Mercado Pago
-                </button>
-              </div>
-            )}
-            {/* <button className="text-black hover:text-red-600">Cancelar Pedido</button>
-            <button className=" text-black hover:text-blue-600  ">Acompanhar Entrega</button> */}
           </div>
         </div>
       )}
