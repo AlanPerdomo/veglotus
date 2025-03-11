@@ -21,7 +21,7 @@ class OrderService {
   async cancel(id: number) {
     const response = await (
       await fetch(BASE_URL + 'pedidos/cancelar/' + id, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           authorization: 'Bearer ' + localStorage.getItem('token'),
@@ -36,7 +36,7 @@ class OrderService {
     const order = {
       orderProducts: data.cart,
       status: 'Aguardando Pagamento',
-      paymentStatus: 'Pendente',
+      paymentStatus: 'PENDENTE',
       subTotal: data.totalPrice,
       deliveryFee: data.deliveryFee,
       total: data.totalPrice + data.deliveryFee,
@@ -73,10 +73,6 @@ class OrderService {
     localStorage.setItem('quotation', JSON.stringify(response));
 
     return response;
-  }
-
-  async createPaymentPreference() {
-    const response = await fetch(BASE_URL + 'pagamento/criar-preferencia');
   }
 }
 

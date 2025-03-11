@@ -82,6 +82,13 @@ export default function Carrinho() {
   };
 
   const checkout = async () => {
+    if (!address) {
+      alert('Por favor, selecione um endereço de entrega.');
+      return;
+    }
+
+    setIsLoading(true);
+
     const order = {
       address,
       deliveryFee,
@@ -89,15 +96,18 @@ export default function Carrinho() {
       cart,
     };
 
-    const response = await orderService.save(order);
-    await paymentService.createMPPayment(response.id);
+    try {
+      const response = await orderService.save(order);
+      await paymentService.createMPPayment(response.id);
 
-    if (response) {
       localStorage.setItem('newOrder', JSON.stringify(response.id));
-      console.log(response);
-      await orderService.listar();
       localStorage.removeItem('cart');
       window.location.href = '/pedidos';
+    } catch (error) {
+      console.error('Erro ao finalizar o pedido:', error);
+      alert('Ocorreu um erro ao finalizar o pedido. Tente novamente.');
+    } finally {
+      setIsLoading(false);
     }
   };
 

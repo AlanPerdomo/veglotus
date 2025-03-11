@@ -43,7 +43,8 @@ export default function Pedidos() {
 
   useEffect(() => {
     const fetchData = async () => {
-      initMercadoPago(process.env.MERCADO_PAGO_PUBLIC_KEY!, {});
+      initMercadoPago('APP_USR-4e2c712e-1b41-412b-8d15-5a9761bb0883', {});
+
       const newOrder = localStorage.getItem('newOrder');
       let pedidos = JSON.parse(localStorage.getItem('orders')!);
 
@@ -55,8 +56,6 @@ export default function Pedidos() {
       }
 
       if (newOrder && pedidos) {
-        console.log('newOrder:', newOrder);
-        await meusPedidos();
         const pedidoId = JSON.parse(newOrder);
         const pedido = pedidos.find((pedido: order) => pedido.id === pedidoId);
         setSelectedPedido(pedido);
@@ -116,8 +115,11 @@ export default function Pedidos() {
 
   const cancelarPedido = async (pedidoId: number) => {
     try {
-      await orderService.cancel(pedidoId);
-      await meusPedidos();
+      const response = await orderService.cancel(pedidoId);
+      if (response.status === 'CANCELADO') {
+        closeModal();
+        await meusPedidos();
+      }
     } catch (error) {
       console.error('Erro ao cancelar o pedido:', error);
     }
@@ -172,7 +174,7 @@ export default function Pedidos() {
       </div>
       {modalOpen && selectedPedido && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg shadow-lg w-full p-6 text-black overflow-y-auto max-h-screen max-w-3xl">
+          <div className="bg-white rounded-xl shadow-lg w-full p-6 text-black overflow-y-auto max-h-screen max-w-5xl">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold">Detalhes do Pedido #{selectedPedido.id}</h2>
               <button onClick={closeModal} className="text-gray-500 hover:text-gray-700 text-3xl leading-none">
@@ -230,15 +232,24 @@ export default function Pedidos() {
                   </ul>
                 </div>
               )}
-              {selectedPedido.status === 'Aguardando Pagamento' && (
-                <div>
-                  <Wallet initialization={{ preferenceId: selectedPedido.MLpaymentId, redirectMode: 'self' }} />
-                </div>
-              )}
-              <button className="text-black hover:text-red-600" onClick={() => cancelarPedido(selectedPedido.id)}>
-                Cancelar Pedido
-              </button>
-              {/* <button className=" text-black hover:text-blue-600  ">Acompanhar Entrega</button>  */}
+              <div className="flex flex-col  mt-4">
+                {selectedPedido.status === 'Aguardando Pagamento' && (
+                  <div>
+                    <Wallet initialization={{ preferenceId: selectedPedido.MLpaymentId, redirectMode: 'blank' }} />
+                  </div>
+                )}
+                {/* <button className=" text-black hover:text-blue-600  ">Acompanhar Entrega</button>  */}
+                {selectedPedido.status !== 'CANCELADO' && (
+                  <div className="text-right">
+                    <button
+                      className="text-neutral-500 hover:text-red-600 text-sm text-"
+                      onClick={() => cancelarPedido(selectedPedido.id)}
+                    >
+                      Cancelar Pedido
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
