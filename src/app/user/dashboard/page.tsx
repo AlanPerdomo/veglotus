@@ -20,6 +20,7 @@ interface Address {
 interface User {
   id: string;
   name: string;
+  surname: string;
   email: string;
   phone?: string;
   cpf?: string;
@@ -32,6 +33,7 @@ export default function Dashboard() {
   const [formData, setFormData] = useState<User>({
     id: '',
     name: '',
+    surname: '',
     email: '',
     phone: '',
     cpf: '',
@@ -39,6 +41,7 @@ export default function Dashboard() {
   const [editedFields, setEditedFields] = useState<Record<string, boolean>>({});
   const [editingFields, setEditingFields] = useState({
     name: false,
+    surname: false,
     email: false,
     phone: false,
     cpf: false,
@@ -103,6 +106,11 @@ export default function Dashboard() {
       return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
     }
     return phone;
+  };
+
+  const formatCPF = (cpf: string): string => {
+    const formattedCPF = cpf.replace(/\D/g, '');
+    return `***.${formattedCPF.slice(3, 6)}.${formattedCPF.slice(6, 9)}-**`;
   };
 
   const handleDeleteAddress = async (id: string) => {
@@ -195,6 +203,7 @@ export default function Dashboard() {
       setUser(updatedUser);
       setEditingFields({
         name: false,
+        surname: false,
         email: false,
         phone: false,
         cpf: false,
@@ -233,20 +242,42 @@ export default function Dashboard() {
           {/* Nome */}
           <div className="flex items-center justify-between">
             <div className="w-full">
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                Nome:
-              </label>
               {editingFields.name ? (
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <div className="flex gap-2">
+                  <div className="">
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                      Nome:
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className=" p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                      Sobrenome:
+                    </label>
+                    <input
+                      type="text"
+                      id="surname"
+                      name="surname"
+                      value={formData.surname}
+                      onChange={handleInputChange}
+                      className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
               ) : (
-                <p>{user.name}</p>
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                    Nome:
+                  </label>
+                  <p>{user.name + ' ' + user.surname}</p>
+                </div>
               )}
             </div>
             <div className="ml-2">
@@ -351,7 +382,7 @@ export default function Dashboard() {
                   className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               ) : (
-                <p>{user.cpf ? user.cpf : 'Não informado'}</p>
+                <p>{user.cpf ? formatCPF(user.cpf) : 'Não informado'}</p>
               )}
             </div>
             <div className="ml-2">

@@ -3,6 +3,8 @@ import { orderService } from '@/service/order.service';
 import { paymentService } from '@/service/payment.service';
 import { useEffect, useState } from 'react';
 import { FaTrash } from 'react-icons/fa';
+import { initMercadoPago } from '@mercadopago/sdk-react';
+
 interface CartItem {
   id: string;
   name: string;
@@ -33,6 +35,7 @@ export default function Carrinho() {
   const totalPrice = cart.reduce((acc, item) => acc + (Math.trunc(item.price * 100) / 100) * item.quantity, 0);
 
   useEffect(() => {
+    initMercadoPago('APP_USR-4e2c712e-1b41-412b-8d15-5a9761bb0883', {});
     const storedCart = localStorage.getItem('cart');
     setCart(storedCart ? JSON.parse(storedCart) : []);
 
@@ -101,8 +104,9 @@ export default function Carrinho() {
       await paymentService.createMPPayment(response.id);
 
       localStorage.setItem('newOrder', JSON.stringify(response.id));
-      localStorage.removeItem('cart');
-      window.location.href = '/pedidos';
+      sessionStorage.setItem('teste', JSON.stringify(response.id));
+      // localStorage.removeItem('cart');
+      // window.location.href = '/pedidos';
     } catch (error) {
       console.error('Erro ao finalizar o pedido:', error);
       alert('Ocorreu um erro ao finalizar o pedido. Tente novamente.');

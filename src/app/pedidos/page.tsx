@@ -43,6 +43,7 @@ export default function Pedidos() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       initMercadoPago('APP_USR-4e2c712e-1b41-412b-8d15-5a9761bb0883', {});
 
       const newOrder = localStorage.getItem('newOrder');
@@ -64,6 +65,7 @@ export default function Pedidos() {
     };
 
     fetchData();
+    setLoading(false);
   }, []);
 
   const meusPedidos = async () => {

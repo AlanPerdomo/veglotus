@@ -1,9 +1,11 @@
 'use client';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { userService } from '@/service/user.service';
+import { format } from 'path';
 
 export default function Register() {
   const [name, setName] = useState('');
+  const [surname, setSurname] = useState('');
   const [cpf, setCpf] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -65,6 +67,11 @@ export default function Register() {
     setName(formattedName);
   };
 
+  const handleSurnameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedSurname = formatName(e.target.value);
+    setSurname(formattedSurname);
+  };
+
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     setErrorMessage('');
     e.preventDefault();
@@ -76,6 +83,7 @@ export default function Register() {
 
     const data = {
       name: name,
+      surname: surname,
       email: email,
       cpf: cpf.replace(/\D/g, ''),
       password: password,
@@ -113,6 +121,21 @@ export default function Register() {
               onChange={handleNameChange}
               className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               placeholder="Seu nome"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="surname" className="block text-sm font-medium text-gray-700 mb-1">
+              *Sobrenome:
+            </label>
+            <input
+              type="text"
+              id="surname"
+              name="surname"
+              value={surname}
+              onChange={handleSurnameChange}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+              placeholder="Seu sobrenome"
               required
             />
           </div>

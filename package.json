@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@mercadopago/sdk-js": "^0.0.3",
     "@mercadopago/sdk-react": "^0.0.24",
     "autoprefixer": "^10.4.20",
     "dotenv": "^16.4.7",
