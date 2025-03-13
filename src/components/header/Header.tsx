@@ -5,6 +5,7 @@ export const Header = () => {
   // Inicializa os estados com valores padrão
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('');
+  const [isAdmin, setAdmin] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const dropdownRef = useRef<HTMLUListElement>(null);
@@ -19,6 +20,9 @@ export const Header = () => {
           const user = JSON.parse(storedUser);
           setIsLoggedIn(true);
           setUserName(user.name);
+          if (user.type === 'admin') {
+            setAdmin(true);
+          }
         }
       } catch (error) {
         console.log('Erro ao ler o usuário do localStorage:', error);
@@ -122,12 +126,14 @@ export const Header = () => {
                     <li className="hover:text-[#e967a8]">
                       <a href="/user/dashboard">Perfil</a>
                     </li>
+                    {isAdmin ? (
+                      <li className="hover:text-green-600">
+                        <a href="/admin/dashboard">Dashboard</a>
+                      </li>
+                    ) : null}
                     <li className="hover:text-[#e967a8] ">
                       <a href="/pedidos">Meus Pedidos</a>
                     </li>
-                    {/* <li className="hover:text-[#e967a8]">
-                      <a href="/settings">Configurações</a>
-                    </li> */}
                     <li className="text-red-500 hover:text-red-700">
                       <button onClick={handleLogout}>Sair</button>
                     </li>

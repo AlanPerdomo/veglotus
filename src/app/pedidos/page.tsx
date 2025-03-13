@@ -1,6 +1,5 @@
 'use client';
 import { orderService } from '@/service/order.service';
-import { paymentService } from '@/service/payment.service';
 import { useEffect, useState } from 'react';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 
@@ -39,11 +38,11 @@ export default function Pedidos() {
   const [selectedPedido, setSelectedPedido] = useState<order | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(10);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
+      setIsLoading(true);
       initMercadoPago('APP_USR-4e2c712e-1b41-412b-8d15-5a9761bb0883', {});
 
       const newOrder = localStorage.getItem('newOrder');
@@ -65,12 +64,12 @@ export default function Pedidos() {
     };
 
     fetchData();
-    setLoading(false);
+    setIsLoading(false);
   }, []);
 
   const meusPedidos = async () => {
     if (localStorage.getItem('isLogged') === 'true') {
-      const pedidos = await orderService.listar();
+      const pedidos = await orderService.meusPedidos();
       sortOrders(pedidos);
     } else {
       window.location.href = '/user/login';
@@ -131,7 +130,15 @@ export default function Pedidos() {
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-4xl font-bold text-center text-black mb-8">Meus Pedidos</h1>
-        <div className="bg-white shadow-lg rounded-lg p-6">
+        <div className="bg-white shadow-lg rounded-lg p-6 flex flex-col">
+          <div className="flex justify-end">
+            <button
+              onClick={meusPedidos}
+              className="bg-green-500 text-white font-semibold hover:bg-green-600 px-4 py-2 rounded-xl mb-4"
+            >
+              Atualizar Pedidos
+            </button>
+          </div>
           {pedidos.length === 0 ? (
             <div className="text-center text-gray-500">Você ainda não fez nenhum pedido.</div>
           ) : (
@@ -166,12 +173,6 @@ export default function Pedidos() {
               Exibir Mais Pedidos
             </button>
           )}
-          <button
-            onClick={meusPedidos}
-            className="mt-6 w-full flex justify-center items-center bg-green-500 hover:bg-green-600 text-white font-semibold rounded-md py-2"
-          >
-            Atualizar Pedidos
-          </button>
         </div>
       </div>
       {modalOpen && selectedPedido && (

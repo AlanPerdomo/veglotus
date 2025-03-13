@@ -2,7 +2,7 @@
 const BASE_URL = 'http://localhost:3001/';
 
 class OrderService {
-  async listar() {
+  async meusPedidos() {
     const response = await (
       await fetch(BASE_URL + 'pedidos/my', {
         method: 'GET',
@@ -14,6 +14,22 @@ class OrderService {
     ).json();
 
     localStorage.setItem('orders', JSON.stringify(response));
+
+    return response;
+  }
+
+  async listar() {
+    const response = await (
+      await fetch(BASE_URL + 'pedidos/listar', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: 'Bearer ' + localStorage.getItem('token'),
+        },
+      })
+    ).json();
+
+    localStorage.setItem('allOrders', JSON.stringify(response));
 
     return response;
   }
