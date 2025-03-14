@@ -2,18 +2,18 @@
 import { useState, useEffect, useRef } from 'react';
 
 export const Header = () => {
-  // Inicializa os estados com valores padrão
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('');
   const [isAdmin, setAdmin] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const dropdownRef = useRef<HTMLUListElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Verifica se estamos no ambiente do navegador
     if (typeof window !== 'undefined') {
-      // Atualiza o estado do usuário
       try {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
@@ -28,7 +28,6 @@ export const Header = () => {
         console.log('Erro ao ler o usuário do localStorage:', error);
       }
 
-      // Atualiza o contador do carrinho
       try {
         const storedCart = localStorage.getItem('cart');
         if (storedCart) {
@@ -40,7 +39,6 @@ export const Header = () => {
         console.log('Erro ao ler o carrinho do localStorage:', error);
       }
 
-      // Função para atualizar o contador do carrinho quando ocorrer mudanças em outras abas
       const updateCartCount = () => {
         try {
           const storedCart = localStorage.getItem('cart');
@@ -66,16 +64,19 @@ export const Header = () => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownVisible(false);
       }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setMobileMenuOpen(false);
+      }
     };
-    if (dropdownVisible) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [dropdownVisible]);
+  }, []);
 
   const handleLogout = () => {
+    console.log(typeof window);
     if (typeof window !== 'undefined') {
       localStorage.clear();
     }
@@ -89,18 +90,38 @@ export const Header = () => {
     setDropdownVisible(!dropdownVisible);
   };
 
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
   return (
-    <header className="bg-[#f0ad31] p-3 px-8 flex justify-between items-center">
+    <header className="bg-[#f0ad31] p-3 px-4 sm:px-8 flex justify-between items-center relative">
       <div>
-        <a className="flex items-center gap-4" href="/">
-          <img className="w-14 h-14" src="/logo.png" alt="Veglótus" />
-          <h1 className="text-3xl font-bold drop-shadow-xl">
+        <a className="flex items-center gap-2 sm:gap-4" href="/">
+          <img className="w-10 h-10 sm:w-14 sm:h-14" src="/logo.png" alt="Veglótus" />
+          <h1 className="text-xl sm:text-3xl font-bold drop-shadow-xl">
             <span className="text-green-600">Veg</span>
             <span className="text-[#e967a8]">lótus</span>
           </h1>
         </a>
       </div>
-      <nav>
+      <div className="sm:hidden flex gap-6">
+        <a href="/carrinho" className="relative">
+          <img src="/sacola.png" alt="Sacola" className="w-5" />
+          {cartCount > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-2">
+              {cartCount}
+            </span>
+          )}
+        </a>
+        <button onClick={toggleMobileMenu}>
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
+          </svg>
+        </button>
+      </div>
+
+      <nav className="hidden sm:block">
         <ul className="flex gap-4 text-[#000000] font-bold drop-shadow-sm">
           <li className="hover:text-[#e967a8]">
             <a href="/">Home</a>
@@ -158,8 +179,114 @@ export const Header = () => {
           </li>
         </ul>
       </nav>
+      {mobileMenuOpen && (
+        <div ref={mobileMenuRef} className="sm:hidden absolute top-16 right-0 bg-[#f0ad31] w-full p-4 shadow-lg z-50">
+          <ul className="flex flex-col gap-4">
+            <li className="hover:text-[#e967a8]">
+              <a href="/">Home</a>
+            </li>
+            <li className="hover:text-[#e967a8]">
+              <a href="/produtos">Produtos</a>
+            </li>
+            <li className="text-green-600 hover:text-green-500">
+              <a href="https://wa.me/5521990808515">WhatsApp</a>
+            </li>
+            <li>
+              {isLoggedIn ? (
+                <div>
+                  <button onClick={toggleDropdown} className="hover:text-[#e967a8]">
+                    {userName}
+                  </button>
+                  {dropdownVisible && (
+                    <ul className="mt-2 bg-gray-200 shadow-lg rounded-lg p-4 w-40 text-md text-gray-700">
+                      <li className="hover:text-[#e967a8]">
+                        <a href="/user/dashboard">Perfil</a>
+                      </li>
+                      {isAdmin ? (
+                        <li className="hover:text-green-600">
+                          <a href="/admin/dashboard">Dashboard</a>
+                        </li>
+                      ) : null}
+                      <li className="hover:text-[#e967a8] ">
+                        <a href="/pedidos">Meus Pedidos</a>
+                      </li>
+                      <li className="text-red-500 hover:text-red-700">
+                        <button onClick={handleLogout}>Sair</button>
+                      </li>
+                    </ul>
+                  )}
+                </div>
+              ) : (
+                <a href="/user/login" className="hover:text-[#e967a8]">
+                  Login
+                </a>
+              )}
+            </li>
+          </ul>
+        </div>
+      )}
     </header>
   );
 };
 
 export default Header;
+
+// <nav>
+//   <button className="sm:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}></button>
+//   <ul className="flex gap-4 text-[#000000] font-bold drop-shadow-sm">
+//     <li className="hover:text-[#e967a8]">
+//       <a href="/">Home</a>
+//     </li>
+//     <li className="hover:text-[#e967a8]">
+//       <a href="/produtos">Produtos</a>
+//     </li>
+//     <li className="text-green-600 hover:text-green-500">
+//       <a href="https://wa.me/5521990808515">WhatsApp</a>
+//     </li>
+//     <li className="relative">
+//       {isLoggedIn ? (
+//         <div>
+//           <button onClick={toggleDropdown} className="hover:text-[#e967a8]">
+//             {userName}
+//           </button>
+//           {dropdownVisible && (
+//             <ul
+//               ref={dropdownRef}
+//               id="dropdown-menu"
+//               className="absolute top-8 right-0 bg-gray-200 shadow-lg rounded-lg p-4 w-40 text-md text-gray-700"
+//             >
+//               <li className="hover:text-[#e967a8]">
+//                 <a href="/user/dashboard">Perfil</a>
+//               </li>
+//               {isAdmin ? (
+//                 <li className="hover:text-green-600">
+//                   <a href="/admin/dashboard">Dashboard</a>
+//                 </li>
+//               ) : null}
+//               <li className="hover:text-[#e967a8] ">
+//                 <a href="/pedidos">Meus Pedidos</a>
+//               </li>
+//               <li className="text-red-500 hover:text-red-700">
+//                 <button onClick={handleLogout}>Sair</button>
+//               </li>
+//             </ul>
+//           )}
+//         </div>
+//       ) : (
+//         <a href="/user/login" className="hover:text-[#e967a8]">
+//           Login
+//         </a>
+//       )}
+//     </li>
+//     <li className="relative">
+//       <a href="/carrinho" className="relative">
+//         <img src="/sacola.png" alt="Sacola" className="w-5" />
+//         {cartCount > 0 && (
+//           <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-2">
+//             {cartCount}
+//           </span>
+//         )}
+//       </a>
+//     </li>
+//   </ul>
+// </nav>

@@ -1,7 +1,7 @@
 import { get } from 'http';
 
-// const BASE_URL_NGROK = 'https://winning-lately-dodo.ngrok-free.app/';
-const BASE_URL = 'http://localhost:3001/';
+const BASE_URL = 'https://winning-lately-dodo.ngrok-free.app/';
+// const BASE_URL = 'http://localhost:3001/';
 class UserService {
   async cadastrar(data: any) {
     const response = await (

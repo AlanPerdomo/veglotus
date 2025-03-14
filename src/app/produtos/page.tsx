@@ -110,9 +110,8 @@ export default function Produtos() {
 
   return (
     <div className="container mx-auto px-4 p-6">
-      <h2 className="text-3xl font-bold text-center mb-6 text-black">Produtos</h2>
+      <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6 text-black">Produtos</h2>
 
-      {/* Barra de busca */}
       <div className="mb-6 flex justify-center">
         <input
           type="text"
@@ -123,30 +122,31 @@ export default function Produtos() {
         />
       </div>
 
-      {/* Exibição dos produtos por categoria */}
       {Object.keys(groupedProducts).map(categoria => (
         <div key={categoria} className="mb-8">
           <div className="flex items-center justify-between bg-gray-200 p-2 pl-4 pr-5 rounded-xl">
-            <h3 className="text-2xl font-semibold text-[#378b3a] capitalize bg-gray-200 rounded-xl">{categoria}</h3>
+            <h3 className="text-xl sm:text-2xl font-semibold text-[#378b3a] capitalize">{categoria}</h3>
             <button
               onClick={() => toggleCategory(categoria)}
               className="text-sm bg-[#f0ad31] text-white font-semibold py-1 px-2 rounded-md"
             >
-              {expandedCategories[categoria] ? '-' : '+'}
+              {expandedCategories[categoria] ? 'v' : '>'}
             </button>
           </div>
           {expandedCategories[categoria] && (
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-6 mt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
               {groupedProducts[categoria].map(product => (
                 <div
                   key={product.id}
                   className="border rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow bg-white p-4 max-w-sm"
                   onClick={() => openProductModal(product)}
                 >
-                  <img src={product.image} alt={product.name} className="w-full h-32 object-cover" />
+                  {product.image && (
+                    <img src={product.image} alt={product.name} className="w-full h-32 sm:h-40 object-cover" />
+                  )}
                   <div className="p-2">
-                    <h3 className="text-sm text-black font-semibold truncate">{product.name}</h3>
-                    <p className="text-green-600 font-bold text-sm">
+                    <h3 className="text-sm sm:text-md text-black font-semibold truncate">{product.name}</h3>{' '}
+                    <p className="text-green-600 font-bold text-sm sm:text-md">
                       R$ {(Math.trunc(product.price * 100) / 100).toFixed(2)}
                     </p>
                   </div>
@@ -157,18 +157,19 @@ export default function Produtos() {
         </div>
       ))}
 
-      {/* Modal de visualização do produto */}
       {selectedProduct && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-11/12 max-w-md shadow-lg relative">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative">
             <button onClick={closeProductModal} className="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
               &times;
             </button>
-            <img
-              src={selectedProduct.image}
-              alt={selectedProduct.name}
-              className="w-full h-full object-cover rounded-md mb-4"
-            />
+            {selectedProduct.image && (
+              <img
+                src={selectedProduct.image}
+                alt={selectedProduct.name}
+                className="w-full h-full object-cover rounded-md mb-4"
+              />
+            )}
             <h3 className="text-xl font-bold text-black mb-2">{selectedProduct.name}</h3>
             <p className="text-gray-700 mb-4">{selectedProduct.description}</p>
             <p className="text-green-600 font-bold text-lg">

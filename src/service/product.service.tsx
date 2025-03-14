@@ -3,7 +3,7 @@ const BASE_URL = 'http://localhost:3001/';
 
 class ProductService {
   async listar() {
-    const response = await fetch(BASE_URL + 'produtos', {
+    const response = await fetch(BASE_URL_NGROK + 'produtos', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
