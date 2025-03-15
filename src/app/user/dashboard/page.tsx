@@ -65,6 +65,11 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchData = async () => {
+      const logged = localStorage.getItem('isLogged');
+      if (logged !== 'true') {
+        window.location.href = '/user/login';
+      }
+
       const userStorage = localStorage.getItem('user');
       if (userStorage) {
         const userData = JSON.parse(userStorage);

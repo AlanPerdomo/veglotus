@@ -14,6 +14,7 @@ interface CartItem {
   description?: string;
   category?: string;
 }
+
 interface Address {
   bairro: string;
   cep: string;
@@ -31,7 +32,7 @@ export default function Carrinho() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [address, setAddress] = useState<Address | null>(null);
   const [deliveryFee, setDeliveryFee] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const totalPrice = cart.reduce((acc, item) => acc + (Math.trunc(item.price * 100) / 100) * item.quantity, 0);
 
   useEffect(() => {
@@ -51,8 +52,8 @@ export default function Carrinho() {
       new Date().getTime() - new Date(quotation.createdAt).getTime() <= 20 * 60 * 1000
     ) {
       setDeliveryFee(parseFloat(quotation.valorFrete.priceBreakdown.total));
-    } else {
-      setIsLoading(true);
+      setIsLoading(false);
+    } else if (address) {
       const calculateDeliveryFee = async () => {
         const quotation = await orderService.getQuotation(localStorage.getItem('address'));
         setDeliveryFee(parseFloat(quotation.valorFrete.priceBreakdown.total));
@@ -60,6 +61,7 @@ export default function Carrinho() {
       };
       calculateDeliveryFee();
     }
+    console.log(address);
   }, []);
 
   async function updateCart(newCart: CartItem[]) {
@@ -202,7 +204,7 @@ export default function Carrinho() {
             >
               Continuar comprando
             </button>
-            {isLoading ? (
+            {isLoading && address ? (
               <button className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold  rounded-md py-2 px-4">
                 <svg
                   className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
@@ -219,6 +221,13 @@ export default function Carrinho() {
                 </svg>
                 Carregando...
               </button>
+            ) : isLoading && !address ? (
+              <a
+                href="/user/dashboard"
+                className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold  rounded-md py-2 px-4"
+              >
+                Escolha um endereço
+              </a>
             ) : (
               <button
                 onClick={checkout}
