@@ -61,9 +61,17 @@ export const Header = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const dropdownButton = document.getElementById('dropdown-button');
+
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        dropdownButton &&
+        !dropdownButton.contains(event.target as Node)
+      ) {
         setDropdownVisible(false);
       }
+
       if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
         setMobileMenuOpen(false);
       }
@@ -135,7 +143,7 @@ export const Header = () => {
           <li className="relative">
             {isLoggedIn ? (
               <div>
-                <button onClick={toggleDropdown} className="hover:text-[#e967a8]">
+                <button id="dropdown-button" onClick={toggleDropdown} className="hover:text-[#e967a8]">
                   {userName}
                 </button>
                 {dropdownVisible && (
@@ -145,15 +153,21 @@ export const Header = () => {
                     className="absolute top-8 right-0 bg-gray-200 shadow-lg rounded-lg p-4 w-40 text-md text-gray-700"
                   >
                     <li className="hover:text-[#e967a8]">
-                      <a href="/user/dashboard">Perfil</a>
+                      <a href="/user/dashboard" onClick={e => e.stopPropagation()}>
+                        Perfil
+                      </a>
                     </li>
                     {isAdmin ? (
                       <li className="hover:text-green-600">
-                        <a href="/admin/dashboard">Dashboard</a>
+                        <a href="/admin/dashboard" onClick={e => e.stopPropagation()}>
+                          Dashboard
+                        </a>
                       </li>
                     ) : null}
                     <li className="hover:text-[#e967a8] ">
-                      <a href="/pedidos">Meus Pedidos</a>
+                      <a href="/pedidos" onClick={e => e.stopPropagation()}>
+                        Meus Pedidos
+                      </a>
                     </li>
                     <li className="text-red-500 hover:text-red-700">
                       <button onClick={handleLogout}>Sair</button>
@@ -194,24 +208,27 @@ export const Header = () => {
             <li>
               {isLoggedIn ? (
                 <div>
-                  <button onClick={toggleDropdown} className="hover:text-[#e967a8]">
+                  <button id="dropdown-button" onClick={toggleDropdown} className="hover:text-[#e967a8]">
                     {userName}
                   </button>
                   {dropdownVisible && (
                     <ul className="mt-2 bg-gray-200 shadow-lg rounded-lg p-4 w-40 text-md text-gray-700">
                       <li className="hover:text-[#e967a8]">
-                        <a href="/user/dashboard">Perfil</a>
+                        <a href="/user/dashboard" onClick={e => e.stopPropagation()}>
+                          Perfil
+                        </a>
                       </li>
                       {isAdmin ? (
                         <li className="hover:text-green-600">
-                          <a href="/admin/dashboard">Dashboard</a>
+                          <a href="/admin/dashboard" onClick={e => e.stopPropagation()}>
+                            Dashboard
+                          </a>
                         </li>
                       ) : null}
                       <li className="hover:text-[#e967a8] ">
-                        <a href="/pedidos">Meus Pedidos</a>
-                      </li>
-                      <li className="text-red-500 hover:text-red-700">
-                        <button onClick={handleLogout}>Sair</button>
+                        <a href="/pedidos" onClick={e => e.stopPropagation()}>
+                          Meus Pedidos
+                        </a>
                       </li>
                     </ul>
                   )}
@@ -220,6 +237,13 @@ export const Header = () => {
                 <a href="/user/login" className="hover:text-[#e967a8]">
                   Login
                 </a>
+              )}
+            </li>
+            <li>
+              {isLoggedIn && (
+                <button className="text-red-500 hover:text-red-700" onClick={handleLogout}>
+                  Sair
+                </button>
               )}
             </li>
           </ul>

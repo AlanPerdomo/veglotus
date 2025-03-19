@@ -21,8 +21,8 @@ export default function Login() {
     const response = await userService.login(email, password);
 
     if (response.ok) {
-      // alert('Login realizado com sucesso!');
-      // window.location.href = '/';
+      alert('Login realizado com sucesso!');
+      window.location.href = '/';
     } else {
       setErrorMessage('Email ou senha incorretos');
     }

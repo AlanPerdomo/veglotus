@@ -8,6 +8,7 @@ class OrderService {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
           authorization: 'Bearer ' + localStorage.getItem('token'),
         },
       })
@@ -24,6 +25,7 @@ class OrderService {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
           authorization: 'Bearer ' + localStorage.getItem('token'),
         },
       })
@@ -40,6 +42,7 @@ class OrderService {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
           authorization: 'Bearer ' + localStorage.getItem('token'),
         },
       })
@@ -64,6 +67,7 @@ class OrderService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
           authorization: 'Bearer ' + localStorage.getItem('token'),
         },
         body: JSON.stringify(order),
@@ -79,6 +83,7 @@ class OrderService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
         },
         body: address,
       })

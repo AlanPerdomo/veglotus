@@ -5,6 +5,7 @@ class PaymentService {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
         authorization: 'bearer ' + localStorage.getItem('token'),
       },
     });
