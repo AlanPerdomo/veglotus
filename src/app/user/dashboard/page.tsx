@@ -28,7 +28,6 @@ interface User {
 }
 
 export default function Dashboard() {
-  // Estados de informações pessoais
   const [user, setUser] = useState<User | null>(null);
   const [formData, setFormData] = useState<User>({
     id: '',
@@ -70,6 +69,8 @@ export default function Dashboard() {
         window.location.href = '/user/login';
       }
 
+      // await getUser();
+
       const userStorage = localStorage.getItem('user');
       if (userStorage) {
         const userData = JSON.parse(userStorage);
@@ -102,6 +103,14 @@ export default function Dashboard() {
       [name]: true,
     }));
   };
+
+  // const getUser = async () => {
+  //   console.log('getUser');
+  //   if (localStorage.getItem('isLogged') === 'true') {
+  //     const user = await userService.getUser(localStorage.getItem('token')!);
+  //     setUser(user);
+  //   }
+  // };
 
   const formatPhoneNumber = (phone: string): string => {
     const digits = phone.replace(/\D/g, '');
@@ -240,16 +249,18 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="container mx-auto px-4 p-6">
-      <h2 className="text-3xl font-bold text-center mb-6 text-black">Informações Pessoais</h2>
+    <div className="flex flex-col items-center justify-center container mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 className="text-lg sm:text-3xl font-bold my-4 sm:my-6 text-center sm:text-left text-black">
+        Informações Pessoais
+      </h2>
       {user ? (
-        <div className="bg-white shadow-lg rounded-lg p-6 max-w-4xl mx-auto space-y-6 text-black">
+        <div className="bg-white shadow-lg rounded-lg p-4 sm:p-6 max-w-4xl w-full space-y-4 sm:space-y-6 text-black">
           {/* Nome */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-row items-center  justify-between gap-2 sm:gap-4">
             <div className="w-full">
               {editingFields.name ? (
-                <div className="flex gap-2">
-                  <div className="">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                  <div className="w-full sm:w-1/2">
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                       Nome:
                     </label>
@@ -259,11 +270,11 @@ export default function Dashboard() {
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      className=" p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                  <div className="w-full sm:w-1/2">
+                    <label htmlFor="surname" className="block text-sm font-medium text-gray-700 mb-1">
                       Sobrenome:
                     </label>
                     <input
@@ -272,7 +283,7 @@ export default function Dashboard() {
                       name="surname"
                       value={formData.surname}
                       onChange={handleInputChange}
-                      className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                 </div>
@@ -302,7 +313,7 @@ export default function Dashboard() {
             </div>
           </div>
           {/* E-mail */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
             <div className="w-full">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                 E-mail:
@@ -337,7 +348,7 @@ export default function Dashboard() {
             </div>
           </div>
           {/* Telefone */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
             <div className="w-full">
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
                 Telefone:
@@ -372,7 +383,7 @@ export default function Dashboard() {
             </div>
           </div>
           {/* CPF */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
             <div className="w-full">
               <label htmlFor="cpf" className="block text-sm font-medium text-gray-700 mb-1">
                 CPF:
@@ -424,24 +435,23 @@ export default function Dashboard() {
           )}
         </div>
       ) : (
-        <p className="text-center text-gray-500">Carregando...</p>
+        <p className="text-lg sm:text-3xl text-center text-gray-500">Carregando...</p>
       )}
 
       {/* Seção de Endereços */}
-      <h2 className="text-3xl font-bold text-center mb-6 mt-10 text-black">Endereços</h2>
-      <div className="bg-white shadow-lg rounded-lg p-6 max-w-3xl mx-auto space-y-6 text-black">
+      <h2 className="text-lg sm:text-3xl font-bold text-center my-6 sm:my-10 text-black">Endereços</h2>
+      <div className="bg-white shadow-lg mb-4 sm:mb-6 rounded-lg p-4 sm:p-6 max-w-3xl w-full space-y-4 sm:space-y-6 text-black">
         {addresses.length > 0 ? (
           <div>
-            <h3 className="text-lg font-medium mb-2">Selecione seu endereço:</h3>
+            <h3 className="text-md sm:text-xl font-medium mb-2">Selecione seu endereço:</h3>
             {addresses.map(addr => (
               <div
                 key={addr.id}
-                className={`flex items-center justify-between border p-2 rounded-lg mb-2 ${
+                className={`flex flex-row items-center justify-between border p-2 rounded-lg mb-2 ${
                   principalAddressId === String(addr.id) ? 'bg-blue-100' : 'bg-white'
                 }`}
               >
                 <div className="flex items-center">
-                  {/* Caixa de seleção (radio) para definir o endereço principal */}
                   <input
                     type="radio"
                     name="principalAddress"
@@ -461,7 +471,6 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div>
-                  {/* Botão de deletar com ícone de lixeira */}
                   <button
                     onClick={() => handleDeleteAddress(String(addr.id))}
                     className="text-red-500 hover:text-red-700 transition duration-200"
@@ -476,16 +485,22 @@ export default function Dashboard() {
         ) : (
           <p className="text-center text-gray-500">Nenhum endereço cadastrado.</p>
         )}
-        <div>
-          <button
-            onClick={() => setShowAddressForm(prev => !prev)}
-            className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
-          >
-            {showAddressForm ? 'Cancelar' : 'Adicionar Novo Endereço'}
-          </button>
+        <div className="flex flex-auto justify-center">
+          {!showAddressForm ? (
+            <button
+              onClick={() => setShowAddressForm(prev => !prev)}
+              className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-500"
+            >
+              Adicionar Novo Endereço
+            </button>
+          ) : null}
+
           {showAddressForm && (
-            <div className="mt-4 space-y-4">
-              <div>
+            <div className="sm:m-6 p-4 sm:p-6 bg-gray-100 shadow-lg rounded-lg w-full max-w-3xl">
+              <div className="mb-4">
+                <h3 className="text-lg font-medium">Novo Endereço</h3>
+              </div>
+              <div className="flex flex-col gap-2">
                 <label htmlFor="cep" className="block text-sm font-medium text-gray-700">
                   CEP:
                 </label>
@@ -497,8 +512,6 @@ export default function Dashboard() {
                   onChange={handleAddressFormChange}
                   className="w-full p-2 border border-gray-300 rounded-lg"
                 />
-              </div>
-              <div>
                 <label htmlFor="rua" className="block text-sm font-medium text-gray-700">
                   Rua:
                 </label>
@@ -510,8 +523,6 @@ export default function Dashboard() {
                   onChange={handleAddressFormChange}
                   className="w-full p-2 border border-gray-300 rounded-lg"
                 />
-              </div>
-              <div>
                 <label htmlFor="numero" className="block text-sm font-medium text-gray-700">
                   Número:
                 </label>
@@ -523,8 +534,6 @@ export default function Dashboard() {
                   onChange={handleAddressFormChange}
                   className="w-full p-2 border border-gray-300 rounded-lg"
                 />
-              </div>
-              <div>
                 <label htmlFor="complemento" className="block text-sm font-medium text-gray-700">
                   Complemento:
                 </label>
@@ -536,8 +545,6 @@ export default function Dashboard() {
                   onChange={handleAddressFormChange}
                   className="w-full p-2 border border-gray-300 rounded-lg"
                 />
-              </div>
-              <div>
                 <label htmlFor="bairro" className="block text-sm font-medium text-gray-700">
                   Bairro:
                 </label>
@@ -549,8 +556,6 @@ export default function Dashboard() {
                   onChange={handleAddressFormChange}
                   className="w-full p-2 border border-gray-300 rounded-lg"
                 />
-              </div>
-              <div>
                 <label htmlFor="cidade" className="block text-sm font-medium text-gray-700">
                   Cidade:
                 </label>
@@ -562,8 +567,6 @@ export default function Dashboard() {
                   onChange={handleAddressFormChange}
                   className="w-full p-2 border border-gray-300 rounded-lg"
                 />
-              </div>
-              <div>
                 <label htmlFor="estado" className="block text-sm font-medium text-gray-700">
                   Estado:
                 </label>
@@ -576,12 +579,18 @@ export default function Dashboard() {
                   className="w-full p-2 border border-gray-300 rounded-lg"
                 />
               </div>
-              <div>
+              <div className="flex justify-between mt-4 sm:mt-6">
                 <button
                   onClick={handleAddAddress}
                   className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-200"
                 >
                   Salvar Endereço
+                </button>
+                <button
+                  onClick={() => setShowAddressForm(prev => !prev)}
+                  className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition duration-200"
+                >
+                  Cancelar
                 </button>
               </div>
             </div>

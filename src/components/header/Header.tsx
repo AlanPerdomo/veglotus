@@ -65,9 +65,9 @@ export const Header = () => {
 
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
+        dropdownRef.current.contains(event.target as Node) &&
         dropdownButton &&
-        !dropdownButton.contains(event.target as Node)
+        dropdownButton.contains(event.target as Node)
       ) {
         setDropdownVisible(false);
       }
@@ -214,21 +214,15 @@ export const Header = () => {
                   {dropdownVisible && (
                     <ul className="mt-2 bg-gray-200 shadow-lg rounded-lg p-4 w-40 text-md text-gray-700">
                       <li className="hover:text-[#e967a8]">
-                        <a href="/user/dashboard" onClick={e => e.stopPropagation()}>
-                          Perfil
-                        </a>
+                        <a href="/user/dashboard">Perfil</a>
                       </li>
                       {isAdmin ? (
                         <li className="hover:text-green-600">
-                          <a href="/admin/dashboard" onClick={e => e.stopPropagation()}>
-                            Dashboard
-                          </a>
+                          <a href="/admin/dashboard">Dashboard</a>
                         </li>
                       ) : null}
                       <li className="hover:text-[#e967a8] ">
-                        <a href="/pedidos" onClick={e => e.stopPropagation()}>
-                          Meus Pedidos
-                        </a>
+                        <a href="/pedidos">Meus Pedidos</a>
                       </li>
                     </ul>
                   )}

@@ -39,7 +39,6 @@ class UserService {
   }
 
   async getUser(token: string) {
-    console.log(token);
     try {
       const response = await (
         await fetch(BASE_URL + 'user/me', {
@@ -51,7 +50,6 @@ class UserService {
         })
       ).json();
       localStorage.setItem('user', JSON.stringify(response));
-      console.log('teste');
       return response;
     } catch (error) {
       console.log(error);
@@ -69,10 +67,9 @@ class UserService {
           },
         })
       ).json();
+      const address = JSON.parse(localStorage.getItem('addresses')!).find((address: any) => address.isPrincipal);
 
       localStorage.setItem('addresses', JSON.stringify(response));
-
-      const address = JSON.parse(localStorage.getItem('addresses')!).find((address: any) => address.isPrincipal);
       localStorage.setItem('address', JSON.stringify(address));
 
       return response;
