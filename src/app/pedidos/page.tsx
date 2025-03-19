@@ -127,36 +127,28 @@ export default function Pedidos() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-4xl font-bold text-center text-black mb-8">Meus Pedidos</h1>
-        <div className="bg-white shadow-lg rounded-lg p-6 flex flex-col">
-          <div className="flex justify-end">
-            <button
-              onClick={meusPedidos}
-              className="bg-green-500 text-white font-semibold hover:bg-green-600 px-4 py-2 rounded-xl mb-4"
-            >
-              Atualizar Pedidos
-            </button>
-          </div>
+    <div className="min-h-screen bg-gray-100 sm:p-4 p-1">
+      <div className="max-w-5xl sm:mx-auto m-1">
+        <div className="bg-white shadow-lg rounded-lg p-1 flex flex-col">
+          <h1 className="text-lg sm:text-4xl font-bold text-center text-black mb-4 sm:mb-8">Meus Pedidos</h1>
           {pedidos.length === 0 ? (
             <div className="text-center text-gray-500">Você ainda não fez nenhum pedido.</div>
           ) : (
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2  ">
               {pedidos.slice(0, visibleCount).map(pedido => (
                 <div
                   key={pedido.id}
                   onClick={() => openModal(pedido)}
-                  className="cursor-pointer border p-4 rounded-lg hover:shadow-xl transition-all bg-white"
+                  className="cursor-pointer border sm:p-3 p-2 rounded-lg hover:shadow-xl transition-all bg-white text-xs sm:text-base"
                 >
-                  <div className="flex justify-between items-center">
-                    <div className="flex flex-col gap-auto">
-                      <h3 className="text-black font-semibold">Pedido #{pedido.id}</h3>
-                      <p className="text-black  ">Pedido realizado em {formatDate(pedido.createdAt)}</p>
+                  <div className="flex flex-row justify-between">
+                    <div className="flex flex-col sm:gap-2 gap-1 ">
+                      <h3 className="text-black font-semibold sm:font-bold">Pedido #{pedido.id}</h3>
+                      <p className="text-black">Realizado em {formatDate(pedido.createdAt)}</p>
                     </div>
-                    <div className="flex flex-col items-end text-black gap-auto">
-                      <p className="text-gray-500">Status: {pedido.status}</p>
-                      <p className="text-green-800 font-bold ">
+                    <div className="flex flex-col sm:items-end items-center text-black sm:gap-1 ">
+                      <p className="text-gray-500 text-center">{pedido.status}</p>
+                      <p className="text-green-800 sm:font-bold font-semibold">
                         <span className="text-black">Total: </span> R$ {pedido.total.toFixed(2)}
                       </p>
                     </div>
@@ -165,26 +157,36 @@ export default function Pedidos() {
               ))}
             </div>
           )}
-          {pedidos.length > visibleCount && (
+          <div className="flex flex-col sm:flex-row justify-between items-center pt-4 text-white sm:font-semibold">
+            {pedidos.length > visibleCount && (
+              <button
+                onClick={loadMore}
+                // className="mt-6 w-full flex justify-center items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold rounded-xl py-2"
+                className=" bg-[#f0ad31] hover:bg-[#e6942c] w-full rounded-xl sm:p-1"
+              >
+                Exibir Mais Pedidos
+              </button>
+            )}
             <button
-              onClick={loadMore}
-              className="mt-6 w-full flex justify-center items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold rounded-md py-2"
+              onClick={meusPedidos}
+              className=" bg-green-500 hover:bg-green-600 w-full rounded-xl m-2 sm:p-1"
+              // className="bg-green-500 text-white font-semibold hover:bg-green-600 px-4 py-2 rounded-xl mb-4"
             >
-              Exibir Mais Pedidos
+              Atualizar Pedidos
             </button>
-          )}
+          </div>
         </div>
       </div>
       {modalOpen && selectedPedido && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-xl shadow-lg w-full p-6 text-black overflow-y-auto max-h-screen max-w-5xl">
+          <div className="bg-white rounded-xl shadow-xl sm:p-4 p-2 m-5 text-black w-full">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">Detalhes do Pedido #{selectedPedido.id}</h2>
-              <button onClick={closeModal} className="text-gray-500 hover:text-gray-700 text-3xl leading-none">
+              <h2 className="text-2xl sm:font-bold font-semibold">Detalhes do Pedido #{selectedPedido.id}</h2>
+              <button onClick={closeModal} className="text-gray-500 hover:text-gray-700 text-3xl sm:text-4xl">
                 &times;
               </button>
             </div>
-            <div className="text-black mb-4 ">
+            <div className="text-black mb-4 text-xs sm:text-base">
               <span className="font-semibold">Pedido feito:</span> {formatDate(selectedPedido.createdAt)}
               <p>
                 <span className="font-semibold">Status do Pedido:</span> {selectedPedido.status}

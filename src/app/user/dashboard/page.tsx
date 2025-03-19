@@ -69,7 +69,7 @@ export default function Dashboard() {
         window.location.href = '/user/login';
       }
 
-      // await getUser();
+      await getUser();
 
       const userStorage = localStorage.getItem('user');
       if (userStorage) {
@@ -104,13 +104,12 @@ export default function Dashboard() {
     }));
   };
 
-  // const getUser = async () => {
-  //   console.log('getUser');
-  //   if (localStorage.getItem('isLogged') === 'true') {
-  //     const user = await userService.getUser(localStorage.getItem('token')!);
-  //     setUser(user);
-  //   }
-  // };
+  const getUser = async () => {
+    if (localStorage.getItem('isLogged') === 'true') {
+      const user = await userService.getUser(localStorage.getItem('token')!);
+      setUser(user);
+    }
+  };
 
   const formatPhoneNumber = (phone: string): string => {
     const digits = phone.replace(/\D/g, '');

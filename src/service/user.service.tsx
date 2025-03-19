@@ -67,9 +67,8 @@ class UserService {
           },
         })
       ).json();
-      const address = JSON.parse(localStorage.getItem('addresses')!).find((address: any) => address.isPrincipal);
-
       localStorage.setItem('addresses', JSON.stringify(response));
+      const address = JSON.parse(localStorage.getItem('addresses')!).find((address: any) => address.isPrincipal);
       localStorage.setItem('address', JSON.stringify(address));
 
       return response;
