@@ -22,16 +22,18 @@ export default function Login() {
 
     if (response.ok) {
       alert('Login realizado com sucesso!');
-      window.location.href = '/';
+      window.location.href = '/produtos';
     } else {
       setErrorMessage('Email ou senha incorretos');
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className=" bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center text-green-500 mb-6">Login</h1>
+    <div className="bg-gray-100 flex-1 flex flex-col items-center justify-center">
+      <div className=" bg-white shadow-lg rounded-lg p-6 sm:p-8 w-full max-w-xs  sm:max-w-md">
+        <h1 className="text-2xl sm:text-3xl font-semibold sm:font-bold text-center text-green-500 mb-4 sm:mb-6">
+          Login
+        </h1>
         <form className="space-y-4" onSubmit={handleLogin}>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">

@@ -118,65 +118,67 @@ export default function Carrinho() {
   };
 
   return (
-    <div className="container mx-auto px-4 p-6">
-      <h2 className="text-3xl font-bold text-center mb-6 text-black">Carrinho</h2>
+    <div className="container sm:mx-auto sm:px-4 px-2 sm:p-6 p-4 flex flex-col">
+      <h2 className="text-2xl sm:text-3xl font-semibold sm:font-bold text-center sm:mb-6 mb-4 text-black">Carrinho</h2>
       {cart.length === 0 ? (
         <div className="text-center text-gray-500">
           <h3>Seu carrinho está vazio.</h3>
           <button
-            className="bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold rounded-md py-2 px-4"
+            className="bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold sm:font-bold rounded-xl sm:py-2 py-1 sm:px-4 px-2 mt-4"
             onClick={() => (window.location.href = '/produtos')}
           >
             Continuar comprando
           </button>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-2 sm:text-base text-sm">
           {cart.map(item => (
             <div key={item.id} className="flex items-center justify-between border p-4 rounded-lg shadow-md bg-white">
-              <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-md" />
+              {item.image && <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded-md" />}
               <div className="flex-1 ml-4">
                 <h3 className="text-black font-semibold">{item.name}</h3>
                 <p className="text-green-600 font-bold">R$ {Math.trunc(item.price * 100) / 100}</p>
               </div>
-              <div className="flex items-center">
-                {item.quantity === 1 ? (
+              <div className="flex justify-center sm:text-sm text-xs">
+                <div className="flex items-center">
+                  {item.quantity === 1 ? (
+                    <button
+                      onClick={() => removeFromCart(item.id)}
+                      className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-3 rounded-md"
+                    >
+                      <FaTrash />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => decrementQuantity(item.id)}
+                      className="bg-green-300 hover:bg-green-400 text-black font-semibold py-1 px-3 rounded-l-lg"
+                    >
+                      -
+                    </button>
+                  )}
+                  <input
+                    type="text"
+                    value={item.quantity}
+                    readOnly
+                    className="w-12 text-center border-y border-gray-300 text-black"
+                  />
                   <button
-                    onClick={() => removeFromCart(item.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-3 rounded-md"
+                    onClick={() => incrementQuantity(item.id)}
+                    className="bg-green-300 hover:bg-green-400 text-black  font-semibold py-1 px-3 rounded-r-lg"
                   >
-                    <FaTrash />
+                    +
                   </button>
-                ) : (
-                  <button
-                    onClick={() => decrementQuantity(item.id)}
-                    className="bg-green-300 hover:bg-green-400 text-black font-semibold py-1 px-3 rounded-l-lg"
-                  >
-                    -
-                  </button>
-                )}
-                <input
-                  type="text"
-                  value={item.quantity}
-                  readOnly
-                  className="w-12 text-center border-y border-gray-300 text-black"
-                />
+                </div>
                 <button
-                  onClick={() => incrementQuantity(item.id)}
-                  className="bg-green-300 hover:bg-green-400 text-black font-semibold py-1 px-3 rounded-r-lg"
+                  onClick={() => removeFromCart(item.id)}
+                  className="ml-4 bg-red-500 hover:bg-red-600 text-white font-semibold sm:py-2 py-1 sm:px-3 px-2 rounded-xl"
                 >
-                  +
+                  Remover
                 </button>
               </div>
-              <button
-                onClick={() => removeFromCart(item.id)}
-                className="ml-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-3 rounded-md"
-              >
-                Remover
-              </button>
             </div>
           ))}
-          <div className="text-right font-bold text-xl text-black">
+          <div className="text-right sm:font-bold font-semibold text-base text-black">
             Subtotal: R$ {(Math.trunc(totalPrice * 100) / 100).toFixed(2)}
           </div>
           {address ? (

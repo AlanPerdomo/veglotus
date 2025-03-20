@@ -107,7 +107,7 @@ export const Header = () => {
       <div>
         <a className="flex items-center gap-2 sm:gap-4" href="/">
           <img className="w-10 h-10 sm:w-14 sm:h-14" src="/logo.png" alt="Veglótus" />
-          <h1 className="text-xl sm:text-3xl font-bold drop-shadow-xl">
+          <h1 className="text-xl sm:text-3xl sm:font-bold font-semibold drop-shadow-xl">
             <span className="text-green-600">Veg</span>
             <span className="text-[#e967a8]">lótus</span>
           </h1>
@@ -194,7 +194,10 @@ export const Header = () => {
         </ul>
       </nav>
       {mobileMenuOpen && (
-        <div ref={mobileMenuRef} className="sm:hidden absolute top-16 right-0 bg-[#f0ad31] w-full p-4 shadow-lg z-50">
+        <div
+          ref={mobileMenuRef}
+          className="sm:hidden absolute top-16 right-0 bg-[#f0ad31] w-full p-4 shadow-lg z-50 text-black font-semibold"
+        >
           <ul className="flex flex-col gap-4">
             <li className="hover:text-[#e967a8]">
               <a href="/">Home</a>

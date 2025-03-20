@@ -1,7 +1,6 @@
 'use client';
 import React, { useState } from 'react';
 import { userService } from '@/service/user.service';
-import { format } from 'path';
 
 export default function Register() {
   const [name, setName] = useState('');

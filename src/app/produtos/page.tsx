@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { productService } from '@/service/product.service';
+import { FiSearch } from 'react-icons/fi';
 
 export default function Produtos() {
   interface Product {
@@ -15,6 +16,7 @@ export default function Produtos() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -22,7 +24,6 @@ export default function Produtos() {
   useEffect(() => {
     const fetchProdutos = async () => {
       const response = await productService.listar();
-
       if (response.ok) {
         const data = await response.json();
         setProducts(data);
@@ -31,7 +32,6 @@ export default function Produtos() {
           acc[product.category] = true;
           return acc;
         }, {});
-
         setExpandedCategories(initialExpandedState);
 
         const initialQuantities = data.reduce((acc: Record<string, number>, product: Product) => {
@@ -41,7 +41,6 @@ export default function Produtos() {
         setQuantities(initialQuantities);
       }
     };
-
     fetchProdutos();
   }, []);
 
@@ -109,26 +108,35 @@ export default function Produtos() {
   };
 
   return (
-    <div className="container mx-auto px-4 p-6">
-      <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6 text-black">Produtos</h2>
-
-      <div className="mb-6 flex justify-center">
-        <input
-          type="text"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Buscar produtos..."
-          className="border border-gray-200 text-black rounded-lg p-2 w-full max-w-md"
-        />
+    <div className="container sm:mx-auto sm:px-4 px-2 sm:p-6 p-4">
+      <div className="flex items-center justify-center flex-row text-center">
+        <h2 className="text-2xl sm:text-3xl flex-1 font-semibold text-center sm:mb-6 mb-4 text-black">Produtos</h2>
+        <div className="sm:mb-6 mb-4 flex justify-center relative">
+          <button
+            onClick={() => setShowSearch(!showSearch)}
+            className="sm:hidden text-black bg-gray-200 p-2 rounded-full"
+          >
+            <FiSearch size={20} />
+          </button>
+          {(showSearch || window.innerWidth >= 640) && (
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Buscar produtos..."
+              className="border border-gray-200 text-black rounded-lg sm:p-2 p-1 w-full max-w-md sm:block"
+            />
+          )}
+        </div>
       </div>
 
       {Object.keys(groupedProducts).map(categoria => (
         <div key={categoria} className="mb-8">
-          <div className="flex items-center justify-between bg-gray-200 p-2 pl-4 pr-5 rounded-xl">
-            <h3 className="text-xl sm:text-2xl font-semibold text-[#378b3a] capitalize">{categoria}</h3>
+          <div className="flex items-center justify-between bg-gray-200 sm:p-2 p-1 sm:pl-4 pl-2 sm:pr-5 pr-3 rounded-xl">
+            <h3 className="text-sm sm:text-2xl font-semibold text-[#378b3a] capitalize">{categoria}</h3>
             <button
               onClick={() => toggleCategory(categoria)}
-              className="text-sm bg-[#f0ad31] text-white font-semibold py-1 px-2 rounded-md"
+              className="sm:text-sm text-xs bg-[#f0ad31] text-white font-semibold sm:py-1 sm:px-2 px-1 rounded-md"
             >
               {expandedCategories[categoria] ? 'v' : '>'}
             </button>
