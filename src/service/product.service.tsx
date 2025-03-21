@@ -1,5 +1,5 @@
 const BASE_URL_NGROK = 'https://winning-lately-dodo.ngrok-free.app/';
-const BASE_URL = 'http://localhost:3001/';
+// const BASE_URL = 'http://localhost:3001/';
 
 class ProductService {
   async listar() {
@@ -10,7 +10,6 @@ class ProductService {
         'ngrok-skip-browser-warning': 'true',
       },
     });
-    console.log(response);
     return response;
   }
 }

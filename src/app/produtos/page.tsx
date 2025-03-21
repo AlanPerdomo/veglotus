@@ -17,6 +17,7 @@ export default function Produtos() {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
+  const [windowSize, setWindowSize] = useState<number>(0);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -49,6 +50,13 @@ export default function Produtos() {
     const filtered = products.filter(product => product.name.toLowerCase().includes(lowerCaseSearch));
     setFilteredProducts(filtered);
   }, [search, products]);
+
+  useEffect(() => {
+    const handleResize = () => setWindowSize(window.innerWidth);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleQuantityChange = (productId: number, value: number) => {
     setQuantities(prev => ({
@@ -118,7 +126,7 @@ export default function Produtos() {
           >
             <FiSearch size={20} />
           </button>
-          {(showSearch || window.innerWidth >= 640) && (
+          {(showSearch || windowSize >= 640) && (
             <input
               type="text"
               value={search}
@@ -131,7 +139,7 @@ export default function Produtos() {
       </div>
 
       {Object.keys(groupedProducts).map(categoria => (
-        <div key={categoria} className="mb-8">
+        <div key={categoria} className="mb-2 ">
           <div className="flex items-center justify-between bg-gray-200 sm:p-2 p-1 sm:pl-4 pl-2 sm:pr-5 pr-3 rounded-xl">
             <h3 className="text-sm sm:text-2xl font-semibold text-[#378b3a] capitalize">{categoria}</h3>
             <button
@@ -142,24 +150,45 @@ export default function Produtos() {
             </button>
           </div>
           {expandedCategories[categoria] && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-              {groupedProducts[categoria].map(product => (
-                <div
-                  key={product.id}
-                  className="border rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow bg-white p-4 max-w-sm"
-                  onClick={() => openProductModal(product)}
-                >
-                  {product.image && (
-                    <img src={product.image} alt={product.name} className="w-full h-32 sm:h-40 object-cover" />
-                  )}
-                  <div className="p-2">
-                    <h3 className="text-sm sm:text-md text-black font-semibold truncate">{product.name}</h3>{' '}
-                    <p className="text-green-600 font-bold text-sm sm:text-md">
-                      R$ {(Math.trunc(product.price * 100) / 100).toFixed(2)}
-                    </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:gap-2 gap-1 sm:mt-2 sm:mb-2 mt-1 mb-1">
+              {groupedProducts[categoria].map(product => {
+                const hasImage = !!product.image;
+                return (
+                  <div
+                    key={product.id}
+                    className={`border rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow bg-white sm:p-2 p-1 max-w-sm cursor-pointer hover:scale-110 ${
+                      hasImage ? 'h-auto' : 'h-32 sm:h-40'
+                    }`}
+                    onClick={() => openProductModal(product)}
+                  >
+                    <div
+                      className={`w-full flex items-center justify-center bg-gray-100 ${
+                        hasImage ? 'h-24 sm:h-40' : 'h-full'
+                      }`}
+                    >
+                      {hasImage ? (
+                        <img src={product.image} alt={product.name} className="w-full h-full object-scale-down" />
+                      ) : (
+                        <div className="p-2 text-center font-bold">
+                          <h3 className="text-black text-sm sm:text-lg font-semibold p-2">{product.name}</h3>
+                          <p className="text-green-600 text-sm sm:text-md">
+                            R$ {(Math.trunc(product.price * 100) / 100).toFixed(2)}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {hasImage && (
+                      <div className="p-2 text-center sm:text-left text-xs sm:text-base font-bold">
+                        <h3 className="text-black">{product.name}</h3>
+                        <p className="text-green-600 text-sm sm:text-md">
+                          R$ {(Math.trunc(product.price * 100) / 100).toFixed(2)}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -207,10 +236,12 @@ export default function Produtos() {
             </div>
             <button
               onClick={() => handleAddToCart(selectedProduct)}
-              className="w-full bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold py-2 rounded-md"
+              className="w-full bg-[#f0ad31] hover:bg-[#e6942c] text-black font-semibold py-2 rounded-md"
             >
-              Adicionar ao Carrinho R${''}
-              {((quantities[selectedProduct.id] * Math.trunc(selectedProduct.price * 100)) / 100).toFixed(2)}
+              Adicionar ao Carrinho{' '}
+              <span className="text-green-800 font-bold">
+                R${((quantities[selectedProduct.id] * Math.trunc(selectedProduct.price * 100)) / 100).toFixed(2)}
+              </span>
             </button>
           </div>
         </div>
