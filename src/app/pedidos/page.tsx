@@ -222,19 +222,35 @@ export default function Pedidos() {
                 })()}
               {selectedPedido.orderProducts && (
                 <div className="mt-4">
-                  <p className="font-semibold">Produtos do Pedido:</p>
-                  <ul>
-                    {selectedPedido.orderProducts.map(orderProduct => (
-                      <li key={orderProduct.id} className="flex justify-between">
-                        <div>{orderProduct.product.name.toUpperCase()}</div>
-                        <div className="flex gap-4">
-                          <p>Quantidade: {orderProduct.quantity}</p>
-                          <p>| Preço Unitário: R$ {orderProduct.price.toFixed(2)}</p>
-                          <p>| Subtotal: R$ {(orderProduct.price * orderProduct.quantity).toFixed(2)}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+                  <p className="font-semibold mb-2"> Produtos do Pedido:</p>
+                  <div className="max-h-60 overflow-y-auto border border-gray-300 rounded-lg">
+                    <table className="w-full border-collapse border border-gray-300">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="border border-gray-300 px-4 py-2 text-left">Produtos</th>
+                          <th className="border border-gray-300 px-4 py-2 text-center">Quantidade</th>
+                          <th className="border border-gray-300 px-4 py-2 text-center">Preço Unitário</th>
+                          <th className="border border-gray-300 px-4 py-2 text-center">Subtotal </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedPedido.orderProducts.map(orderProduct => (
+                          <tr key={orderProduct.id} className="border border-gray-300">
+                            <td className="border border-gray-300 px-4 py-2">
+                              {orderProduct.product.name.toUpperCase()}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2 text-center">{orderProduct.quantity}</td>
+                            <td className="border border-gray-300 px-4 py-2 text-center">
+                              R$ {orderProduct.price.toFixed(2)}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2 text-center">
+                              R$ {(orderProduct.price * orderProduct.quantity).toFixed(2)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
               <div className="flex flex-col  mt-4">

@@ -118,7 +118,6 @@ export default function Produtos() {
   return (
     <div className="container sm:mx-auto sm:px-4 px-2 sm:p-6 p-4">
       <div className="flex items-center justify-center flex-row text-center">
-        <h2 className="text-2xl sm:text-3xl flex-1 font-semibold text-center sm:mb-6 mb-4 text-black">Produtos</h2>
         <div className="sm:mb-6 mb-4 flex justify-center relative">
           <button
             onClick={() => setShowSearch(!showSearch)}
@@ -136,6 +135,7 @@ export default function Produtos() {
             />
           )}
         </div>
+        <h2 className="text-2xl sm:text-3xl flex-1 font-semibold text-center sm:mb-6 mb-4 text-black">Produtos</h2>
       </div>
 
       {Object.keys(groupedProducts).map(categoria => (
