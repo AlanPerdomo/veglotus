@@ -102,18 +102,16 @@ export default function Carrinho() {
     };
 
     try {
+      setIsLoading(false);
       const response = await orderService.save(order);
       await paymentService.createMPPayment(response.id);
-
       localStorage.setItem('newOrder', JSON.stringify(response.id));
       sessionStorage.setItem('teste', JSON.stringify(response.id));
-      localStorage.removeItem('cart');
-      window.location.href = '/pedidos';
+      // localStorage.removeItem('cart');
+      // window.location.href = '/pedidos';
     } catch (error) {
       console.error('Erro ao finalizar o pedido:', error);
       alert('Ocorreu um erro ao finalizar o pedido. Tente novamente.');
-    } finally {
-      setIsLoading(false);
     }
   };
 

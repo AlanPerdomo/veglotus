@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:3001/pagamento';
+const BASE_URL = 'https://winning-lately-dodo.ngrok-free.app/pagamento';
 class PaymentService {
   async createMPPayment(orderId: number) {
     const response = await fetch(`${BASE_URL}/mercado-pago/${orderId}`, {
@@ -9,7 +9,7 @@ class PaymentService {
         authorization: 'bearer ' + localStorage.getItem('token'),
       },
     });
-
+    console.log(response);
     return response.json();
   }
 }
