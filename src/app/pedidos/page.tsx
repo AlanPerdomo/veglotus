@@ -157,7 +157,7 @@ export default function Pedidos() {
   return (
     <div className="min-h-screen bg-gray-100 sm:p-4 p-1">
       <div className="max-w-5xl sm:mx-auto m-1">
-        <div className="bg-white shadow-lg rounded-lg p-1 flex flex-col border-gray-200 border p-4 sm:p-8">
+        <div className="bg-white shadow-lg rounded-lg flex flex-col border-gray-200 border p-4 sm:p-8">
           <h1 className="text-lg sm:text-4xl font-bold text-center text-black m-4 sm:m-8">Meus Pedidos</h1>
           {pedidos.length === 0 ? (
             <div className="text-center text-gray-500">Você ainda não fez nenhum pedido.</div>
