@@ -2,7 +2,6 @@
 import { orderService } from '@/service/order.service';
 import { useEffect, useState } from 'react';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
-import { stat } from 'fs';
 
 interface order {
   id: number;
@@ -39,11 +38,11 @@ export default function Pedidos() {
   const [selectedPedido, setSelectedPedido] = useState<order | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(10);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
+      // setIsLoading(true);
       initMercadoPago('APP_USR-4e2c712e-1b41-412b-8d15-5a9761bb0883', {});
 
       const newOrder = localStorage.getItem('newOrder');
@@ -63,9 +62,17 @@ export default function Pedidos() {
         setModalOpen(true);
       }
     };
+    const meusPedidos = async () => {
+      if (localStorage.getItem('isLogged') === 'true') {
+        const pedidos = await orderService.meusPedidos();
+        sortOrders(pedidos);
+      } else {
+        window.location.href = '/user/login';
+      }
+    };
 
     fetchData();
-    setIsLoading(false);
+    // setIsLoading(false);
   }, []);
 
   const meusPedidos = async () => {
@@ -121,7 +128,7 @@ export default function Pedidos() {
     try {
       return JSON.parse(enderecoStr);
     } catch (error) {
-      return null;
+      return error;
     }
   };
 

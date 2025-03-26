@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { productService } from '@/service/product.service';
 import { FiSearch } from 'react-icons/fi';
@@ -167,7 +168,7 @@ export default function Produtos() {
                       }`}
                     >
                       {hasImage ? (
-                        <img src={product.image} alt={product.name} className="w-full h-full object-scale-down" />
+                        <Image src={product.image} alt={product.name} className="w-full h-full object-scale-down" />
                       ) : (
                         <div className="p-2 text-center font-bold">
                           <h3 className="text-black text-sm sm:text-lg font-semibold p-2">{product.name}</h3>
@@ -201,7 +202,7 @@ export default function Produtos() {
               &times;
             </button>
             {selectedProduct.image && (
-              <img
+              <Image
                 src={selectedProduct.image}
                 alt={selectedProduct.name}
                 className="w-full h-full object-cover rounded-md mb-4"

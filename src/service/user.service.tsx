@@ -1,7 +1,31 @@
 const BASE_URL = 'https://winning-lately-dodo.ngrok-free.app/';
 // const BASE_URL = 'http://localhost:3001/';
+
+interface Address {
+  id: string;
+  cep: string;
+  rua: string;
+  numero: string;
+  complemento?: string;
+  bairro: string;
+  cidade: string;
+  estado: string;
+  pais?: string;
+  isPrincipal: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+interface User {
+  id?: string;
+  name: string;
+  surname: string;
+  email: string;
+  phone?: string;
+  cpf?: string;
+  addresses?: Address[];
+}
 class UserService {
-  async cadastrar(data: any) {
+  async cadastrar(data: User) {
     const response = await (
       await fetch(BASE_URL + 'user/cadastrar', {
         method: 'POST',
@@ -68,7 +92,7 @@ class UserService {
         })
       ).json();
       localStorage.setItem('addresses', JSON.stringify(response));
-      const address = JSON.parse(localStorage.getItem('addresses')!).find((address: any) => address.isPrincipal);
+      const address = JSON.parse(localStorage.getItem('addresses')!).find((address: Address) => address.isPrincipal);
       localStorage.setItem('address', JSON.stringify(address));
 
       return response;
@@ -79,7 +103,7 @@ class UserService {
 
   // async saveAddress(data: any, token: string) {}
 
-  async updateUser(data: any, token: string) {
+  async updateUser(data: User, token: string) {
     try {
       console.log('data:', data);
       const response = await fetch(BASE_URL + 'user/update-user', {
@@ -98,7 +122,7 @@ class UserService {
     }
   }
 
-  async registerAddress(data: any, token: string) {
+  async registerAddress(data: Address, token: string) {
     const response = await (
       await fetch(BASE_URL + 'endereco/cadastrar', {
         method: 'POST',

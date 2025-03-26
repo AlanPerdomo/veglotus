@@ -1,5 +1,6 @@
 'use client';
 import { userService } from '@/service/user.service';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 interface Address {
@@ -241,7 +242,7 @@ export default function Dashboard() {
     if (user) {
       setFormData(prev => ({
         ...prev,
-        [field]: (user as any)[field],
+        [field]: (user as User)[field],
       }));
     }
     setEditedFields(prev => ({ ...prev, [field]: false }));
@@ -306,7 +307,7 @@ export default function Dashboard() {
                   className="text-blue-500"
                   title="Editar"
                 >
-                  <img className="max-w-[20px]" src="/icon_edit.png" alt="Editar" />
+                  <Image className="max-w-[20px]" src="/icon_edit.png" alt="Editar" />
                 </button>
               )}
             </div>
@@ -341,7 +342,7 @@ export default function Dashboard() {
                   className="text-blue-500"
                   title="Editar"
                 >
-                  <img className="max-w-[20px]" src="/icon_edit.png" alt="Editar" />
+                  <Image className="max-w-[20px]" src="/icon_edit.png" alt="Editar" />
                 </button>
               )}
             </div>
@@ -376,7 +377,7 @@ export default function Dashboard() {
                   className="text-blue-500"
                   title="Editar"
                 >
-                  <img className="max-w-[20px]" src="/icon_edit.png" alt="Editar" />
+                  <Image className="max-w-[20px]" src="/icon_edit.png" alt="Editar" />
                 </button>
               )}
             </div>
@@ -416,7 +417,7 @@ export default function Dashboard() {
                   className={`text-blue-500 ${user?.cpf ? 'opacity-50 cursor-not-allowed' : ''}`}
                   title={user?.cpf ? 'CPF não pode ser editado' : 'Editar'}
                 >
-                  <img className="max-w-[20px]" src="/icon_edit.png" alt="Editar" />
+                  <Image className="max-w-[20px]" src="/icon_edit.png" alt="Editar" />
                 </button>
               )}
             </div>
@@ -475,7 +476,7 @@ export default function Dashboard() {
                     className="text-red-500 hover:text-red-700 transition duration-200"
                     title="Deletar endereço"
                   >
-                    <img className="max-w-[20px]" src="/icon_trash.png" alt="Deletar" />
+                    <Image className="max-w-[20px]" src="/icon_trash.png" alt="Deletar" />
                   </button>
                 </div>
               </div>
