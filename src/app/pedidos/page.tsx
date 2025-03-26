@@ -159,19 +159,11 @@ export default function Pedidos() {
           )}
           <div className="flex flex-col sm:flex-row justify-between items-center pt-4 text-white sm:font-semibold">
             {pedidos.length > visibleCount && (
-              <button
-                onClick={loadMore}
-                // className="mt-6 w-full flex justify-center items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold rounded-xl py-2"
-                className=" bg-[#f0ad31] hover:bg-[#e6942c] w-full rounded-xl sm:p-1"
-              >
+              <button onClick={loadMore} className=" bg-[#f0ad31] hover:bg-[#e6942c] w-full rounded-xl sm:p-1">
                 Exibir Mais Pedidos
               </button>
             )}
-            <button
-              onClick={meusPedidos}
-              className=" bg-green-500 hover:bg-green-600 w-full rounded-xl m-2 sm:p-1"
-              // className="bg-green-500 text-white font-semibold hover:bg-green-600 px-4 py-2 rounded-xl mb-4"
-            >
+            <button onClick={meusPedidos} className=" bg-green-500 hover:bg-green-600 w-full rounded-xl m-2 sm:p-1">
               Atualizar Pedidos
             </button>
           </div>
