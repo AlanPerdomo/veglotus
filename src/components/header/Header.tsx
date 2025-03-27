@@ -108,7 +108,14 @@ export const Header = () => {
     <header className="bg-[#f0ad31] p-3 px-4 sm:px-8 flex justify-between items-center relative">
       <div>
         <Link className="flex items-center gap-2 sm:gap-4" href="/">
-          <Image className="w-10 h-10 sm:w-14 sm:h-14" src="/logo.png" alt="Veglótus" />
+          <Image
+            className="w-10 h-10 sm:w-14 sm:h-14"
+            src="/logo.png"
+            alt="Veglótus"
+            width={0}
+            height={0}
+            sizes="100vw"
+          />
           <h1 className="text-xl sm:text-3xl sm:font-bold font-semibold drop-shadow-xl">
             <span className="text-green-600">Veg</span>
             <span className="text-[#e967a8]">lótus</span>
@@ -117,7 +124,7 @@ export const Header = () => {
       </div>
       <div className="sm:hidden flex gap-6">
         <Link href="/carrinho" className="relative">
-          <Image src="/sacola.png" alt="Sacola" className="w-5" />
+          <Image src="/sacola.png" alt="Sacola" className="w-5" width={0} height={0} sizes="100vw" />
           {cartCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-2">
               {cartCount}
@@ -185,7 +192,7 @@ export const Header = () => {
           </li>
           <li className="relative">
             <Link href="/carrinho" className="relative">
-              <Image src="/sacola.png" alt="Sacola" className="w-5" />
+              <Image src="/sacola.png" alt="Sacola" className="w-5" width={0} height={0} sizes="100vw" />
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-2">
                   {cartCount}

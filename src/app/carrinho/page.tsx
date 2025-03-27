@@ -113,11 +113,18 @@ export default function Carrinho() {
     try {
       setIsLoading(false);
       const response = await orderService.save(order);
-      await paymentService.createMPPayment(response.id);
+      console.log('response:');
+
+      console.log(response);
+
+      const payment = await paymentService.createMPPayment(response.id);
+      console.log('payment:');
+
+      console.log(payment);
       localStorage.setItem('newOrder', JSON.stringify(response.id));
       sessionStorage.setItem('teste', JSON.stringify(response.id));
-      // localStorage.removeItem('cart');
-      // window.location.href = '/pedidos';
+      localStorage.removeItem('cart');
+      window.location.href = '/pedidos';
     } catch (error) {
       console.error('Erro ao finalizar o pedido:', error);
       alert('Ocorreu um erro ao finalizar o pedido. Tente novamente.');
@@ -141,7 +148,15 @@ export default function Carrinho() {
         <div className="space-y-2 sm:text-base text-sm">
           {cart.map(item => (
             <div key={item.id} className="flex items-center justify-between border p-4 rounded-lg shadow-md bg-white">
-              {item.image && <Image src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded-md" />}
+              {item.image && (
+                <Image
+                  src={item.image}
+                  alt={item.name}
+                  width={100}
+                  height={100}
+                  className="w-12 h-12 object-cover rounded-md"
+                />
+              )}
               <div className="flex-1 ml-4">
                 <h3 className="text-black font-semibold">{item.name}</h3>
                 <p className="text-green-600 font-bold">R$ {Math.trunc(item.price * 100) / 100}</p>

@@ -9,7 +9,6 @@ class PaymentService {
         authorization: 'bearer ' + localStorage.getItem('token'),
       },
     });
-    console.log(response);
     return response.json();
   }
 }
