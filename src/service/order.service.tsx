@@ -1,6 +1,36 @@
 const BASE_URL = 'https://winning-lately-dodo.ngrok-free.app/';
 // const BASE_URL = 'http://localhost:3001/';
 
+interface newOrder {
+  address: Address;
+  deliveryFee: number;
+  totalPrice: number;
+  cart: CartItem[];
+}
+
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+  description?: string;
+  category?: string;
+}
+
+interface Address {
+  bairro: string;
+  cep: string;
+  cidade: string;
+  complemento: string;
+  estado: string;
+  id: string;
+  isPrincipal: boolean;
+  numero: string;
+  pais: string;
+  rua: string;
+}
+
 class OrderService {
   async meusPedidos() {
     const response = await (
@@ -51,7 +81,7 @@ class OrderService {
     return response;
   }
 
-  async save(data: any) {
+  async save(data: newOrder) {
     const order = {
       orderProducts: data.cart,
       status: 'Aguardando Pagamento',
@@ -77,7 +107,7 @@ class OrderService {
     return response;
   }
 
-  async getQuotation(address: any) {
+  async getQuotation(address: string) {
     const response = await (
       await fetch(BASE_URL + 'frete/calcular', {
         method: 'POST',

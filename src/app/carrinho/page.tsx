@@ -4,6 +4,7 @@ import { paymentService } from '@/service/payment.service';
 import { useEffect, useState } from 'react';
 import { FaTrash } from 'react-icons/fa';
 import { initMercadoPago } from '@mercadopago/sdk-react';
+import Image from 'next/image';
 
 interface CartItem {
   id: string;
@@ -26,6 +27,13 @@ interface Address {
   numero: string;
   pais: string;
   rua: string;
+}
+
+interface newOrder {
+  address: Address;
+  deliveryFee: number;
+  totalPrice: number;
+  cart: CartItem[];
 }
 
 export default function Carrinho() {
@@ -55,7 +63,8 @@ export default function Carrinho() {
       setIsLoading(false);
     } else if (address) {
       const calculateDeliveryFee = async () => {
-        const quotation = await orderService.getQuotation(localStorage.getItem('address'));
+        const location = localStorage.getItem('address') || '';
+        const quotation = await orderService.getQuotation(location);
         setDeliveryFee(parseFloat(quotation.valorFrete.priceBreakdown.total));
         setIsLoading(false);
       };
@@ -94,7 +103,7 @@ export default function Carrinho() {
 
     setIsLoading(true);
 
-    const order = {
+    const order: newOrder = {
       address,
       deliveryFee,
       totalPrice,
@@ -132,7 +141,7 @@ export default function Carrinho() {
         <div className="space-y-2 sm:text-base text-sm">
           {cart.map(item => (
             <div key={item.id} className="flex items-center justify-between border p-4 rounded-lg shadow-md bg-white">
-              {item.image && <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded-md" />}
+              {item.image && <Image src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded-md" />}
               <div className="flex-1 ml-4">
                 <h3 className="text-black font-semibold">{item.name}</h3>
                 <p className="text-green-600 font-bold">R$ {Math.trunc(item.price * 100) / 100}</p>

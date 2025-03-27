@@ -1,4 +1,6 @@
 'use client';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 
 export const Header = () => {
@@ -105,23 +107,23 @@ export const Header = () => {
   return (
     <header className="bg-[#f0ad31] p-3 px-4 sm:px-8 flex justify-between items-center relative">
       <div>
-        <a className="flex items-center gap-2 sm:gap-4" href="/">
-          <img className="w-10 h-10 sm:w-14 sm:h-14" src="/logo.png" alt="Veglótus" />
+        <Link className="flex items-center gap-2 sm:gap-4" href="/">
+          <Image className="w-10 h-10 sm:w-14 sm:h-14" src="/logo.png" alt="Veglótus" />
           <h1 className="text-xl sm:text-3xl sm:font-bold font-semibold drop-shadow-xl">
             <span className="text-green-600">Veg</span>
             <span className="text-[#e967a8]">lótus</span>
           </h1>
-        </a>
+        </Link>
       </div>
       <div className="sm:hidden flex gap-6">
-        <a href="/carrinho" className="relative">
-          <img src="/sacola.png" alt="Sacola" className="w-5" />
+        <Link href="/carrinho" className="relative">
+          <Image src="/sacola.png" alt="Sacola" className="w-5" />
           {cartCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-2">
               {cartCount}
             </span>
           )}
-        </a>
+        </Link>
         <button onClick={toggleMobileMenu}>
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
@@ -132,13 +134,13 @@ export const Header = () => {
       <nav className="hidden sm:block">
         <ul className="flex gap-4 text-[#000000] font-bold drop-shadow-sm">
           <li className="hover:text-[#e967a8]">
-            <a href="/">Home</a>
+            <Link href="/">Home</Link>
           </li>
           <li className="hover:text-[#e967a8]">
-            <a href="/produtos">Produtos</a>
+            <Link href="/produtos">Produtos</Link>
           </li>
           <li className="text-green-600 hover:text-green-500">
-            <a href="https://wa.me/5521990808515">WhatsApp</a>
+            <Link href="https://wa.me/5521990808515">WhatsApp</Link>
           </li>
           <li className="relative">
             {isLoggedIn ? (
@@ -153,21 +155,21 @@ export const Header = () => {
                     className="absolute top-8 right-0 bg-gray-200 shadow-lg rounded-lg p-4 w-40 text-md text-gray-700"
                   >
                     <li className="hover:text-[#e967a8]">
-                      <a href="/user/dashboard" onClick={e => e.stopPropagation()}>
+                      <Link href="/user/dashboard" onClick={e => e.stopPropagation()}>
                         Perfil
-                      </a>
+                      </Link>
                     </li>
                     {isAdmin ? (
                       <li className="hover:text-green-600">
-                        <a href="/admin/dashboard" onClick={e => e.stopPropagation()}>
+                        <Link href="/admin/dashboard" onClick={e => e.stopPropagation()}>
                           Dashboard
-                        </a>
+                        </Link>
                       </li>
                     ) : null}
                     <li className="hover:text-[#e967a8] ">
-                      <a href="/pedidos" onClick={e => e.stopPropagation()}>
+                      <Link href="/pedidos" onClick={e => e.stopPropagation()}>
                         Meus Pedidos
-                      </a>
+                      </Link>
                     </li>
                     <li className="text-red-500 hover:text-red-700">
                       <button onClick={handleLogout}>Sair</button>
@@ -176,20 +178,20 @@ export const Header = () => {
                 )}
               </div>
             ) : (
-              <a href="/user/login" className="hover:text-[#e967a8]">
+              <Link href="/user/login" className="hover:text-[#e967a8]">
                 Login
-              </a>
+              </Link>
             )}
           </li>
           <li className="relative">
-            <a href="/carrinho" className="relative">
-              <img src="/sacola.png" alt="Sacola" className="w-5" />
+            <Link href="/carrinho" className="relative">
+              <Image src="/sacola.png" alt="Sacola" className="w-5" />
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-2">
                   {cartCount}
                 </span>
               )}
-            </a>
+            </Link>
           </li>
         </ul>
       </nav>
@@ -200,13 +202,13 @@ export const Header = () => {
         >
           <ul className="flex flex-col gap-4">
             <li className="hover:text-[#e967a8]">
-              <a href="/">Home</a>
+              <Link href="/">Home</Link>
             </li>
             <li className="hover:text-[#e967a8]">
-              <a href="/produtos">Produtos</a>
+              <Link href="/produtos">Produtos</Link>
             </li>
             <li className="text-green-600 hover:text-green-500">
-              <a href="https://wa.me/5521990808515">WhatsApp</a>
+              <Link href="https://wa.me/5521990808515">WhatsApp</Link>
             </li>
             <li>
               {isLoggedIn ? (
@@ -217,23 +219,23 @@ export const Header = () => {
                   {dropdownVisible && (
                     <ul className="mt-2 bg-gray-200 shadow-lg rounded-lg p-4 w-40 text-md text-gray-700">
                       <li className="hover:text-[#e967a8]">
-                        <a href="/user/dashboard">Perfil</a>
+                        <Link href="/user/dashboard">Perfil</Link>
                       </li>
                       {isAdmin ? (
                         <li className="hover:text-green-600">
-                          <a href="/admin/dashboard">Dashboard</a>
+                          <Link href="/admin/dashboard">Dashboard</Link>
                         </li>
                       ) : null}
                       <li className="hover:text-[#e967a8] ">
-                        <a href="/pedidos">Meus Pedidos</a>
+                        <Link href="/pedidos">Meus Pedidos</Link>
                       </li>
                     </ul>
                   )}
                 </div>
               ) : (
-                <a href="/user/login" className="hover:text-[#e967a8]">
+                <Link href="/user/login" className="hover:text-[#e967a8]">
                   Login
-                </a>
+                </Link>
               )}
             </li>
             <li>
@@ -251,63 +253,3 @@ export const Header = () => {
 };
 
 export default Header;
-
-// <nav>
-//   <button className="sm:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}></button>
-//   <ul className="flex gap-4 text-[#000000] font-bold drop-shadow-sm">
-//     <li className="hover:text-[#e967a8]">
-//       <a href="/">Home</a>
-//     </li>
-//     <li className="hover:text-[#e967a8]">
-//       <a href="/produtos">Produtos</a>
-//     </li>
-//     <li className="text-green-600 hover:text-green-500">
-//       <a href="https://wa.me/5521990808515">WhatsApp</a>
-//     </li>
-//     <li className="relative">
-//       {isLoggedIn ? (
-//         <div>
-//           <button onClick={toggleDropdown} className="hover:text-[#e967a8]">
-//             {userName}
-//           </button>
-//           {dropdownVisible && (
-//             <ul
-//               ref={dropdownRef}
-//               id="dropdown-menu"
-//               className="absolute top-8 right-0 bg-gray-200 shadow-lg rounded-lg p-4 w-40 text-md text-gray-700"
-//             >
-//               <li className="hover:text-[#e967a8]">
-//                 <a href="/user/dashboard">Perfil</a>
-//               </li>
-//               {isAdmin ? (
-//                 <li className="hover:text-green-600">
-//                   <a href="/admin/dashboard">Dashboard</a>
-//                 </li>
-//               ) : null}
-//               <li className="hover:text-[#e967a8] ">
-//                 <a href="/pedidos">Meus Pedidos</a>
-//               </li>
-//               <li className="text-red-500 hover:text-red-700">
-//                 <button onClick={handleLogout}>Sair</button>
-//               </li>
-//             </ul>
-//           )}
-//         </div>
-//       ) : (
-//         <a href="/user/login" className="hover:text-[#e967a8]">
-//           Login
-//         </a>
-//       )}
-//     </li>
-//     <li className="relative">
-//       <a href="/carrinho" className="relative">
-//         <img src="/sacola.png" alt="Sacola" className="w-5" />
-//         {cartCount > 0 && (
-//           <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-2">
-//             {cartCount}
-//           </span>
-//         )}
-//       </a>
-//     </li>
-//   </ul>
-// </nav>
