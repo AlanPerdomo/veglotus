@@ -81,6 +81,8 @@ export default function Produtos() {
   const handleAddToCart = (product: Product) => {
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
     const quantity = quantities[product.id];
+    let cartCount = Number(localStorage.getItem('cartCount')) || 0;
+
     const existingProductIndex = cart.findIndex((item: Product & { quantity?: number }) => item.id === product.id);
 
     if (existingProductIndex !== -1) {
@@ -88,7 +90,9 @@ export default function Produtos() {
     } else {
       cart.push({ ...product, quantity });
     }
+    cartCount += quantity;
     localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem('cartCount', cartCount.toString());
 
     alert('Produto adicionado ao carrinho!');
     closeProductModal();
@@ -153,40 +157,28 @@ export default function Produtos() {
           {expandedCategories[categoria] && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:gap-2 gap-1 sm:mt-2 sm:mb-2 mt-1 mb-1">
               {groupedProducts[categoria].map(product => {
-                const hasImage = !!product.image;
                 return (
                   <div
                     key={product.id}
-                    className={`border rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow bg-white sm:p-2 p-1 max-w-sm cursor-pointer hover:scale-110 ${
-                      hasImage ? 'h-auto' : 'h-32 sm:h-40'
-                    }`}
+                    className={`border rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow bg-white sm:p-2 p-1 max-w-sm cursor-pointer hover:scale-110 h-auto`}
                     onClick={() => openProductModal(product)}
                   >
-                    <div
-                      className={`w-full flex items-center justify-center bg-gray-100 ${
-                        hasImage ? 'h-24 sm:h-40' : 'h-full'
-                      }`}
-                    >
-                      {hasImage ? (
-                        <Image src={product.image} alt={product.name} className="w-full h-full object-scale-down" />
-                      ) : (
-                        <div className="p-2 text-center font-bold">
-                          <h3 className="text-black text-sm sm:text-lg font-semibold p-2">{product.name}</h3>
-                          <p className="text-green-600 text-sm sm:text-md">
-                            R$ {(Math.trunc(product.price * 100) / 100).toFixed(2)}
-                          </p>
-                        </div>
-                      )}
+                    <div>
+                      <Image
+                        src={product.image || `/no-image.jpg`}
+                        alt="product.name"
+                        width={400}
+                        height={50}
+                        className="w-full h-full object-cover text-black"
+                      />
                     </div>
 
-                    {hasImage && (
-                      <div className="p-2 text-center sm:text-left text-xs sm:text-base font-bold">
-                        <h3 className="text-black">{product.name}</h3>
-                        <p className="text-green-600 text-sm sm:text-md">
-                          R$ {(Math.trunc(product.price * 100) / 100).toFixed(2)}
-                        </p>
-                      </div>
-                    )}
+                    <div className="p-2 flex sm:flex-col justify-between text-xs sm:text-base font-bold">
+                      <h3 className="text-black">{product.name}</h3>
+                      <p className="text-green-600 text-sm sm:text-md">
+                        R$ {(Math.trunc(product.price * 100) / 100).toFixed(2)}
+                      </p>
+                    </div>
                   </div>
                 );
               })}
@@ -205,6 +197,8 @@ export default function Produtos() {
               <Image
                 src={selectedProduct.image}
                 alt={selectedProduct.name}
+                width={400}
+                height={300}
                 className="w-full h-full object-cover rounded-md mb-4"
               />
             )}
@@ -213,7 +207,7 @@ export default function Produtos() {
             <p className="text-green-600 font-bold text-lg">
               R$ {(Math.trunc(selectedProduct.price * 100) / 100).toFixed(2)}
             </p>
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mb-4 mt-4">
               <button
                 onClick={() => decrementQuantity(selectedProduct.id)}
                 className="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-1 px-3 rounded-l-lg"
