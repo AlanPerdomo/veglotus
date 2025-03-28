@@ -81,6 +81,8 @@ export default function Produtos() {
   const handleAddToCart = (product: Product) => {
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
     const quantity = quantities[product.id];
+    let cartCount = Number(localStorage.getItem('cartCount')) || 0;
+
     const existingProductIndex = cart.findIndex((item: Product & { quantity?: number }) => item.id === product.id);
 
     if (existingProductIndex !== -1) {
@@ -88,7 +90,9 @@ export default function Produtos() {
     } else {
       cart.push({ ...product, quantity });
     }
+    cartCount += quantity;
     localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem('cartCount', cartCount.toString());
 
     alert('Produto adicionado ao carrinho!');
     closeProductModal();

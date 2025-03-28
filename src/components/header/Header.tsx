@@ -15,6 +15,8 @@ export const Header = () => {
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    console.log('Header component mounted');
+    console.log(window);
     if (typeof window !== 'undefined') {
       try {
         const storedUser = localStorage.getItem('user');
@@ -41,23 +43,29 @@ export const Header = () => {
         console.log('Erro ao ler o carrinho do localStorage:', error);
       }
 
-      const updateCartCount = () => {
+      // const updateCartCount = () => {
+      //   try {
+      //     const storedCart = localStorage.getItem('cart');
+      //     if (storedCart) {
+      //       const cart = JSON.parse(storedCart);
+      //       const totalItems = cart.reduce((acc: number, item: { quantity: number }) => acc + item.quantity, 0);
+      //       setCartCount(totalItems);
+      //     } else {
+      //       setCartCount(0);
+      //     }
+      //   } catch (error) {
+      //     console.log(error);
+      //   }
+      // };
+
+      window.addEventListener('storage', () => {
         try {
-          const storedCart = localStorage.getItem('cart');
-          if (storedCart) {
-            const cart = JSON.parse(storedCart);
-            const totalItems = cart.reduce((acc: number, item: { quantity: number }) => acc + item.quantity, 0);
-            setCartCount(totalItems);
-          } else {
-            setCartCount(0);
-          }
+          setCartCount(localStorage.getItem('cartCount') ? parseInt(localStorage.getItem('cartCount')!) : 0);
         } catch (error) {
           console.log(error);
         }
-      };
-
-      window.addEventListener('storage', updateCartCount);
-      return () => window.removeEventListener('storage', updateCartCount);
+      });
+      return () => window.removeEventListener('storage', () => {});
     }
   }, []);
 

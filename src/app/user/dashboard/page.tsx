@@ -307,7 +307,7 @@ export default function Dashboard() {
                   className="text-blue-500"
                   title="Editar"
                 >
-                  <Image className="max-w-[20px]" src="/icon_edit.png" alt="Editar" />
+                  <Image src="/icon_edit.png" className="w-5" width={0} height={0} sizes="100vw" alt="Editar" />
                 </button>
               )}
             </div>
@@ -342,7 +342,7 @@ export default function Dashboard() {
                   className="text-blue-500"
                   title="Editar"
                 >
-                  <Image className="max-w-[20px]" src="/icon_edit.png" alt="Editar" />
+                  <Image src="/icon_edit.png" className="w-5" width={0} height={0} sizes="100vw" alt="Editar" />
                 </button>
               )}
             </div>
@@ -377,7 +377,7 @@ export default function Dashboard() {
                   className="text-blue-500"
                   title="Editar"
                 >
-                  <Image className="max-w-[20px]" src="/icon_edit.png" alt="Editar" />
+                  <Image src="/icon_edit.png" className="w-5" width={0} height={0} sizes="100vw" alt="Editar" />
                 </button>
               )}
             </div>
@@ -417,7 +417,7 @@ export default function Dashboard() {
                   className={`text-blue-500 ${user?.cpf ? 'opacity-50 cursor-not-allowed' : ''}`}
                   title={user?.cpf ? 'CPF não pode ser editado' : 'Editar'}
                 >
-                  <Image className="max-w-[20px]" src="/icon_edit.png" alt="Editar" />
+                  <Image src="/icon_edit.png" className="w-5" width={0} height={0} sizes="100vw" alt="Editar" />
                 </button>
               )}
             </div>
@@ -476,7 +476,7 @@ export default function Dashboard() {
                     className="text-red-500 hover:text-red-700 transition duration-200"
                     title="Deletar endereço"
                   >
-                    <Image className="max-w-[20px]" src="/icon_trash.png" alt="Deletar" />
+                    <Image className="max-w-[20px]" src="/icon_trash.png" width={0} height={0} alt="Deletar" />
                   </button>
                 </div>
               </div>
