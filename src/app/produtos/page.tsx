@@ -93,8 +93,8 @@ export default function Produtos() {
     cartCount += quantity;
     localStorage.setItem('cart', JSON.stringify(cart));
     localStorage.setItem('cartCount', cartCount.toString());
+    window.dispatchEvent(new Event('storage'));
 
-    alert('Produto adicionado ao carrinho!');
     closeProductModal();
   };
 

@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -15,8 +15,6 @@ export const Header = () => {
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log('Header component mounted');
-    console.log(window);
     if (typeof window !== 'undefined') {
       try {
         const storedUser = localStorage.getItem('user');
@@ -29,72 +27,32 @@ export const Header = () => {
           }
         }
       } catch (error) {
-        console.log('Erro ao ler o usuário do localStorage:', error);
+        console.log(error);
       }
+    }
 
+    const updateCartCount = () => {
       try {
         const storedCart = localStorage.getItem('cart');
         if (storedCart) {
           const cart = JSON.parse(storedCart);
           const totalItems = cart.reduce((acc: number, item: { quantity: number }) => acc + item.quantity, 0);
           setCartCount(totalItems);
+        } else {
+          setCartCount(0);
         }
       } catch (error) {
-        console.log('Erro ao ler o carrinho do localStorage:', error);
-      }
-
-      // const updateCartCount = () => {
-      //   try {
-      //     const storedCart = localStorage.getItem('cart');
-      //     if (storedCart) {
-      //       const cart = JSON.parse(storedCart);
-      //       const totalItems = cart.reduce((acc: number, item: { quantity: number }) => acc + item.quantity, 0);
-      //       setCartCount(totalItems);
-      //     } else {
-      //       setCartCount(0);
-      //     }
-      //   } catch (error) {
-      //     console.log(error);
-      //   }
-      // };
-
-      window.addEventListener('storage', () => {
-        try {
-          setCartCount(localStorage.getItem('cartCount') ? parseInt(localStorage.getItem('cartCount')!) : 0);
-        } catch (error) {
-          console.log(error);
-        }
-      });
-      return () => window.removeEventListener('storage', () => {});
-    }
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const dropdownButton = document.getElementById('dropdown-button');
-
-      if (
-        dropdownRef.current &&
-        dropdownRef.current.contains(event.target as Node) &&
-        dropdownButton &&
-        dropdownButton.contains(event.target as Node)
-      ) {
-        setDropdownVisible(false);
-      }
-
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
-        setMobileMenuOpen(false);
+        console.log(error);
       }
     };
-
-    document.addEventListener('mousedown', handleClickOutside);
+    updateCartCount();
+    window.addEventListener('storage', updateCartCount);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('storage', updateCartCount);
     };
   }, []);
 
   const handleLogout = () => {
-    console.log(typeof window);
     if (typeof window !== 'undefined') {
       localStorage.clear();
     }
@@ -166,25 +124,18 @@ export const Header = () => {
                 {dropdownVisible && (
                   <ul
                     ref={dropdownRef}
-                    id="dropdown-menu"
                     className="absolute top-8 right-0 bg-gray-200 shadow-lg rounded-lg p-4 w-40 text-md text-gray-700"
                   >
                     <li className="hover:text-[#e967a8]">
-                      <Link href="/user/dashboard" onClick={e => e.stopPropagation()}>
-                        Perfil
-                      </Link>
+                      <Link href="/user/dashboard">Perfil</Link>
                     </li>
-                    {isAdmin ? (
+                    {isAdmin && (
                       <li className="hover:text-green-600">
-                        <Link href="/admin/dashboard" onClick={e => e.stopPropagation()}>
-                          Dashboard
-                        </Link>
+                        <Link href="/admin/dashboard">Dashboard</Link>
                       </li>
-                    ) : null}
-                    <li className="hover:text-[#e967a8] ">
-                      <Link href="/pedidos" onClick={e => e.stopPropagation()}>
-                        Meus Pedidos
-                      </Link>
+                    )}
+                    <li className="hover:text-[#e967a8]">
+                      <Link href="/pedidos">Meus Pedidos</Link>
                     </li>
                     <li className="text-red-500 hover:text-red-700">
                       <button onClick={handleLogout}>Sair</button>
@@ -210,59 +161,6 @@ export const Header = () => {
           </li>
         </ul>
       </nav>
-      {mobileMenuOpen && (
-        <div
-          ref={mobileMenuRef}
-          className="sm:hidden absolute top-16 right-0 bg-[#f0ad31] w-full p-4 shadow-lg z-50 text-black font-semibold"
-        >
-          <ul className="flex flex-col gap-4">
-            <li className="hover:text-[#e967a8]">
-              <Link href="/">Home</Link>
-            </li>
-            <li className="hover:text-[#e967a8]">
-              <Link href="/produtos">Produtos</Link>
-            </li>
-            <li className="text-green-600 hover:text-green-500">
-              <Link href="https://wa.me/5521990808515">WhatsApp</Link>
-            </li>
-            <li>
-              {isLoggedIn ? (
-                <div>
-                  <button id="dropdown-button" onClick={toggleDropdown} className="hover:text-[#e967a8]">
-                    {userName}
-                  </button>
-                  {dropdownVisible && (
-                    <ul className="mt-2 bg-gray-200 shadow-lg rounded-lg p-4 w-40 text-md text-gray-700">
-                      <li className="hover:text-[#e967a8]">
-                        <Link href="/user/dashboard">Perfil</Link>
-                      </li>
-                      {isAdmin ? (
-                        <li className="hover:text-green-600">
-                          <Link href="/admin/dashboard">Dashboard</Link>
-                        </li>
-                      ) : null}
-                      <li className="hover:text-[#e967a8] ">
-                        <Link href="/pedidos">Meus Pedidos</Link>
-                      </li>
-                    </ul>
-                  )}
-                </div>
-              ) : (
-                <Link href="/user/login" className="hover:text-[#e967a8]">
-                  Login
-                </Link>
-              )}
-            </li>
-            <li>
-              {isLoggedIn && (
-                <button className="text-red-500 hover:text-red-700" onClick={handleLogout}>
-                  Sair
-                </button>
-              )}
-            </li>
-          </ul>
-        </div>
-      )}
     </header>
   );
 };
