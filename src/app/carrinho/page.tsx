@@ -76,6 +76,7 @@ export default function Carrinho() {
   async function updateCart(newCart: CartItem[]) {
     setCart(newCart);
     localStorage.setItem('cart', JSON.stringify(newCart));
+    window.dispatchEvent(new Event('storage'));
   }
 
   async function decrementQuantity(productId: string) {
