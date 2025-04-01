@@ -6,13 +6,16 @@ import { useState, useRef, useEffect } from 'react';
 export const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('');
+  const [userImage, setUserImage] = useState('/no-image-user.png');
   const [isAdmin, setAdmin] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileUserMenuOpen, setMobileUserMenuOpen] = useState(false);
 
   const dropdownRef = useRef<HTMLUListElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const mobileUserMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -22,6 +25,9 @@ export const Header = () => {
           const user = JSON.parse(storedUser);
           setIsLoggedIn(true);
           setUserName(user.name);
+          if (user.avatar) {
+            setUserImage(user.avatar);
+          }
           if (user.type === 'admin') {
             setAdmin(true);
           }
@@ -88,7 +94,27 @@ export const Header = () => {
           </h1>
         </Link>
       </div>
-      <div className="sm:hidden flex gap-6">
+      <div className="sm:hidden flex gap-4" ref={mobileUserMenuRef}>
+        {isLoggedIn ? (
+          isAdmin ? (
+            <button
+              onClick={() => {
+                setMobileUserMenuOpen(!mobileUserMenuOpen), setMobileMenuOpen(false);
+              }}
+            >
+              <Image src={userImage} alt="User" className="w-5" width={0} height={0} sizes="100vw" />
+            </button>
+          ) : (
+            <Link href="/user/dashboard">
+              <Image src={userImage} alt="User" className="w-5" width={0} height={0} sizes="100vw" />
+            </Link>
+          )
+        ) : (
+          <Link href="/user/login">
+            <Image src={userImage} alt="User" className="w-5" width={0} height={0} sizes="100vw" />
+          </Link>
+        )}
+
         <Link href="/carrinho" className="relative">
           <Image src="/sacola.png" alt="Sacola" className="w-5" width={0} height={0} sizes="100vw" />
           {cartCount > 0 && (
@@ -97,13 +123,65 @@ export const Header = () => {
             </span>
           )}
         </Link>
-        <button onClick={toggleMobileMenu}>
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button
+          onClick={() => {
+            setMobileMenuOpen(!mobileMenuOpen), setMobileUserMenuOpen(false);
+          }}
+        >
+          <svg className="w-6 h-6 text-[#000000]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
           </svg>
         </button>
       </div>
+      {mobileMenuOpen && (
+        <nav className="absolute top-14 right-0 bg-gray-100 shadow-md rounded-lg p-4 w-48 sm:hidden font-bold">
+          <ul>
+            <li>
+              <Link href="/">Home</Link>
+            </li>
+            <li>
+              <Link href="/produtos">Produtos</Link>
+            </li>
+            {isLoggedIn && (
+              <div>
+                <li>
+                  <Link href="/pedidos">Meus Pedidos</Link>
+                </li>
+                <li>
+                  <Link href="/carrinho">Carrinho</Link>
+                </li>
+              </div>
+            )}
+            <li className="text-green-600">
+              <Link href="https://wa.me/5521990808515">WhatsApp</Link>
+            </li>
+            {!isLoggedIn ? (
+              <li>
+                <Link href="/user/login">Entrar</Link>
+              </li>
+            ) : (
+              <li className="text-red-600">
+                <button onClick={handleLogout}>Sair</button>
+              </li>
+            )}
+          </ul>
+        </nav>
+      )}
 
+      {mobileUserMenuOpen && (
+        <nav className="absolute top-14 right-0 bg-gray-100 shadow-md rounded-lg p-4 w-48 sm:hidden font-bold">
+          <ul>
+            <li>
+              <Link href="/user/dashboard">Perfil</Link>
+            </li>
+            {isAdmin && (
+              <li>
+                <Link href="/admin/dashboard">Dashboard</Link>
+              </li>
+            )}
+          </ul>
+        </nav>
+      )}
       <nav className="hidden sm:block">
         <ul className="flex gap-4 text-[#000000] font-bold drop-shadow-sm">
           <li className="hover:text-[#e967a8]">
@@ -149,8 +227,8 @@ export const Header = () => {
               </Link>
             )}
           </li>
-          <li className="relative">
-            <Link href="/carrinho" className="relative">
+          <li>
+            <Link href="/carrinho">
               <Image src="/sacola.png" alt="Sacola" className="w-5" width={0} height={0} sizes="100vw" />
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-2">

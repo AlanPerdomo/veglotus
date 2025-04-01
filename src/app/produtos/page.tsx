@@ -169,6 +169,7 @@ export default function Produtos() {
                         alt="product.name"
                         width={400}
                         height={50}
+                        priority={false}
                         className="w-full h-full object-cover text-black"
                       />
                     </div>
