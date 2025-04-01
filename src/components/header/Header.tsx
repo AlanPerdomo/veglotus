@@ -15,7 +15,6 @@ export const Header = () => {
 
   const dropdownRef = useRef<HTMLUListElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
-  const mobileUserMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -74,6 +73,12 @@ export const Header = () => {
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
+    setMobileUserMenuOpen(false);
+  };
+
+  const toggleMobileUserMenu = () => {
+    setMobileUserMenuOpen(!mobileUserMenuOpen);
+    setMobileMenuOpen(false);
   };
 
   return (
@@ -94,14 +99,10 @@ export const Header = () => {
           </h1>
         </Link>
       </div>
-      <div className="sm:hidden flex gap-4" ref={mobileUserMenuRef}>
+      <div className="sm:hidden flex gap-4" ref={mobileMenuRef}>
         {isLoggedIn ? (
           isAdmin ? (
-            <button
-              onClick={() => {
-                setMobileUserMenuOpen(!mobileUserMenuOpen), setMobileMenuOpen(false);
-              }}
-            >
+            <button onClick={toggleMobileUserMenu}>
               <Image src={userImage} alt="User" className="w-5" width={0} height={0} sizes="100vw" />
             </button>
           ) : (
@@ -123,11 +124,7 @@ export const Header = () => {
             </span>
           )}
         </Link>
-        <button
-          onClick={() => {
-            setMobileMenuOpen(!mobileMenuOpen), setMobileUserMenuOpen(false);
-          }}
-        >
+        <button onClick={toggleMobileMenu}>
           <svg className="w-6 h-6 text-[#000000]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
           </svg>
