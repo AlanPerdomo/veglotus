@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 // import Head from '../components/head/Head';
@@ -18,22 +18,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Veglótus',
   description: 'Sua loja de produtos veganos!',
-  viewport: 'width=device-width, initial-scale=1',
-  openGraph: {
-    title: 'Veglótus',
-    description: 'Sua loja de produtos veganos!',
-    images: ['/logo.png'],
-    siteName: 'Veglótus',
-    locale: 'pt_BR',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Veglótus',
-    description: 'Sua loja de produtos veganos!',
-    images: ['/logo.png'],
-    creator: '@Veglotus',
-  },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: 'black',
 };
 
 export default function RootLayout({

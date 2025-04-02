@@ -39,11 +39,11 @@ export default function Pedidos() {
   const [modalOpen, setModalOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(10);
   // const [isLoading, setIsLoading] = useState(false);
+  initMercadoPago('APP_USR-4e2c712e-1b41-412b-8d15-5a9761bb0883', {});
 
   useEffect(() => {
     const fetchData = async () => {
       // setIsLoading(true);
-      initMercadoPago('APP_USR-4e2c712e-1b41-412b-8d15-5a9761bb0883', {});
 
       const newOrder = localStorage.getItem('newOrder');
       let pedidos = JSON.parse(localStorage.getItem('orders')!);
@@ -275,7 +275,10 @@ export default function Pedidos() {
                 )}
                 <div className="flex flex-col sm:flex-row-reverse sm:justify-between items-center mt-4">
                   {selectedPedido.status === 'Aguardando Pagamento' && (
-                    <Wallet initialization={{ preferenceId: selectedPedido.MLpaymentId, redirectMode: 'blank' }} />
+                    <Wallet
+                      locale="pt-BR"
+                      initialization={{ preferenceId: selectedPedido.MLpaymentId, redirectMode: 'blank' }}
+                    />
                   )}
                   {selectedPedido.status !== 'CANCELADO' && (
                     <div>
