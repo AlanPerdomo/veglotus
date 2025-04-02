@@ -45,11 +45,8 @@ export default function Carrinho() {
 
   useEffect(() => {
     initMercadoPago('APP_USR-4e2c712e-1b41-412b-8d15-5a9761bb0883', {});
-    const storedCart = localStorage.getItem('cart');
-    setCart(storedCart ? JSON.parse(storedCart) : []);
-
-    const storedAddress = localStorage.getItem('address');
-    setAddress(storedAddress ? JSON.parse(storedAddress) : null);
+    setCart(localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')!) : []);
+    setAddress(localStorage.getItem('address') ? JSON.parse(localStorage.getItem('address')!) : null);
 
     const quotation = JSON.parse(localStorage.getItem('quotation')!);
     const address = JSON.parse(localStorage.getItem('address')!);

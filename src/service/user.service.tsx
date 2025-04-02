@@ -91,9 +91,11 @@ class UserService {
           },
         })
       ).json();
-      localStorage.setItem('addresses', JSON.stringify(response));
-      const address = JSON.parse(localStorage.getItem('addresses')!).find((address: Address) => address.isPrincipal);
-      localStorage.setItem('address', JSON.stringify(address));
+
+      if (response.length > 0) {
+        localStorage.setItem('addresses', JSON.stringify(response));
+        localStorage.setItem('address', JSON.stringify(response.find((address: Address) => address.isPrincipal)));
+      }
 
       return response;
     } catch (error) {
