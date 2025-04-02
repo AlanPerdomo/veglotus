@@ -70,7 +70,6 @@ export default function Carrinho() {
       };
       calculateDeliveryFee();
     }
-    console.log(address);
   }, []);
 
   async function updateCart(newCart: CartItem[]) {
@@ -114,14 +113,7 @@ export default function Carrinho() {
     try {
       setIsLoading(false);
       const response = await orderService.save(order);
-      console.log('response:');
-
-      console.log(response);
-
-      const payment = await paymentService.createMPPayment(response.id);
-      console.log('payment:');
-
-      console.log(payment);
+      await paymentService.createMPPayment(response.id);
       localStorage.setItem('newOrder', JSON.stringify(response.id));
       sessionStorage.setItem('teste', JSON.stringify(response.id));
       localStorage.removeItem('cart');
