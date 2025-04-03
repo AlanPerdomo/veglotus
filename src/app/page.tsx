@@ -2,9 +2,9 @@ import Image from 'next/image';
 
 export default function Home() {
   return (
-    <div className="flex items-center justify-center ">
-      <div className="  text-black container bg-white p-5 rounded-xl justify-center justify-items-center m-5 ">
-        <Image src="/logo.png" alt="Logo Veglotus" className="w-32 h-32 " width={0} height={0} sizes="100vw" />
+    <div className="flex flex-1 items-center justify-center">
+      <div className="text-black container bg-white p-10 rounded-xl justify-center justify-items-center">
+        <Image src="/logo.png" alt="Logo Veglotus" className="w-32 h-32 mb-10" width={0} height={0} sizes="100vw" />
         <h1>Nosso site está em desenvolvimento!!</h1>
         <p>Estamos trabalhando duro para trazer uma experiência incrível.</p>
         <p>Em breve, você poderá acessar nossa loja online e conferir todos os nossos produtos veganos.</p>

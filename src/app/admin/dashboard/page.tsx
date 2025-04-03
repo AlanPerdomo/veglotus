@@ -27,6 +27,19 @@ interface Order {
     createdAt: string;
     updatedAt: string;
   };
+  orderProducts: [
+    {
+      id: number;
+      price: number;
+      quantity: number;
+      product: {
+        id: number;
+        name: string;
+        description: string;
+        price: number;
+      };
+    },
+  ];
 }
 
 export default function Dashboard() {
@@ -34,6 +47,7 @@ export default function Dashboard() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [showDetails, setShowDetails] = useState(false);
 
   // Estados para os filtros
   const [statusFilter, setStatusFilter] = useState<string>('');
@@ -84,6 +98,7 @@ export default function Dashboard() {
   const closeModal = () => {
     setModalOpen(false);
     setSelectedOrder(null);
+    setShowDetails(false);
   };
 
   if (isLoading) {
@@ -225,13 +240,34 @@ export default function Dashboard() {
               <p>
                 <strong>Data:</strong> {new Date(selectedOrder.createdAt).toLocaleDateString()}
               </p>
+              {showDetails && (
+                <div className="border border-gray-300">
+                  <h3 className="text-center text-lg font-semibold mt-2 mb-4">Itens do Pedido</h3>
+                  <ul className="list-disc pl-6">
+                    {selectedOrder.orderProducts.map(item => (
+                      <li key={item.id} className="mb-2">
+                        {item.product.name} - R$ {item.price.toFixed(2)} - Quantidade: {item.quantity}
+                      </li>
+                    ))}
+                    <li className="mb-2 ">Frete: R$ {selectedOrder.deliveryFee}</li>
+                  </ul>
+                </div>
+              )}
             </div>
-            <button
-              onClick={closeModal}
-              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-            >
-              Fechar
-            </button>
+            <div className="flex justify-between">
+              <button
+                onClick={closeModal}
+                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-xl hover:bg-blue-600 transition-colors"
+              >
+                Fechar
+              </button>
+              <button
+                onClick={() => setShowDetails(!showDetails)}
+                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-xl hover:bg-blue-600 transition-colors"
+              >
+                {showDetails ? 'Ocultar Detalhes' : 'Mostrar Detalhes'}
+              </button>
+            </div>
           </div>
         </div>
       )}
