@@ -210,6 +210,9 @@ export default function Pedidos() {
               <p>
                 <span className="font-semibold">Status do Pedido:</span> {selectedPedido.status}
               </p>
+              <p>
+                <span className="font-semibold">Status do Pagamento:</span> {selectedPedido.paymentStatus}
+              </p>
               <p className="mt-4">
                 <span className="font-semibold">Entrega:</span> R$ {selectedPedido.deliveryFee.toFixed(2)}
               </p>
