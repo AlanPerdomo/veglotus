@@ -149,7 +149,8 @@ export const Header = () => {
                 </li>
               </div>
             )}
-            <li className="text-green-600">
+            <li className="text-green-600 flex ">
+              <Image src="/WhatsApp.svg" alt="WhatsApp" className="w-5 h-5" width={0} height={0} sizes="100vw" />
               <Link href="https://wa.me/5521990808515">WhatsApp</Link>
             </li>
             {!isLoggedIn ? (
@@ -187,7 +188,8 @@ export const Header = () => {
           <li className="hover:text-[#e967a8]">
             <Link href="/produtos">Produtos</Link>
           </li>
-          <li className="text-green-600 hover:text-green-500">
+          <li className="text-green-600 hover:text-green-500 flex gap-1">
+            <Image src="/WhatsApp.svg" alt="WhatsApp" className="w-6 h-6" width={0} height={0} sizes="100vw" />
             <Link href="https://wa.me/5521990808515">WhatsApp</Link>
           </li>
           <li className="relative">
