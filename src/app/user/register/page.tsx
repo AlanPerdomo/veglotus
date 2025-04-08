@@ -179,7 +179,7 @@ export default function Register() {
               value={phone}
               onChange={handleTelChange}
               className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
-              placeholder="(21) 00000-0000"
+              placeholder="(DDD) 00000-0000"
               maxLength={15}
               required
             />

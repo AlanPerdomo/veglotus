@@ -95,7 +95,7 @@ export const Header = () => {
           />
           <h1 className="text-xl sm:text-3xl sm:font-bold font-semibold drop-shadow-xl">
             <span className="text-green-600">Veg</span>
-            <span className="text-[#e967a8]">lótus</span>
+            <span className="text-[#e967a8]">Lótus</span>
           </h1>
         </Link>
       </div>
