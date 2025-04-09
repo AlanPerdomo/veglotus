@@ -76,7 +76,6 @@ export default function Produtos() {
 
   const closeProductModal = () => {
     setSelectedProduct(null);
-    alert('Produto adicionado ao carrinho!');
   };
 
   const handleAddToCart = (product: Product) => {

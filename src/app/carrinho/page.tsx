@@ -93,12 +93,11 @@ export default function Carrinho() {
   };
 
   const checkout = async () => {
+    setIsLoading(true);
     if (!address) {
       alert('Por favor, selecione um endereço de entrega.');
       return;
     }
-
-    setIsLoading(true);
 
     const order: newOrder = {
       address,
@@ -108,7 +107,6 @@ export default function Carrinho() {
     };
 
     try {
-      setIsLoading(false);
       const response = await orderService.save(order);
       await paymentService.createMPPayment(response.id);
       localStorage.setItem('newOrder', JSON.stringify(response.id));

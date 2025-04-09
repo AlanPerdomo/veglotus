@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-// import Head from '../components/head/Head';
 import Header from '../components/header/Header';
 import Footer from '../components/footer/Footer';
 
@@ -16,6 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  icons: '/logo.png',
   title: 'Veglótus',
   description: 'Sua loja de produtos veganos!',
 };

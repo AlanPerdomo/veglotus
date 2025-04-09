@@ -15,6 +15,7 @@ export const Header = () => {
 
   const dropdownRef = useRef<HTMLUListElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const mobileUserMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -54,6 +55,34 @@ export const Header = () => {
     window.addEventListener('storage', updateCartCount);
     return () => {
       window.removeEventListener('storage', updateCartCount);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target) &&
+        !(event.target as HTMLElement).closest('#dropdown-button')
+      ) {
+        setDropdownVisible(false);
+      }
+
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(target)) {
+        setMobileMenuOpen(false);
+      }
+
+      if (mobileUserMenuRef.current && !mobileUserMenuRef.current.contains(target)) {
+        setMobileUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
@@ -131,7 +160,10 @@ export const Header = () => {
         </button>
       </div>
       {mobileMenuOpen && (
-        <nav className="absolute top-14 right-0 bg-gray-100 shadow-md rounded-lg p-4 w-48 sm:hidden font-bold">
+        <nav
+          ref={mobileMenuRef}
+          className="absolute top-14 right-0 bg-gray-100 shadow-md rounded-lg p-4 w-48 sm:hidden font-bold"
+        >
           <ul>
             <li>
               <Link href="/">Home</Link>
@@ -167,7 +199,10 @@ export const Header = () => {
       )}
 
       {mobileUserMenuOpen && (
-        <nav className="absolute top-14 right-0 bg-gray-100 shadow-md rounded-lg p-4 w-48 sm:hidden font-bold">
+        <nav
+          ref={mobileUserMenuRef}
+          className="absolute top-14 right-0 bg-gray-100 shadow-md rounded-lg p-4 w-48 sm:hidden font-bold"
+        >
           <ul>
             <li>
               <Link href="/user/dashboard">Perfil</Link>

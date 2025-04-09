@@ -44,6 +44,16 @@ export default function Pedidos() {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const orderNumber = params.get('id');
+        if (orderNumber) {
+          localStorage.setItem('newOrder', orderNumber);
+          params.delete('id');
+          const newUrl = window.location.pathname;
+          window.history.replaceState({}, '', newUrl);
+        }
+      }
       await meusPedidos();
       const newOrder = localStorage.getItem('newOrder');
       const pedidos = JSON.parse(localStorage.getItem('orders')!);
@@ -140,7 +150,8 @@ export default function Pedidos() {
   const cancelarPedido = async (pedidoId: number) => {
     try {
       const response = await orderService.cancel(pedidoId);
-      if (response.status === 'Cancelado') {
+      console.log(response);
+      if (response.status === 'CANCELADO') {
         closeModal();
         await meusPedidos();
       }
