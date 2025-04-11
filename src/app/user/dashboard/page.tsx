@@ -177,7 +177,6 @@ export default function Dashboard() {
       alert('Erro ao cadastrar endereço.');
       return;
     }
-    console.log('response', response.id);
     await userService.setPrincipalAddress(response.id, token);
     await userService.getAddresses(token);
     setAddresses(prev => [...prev, response]);

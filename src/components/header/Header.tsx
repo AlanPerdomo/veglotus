@@ -33,7 +33,7 @@ export const Header = () => {
           }
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     }
 
@@ -48,7 +48,7 @@ export const Header = () => {
           setCartCount(0);
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
     updateCartCount();

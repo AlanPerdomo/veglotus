@@ -150,7 +150,6 @@ export default function Pedidos() {
   const cancelarPedido = async (pedidoId: number) => {
     try {
       const response = await orderService.cancel(pedidoId);
-      console.log(response);
       if (response.status === 'CANCELADO') {
         closeModal();
         await meusPedidos();
@@ -287,7 +286,7 @@ export default function Pedidos() {
                 {selectedPedido.status === 'Aguardando Pagamento' && (
                   <Wallet
                     locale="pt-BR"
-                    initialization={{ preferenceId: selectedPedido.MLpaymentId, redirectMode: 'blank' }}
+                    initialization={{ preferenceId: selectedPedido.MLpaymentId, redirectMode: 'self' }}
                   />
                 )}
                 {selectedPedido.status !== 'CANCELADO' && (

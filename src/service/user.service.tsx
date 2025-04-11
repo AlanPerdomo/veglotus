@@ -76,7 +76,7 @@ class UserService {
       localStorage.setItem('user', JSON.stringify(response));
       return response;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -99,7 +99,7 @@ class UserService {
 
       return response;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -107,7 +107,6 @@ class UserService {
 
   async updateUser(data: User, token: string) {
     try {
-      console.log('data:', data);
       const response = await fetch(BASE_URL + 'user/update-user', {
         method: 'POST',
         headers: {
@@ -120,7 +119,7 @@ class UserService {
 
       return response;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -140,7 +139,6 @@ class UserService {
   }
 
   async deleteAddress(addressID: string, token: string) {
-    console.log(addressID);
     const response = await (
       await fetch(BASE_URL + `endereco/${addressID}`, {
         method: 'DELETE',
