@@ -187,7 +187,7 @@ export const Header = () => {
             </li>
             {!isLoggedIn ? (
               <li>
-                <Link href="/user/login">Entrar</Link>
+                <Link href="/user">Entrar</Link>
               </li>
             ) : (
               <li className="text-red-600">
@@ -256,7 +256,7 @@ export const Header = () => {
                 )}
               </div>
             ) : (
-              <Link href="/user/login" className="hover:text-[#e967a8]">
+              <Link href="/user" className="hover:text-[#e967a8]">
                 Login
               </Link>
             )}
