@@ -1,4 +1,4 @@
-const BASE_URL = 'https://winning-lately-dodo.ngrok-free.app/pagamento';
+const BASE_URL = 'http://api.veglotus.com.br/pagamento';
 class PaymentService {
   async createMPPayment(orderId: number) {
     const response = await fetch(`${BASE_URL}/mercado-pago/${orderId}`, {

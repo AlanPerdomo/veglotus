@@ -1,5 +1,4 @@
-const BASE_URL = 'https://winning-lately-dodo.ngrok-free.app/';
-// const BASE_URL = 'http://localhost:3001/';
+const BASE_URL = 'http://api.veglotus.com.br/';
 
 interface Address {
   id: string;

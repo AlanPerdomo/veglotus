@@ -1,5 +1,4 @@
-const BASE_URL_NGROK = 'https://winning-lately-dodo.ngrok-free.app/';
-// const BASE_URL = 'http://localhost:3001/';
+const BASE_URL_NGROK = 'http://api.veglotus.com.br/';
 
 class ProductService {
   async listar() {
