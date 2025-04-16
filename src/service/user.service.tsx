@@ -1,5 +1,4 @@
-const BASE_URL = 'http://api.veglotus.com.br/';
-
+import { API_URL } from './config.service';
 interface Address {
   id: string;
   cep: string;
@@ -26,7 +25,7 @@ interface User {
 class UserService {
   async cadastrar(data: User) {
     const response = await (
-      await fetch(BASE_URL + 'user/cadastrar', {
+      await fetch(API_URL + 'user/cadastrar', {
         method: 'POST',
         headers: {
           'ngrok-skip-browser-warning': 'true',
@@ -40,7 +39,7 @@ class UserService {
   }
 
   async login(email: string, password: string) {
-    const response = await fetch(BASE_URL + 'user/login', {
+    const response = await fetch(API_URL + 'user/login', {
       method: 'POST',
       headers: {
         'ngrok-skip-browser-warning': 'true',
@@ -64,7 +63,7 @@ class UserService {
   async getUser(token: string) {
     try {
       const response = await (
-        await fetch(BASE_URL + 'user/me', {
+        await fetch(API_URL + 'user/me', {
           method: 'GET',
           headers: {
             'ngrok-skip-browser-warning': 'true',
@@ -82,7 +81,7 @@ class UserService {
   async getAddresses(token: string) {
     try {
       const response = await (
-        await fetch(BASE_URL + 'endereco/my', {
+        await fetch(API_URL + 'endereco/my', {
           method: 'GET',
           headers: {
             'ngrok-skip-browser-warning': 'true',
@@ -106,7 +105,7 @@ class UserService {
 
   async updateUser(data: User, token: string) {
     try {
-      const response = await fetch(BASE_URL + 'user/update-user', {
+      const response = await fetch(API_URL + 'user/update-user', {
         method: 'POST',
         headers: {
           'ngrok-skip-browser-warning': 'true',
@@ -124,7 +123,7 @@ class UserService {
 
   async registerAddress(data: Address, token: string) {
     const response = await (
-      await fetch(BASE_URL + 'endereco/cadastrar', {
+      await fetch(API_URL + 'endereco/cadastrar', {
         method: 'POST',
         headers: {
           'ngrok-skip-browser-warning': 'true',
@@ -139,7 +138,7 @@ class UserService {
 
   async deleteAddress(addressID: string, token: string) {
     const response = await (
-      await fetch(BASE_URL + `endereco/${addressID}`, {
+      await fetch(API_URL + `endereco/${addressID}`, {
         method: 'DELETE',
         headers: {
           'ngrok-skip-browser-warning': 'true',
@@ -154,7 +153,7 @@ class UserService {
 
   async setPrincipalAddress(addressId: string, token: string) {
     const response = await (
-      await fetch(BASE_URL + `endereco/set-principal/${addressId}`, {
+      await fetch(API_URL + `endereco/set-principal/${addressId}`, {
         method: 'PATCH',
         headers: {
           'ngrok-skip-browser-warning': 'true',

@@ -1,4 +1,4 @@
-const BASE_URL = 'http://api.veglotus.com.br/';
+import { API_URL } from './config.service';
 
 interface newOrder {
   address: Address;
@@ -33,7 +33,7 @@ interface Address {
 class OrderService {
   async meusPedidos() {
     const response = await (
-      await fetch(BASE_URL + 'pedidos/my', {
+      await fetch(API_URL + 'pedidos/my', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ class OrderService {
 
   async listar() {
     const response = await (
-      await fetch(BASE_URL + 'pedidos/listar', {
+      await fetch(API_URL + 'pedidos/listar', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ class OrderService {
 
   async cancel(id: number) {
     const response = await (
-      await fetch(BASE_URL + 'pedidos/cancelar/' + id, {
+      await fetch(API_URL + 'pedidos/cancelar/' + id, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ class OrderService {
     };
 
     const response = await (
-      await fetch(BASE_URL + 'pedidos/cadastrar', {
+      await fetch(API_URL + 'pedidos/cadastrar', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ class OrderService {
 
   async getQuotation(address: string) {
     const response = await (
-      await fetch(BASE_URL + 'frete/calcular', {
+      await fetch(API_URL + 'frete/calcular', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

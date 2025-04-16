@@ -1,4 +1,4 @@
-const BASE_URL = 'http://api.veglotus.com.br/';
+import { API_URL } from './config.service';
 
 interface Contact {
   name: string;
@@ -9,7 +9,7 @@ interface Contact {
 class ContactService {
   async sendContactMessage(contact: Contact) {
     const response = await (
-      await fetch(BASE_URL + 'contato', {
+      await fetch(API_URL + 'contato', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

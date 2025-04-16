@@ -1,7 +1,8 @@
-const BASE_URL = 'http://api.veglotus.com.br/pagamento';
+import { API_URL } from './config.service';
+
 class PaymentService {
   async createMPPayment(orderId: number) {
-    const response = await fetch(`${BASE_URL}/mercado-pago/${orderId}`, {
+    const response = await fetch(`${API_URL}/pagamento/mercado-pago/${orderId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

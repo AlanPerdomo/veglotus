@@ -1,8 +1,8 @@
-const BASE_URL_NGROK = 'http://api.veglotus.com.br/';
+import { API_URL } from './config.service';
 
 class ProductService {
   async listar() {
-    const response = await fetch(BASE_URL_NGROK + 'produtos', {
+    const response = await fetch(API_URL + 'produtos', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
