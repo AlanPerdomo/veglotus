@@ -208,9 +208,14 @@ export const Header = () => {
               <Link href="/user/dashboard">Perfil</Link>
             </li>
             {isAdmin && (
-              <li>
-                <Link href="/admin/dashboard">Dashboard</Link>
-              </li>
+              <div>
+                <li>
+                  <Link href="/admin/dashboard">Dashboard</Link>
+                </li>
+                <li>
+                  <Link href="/admin/produtos">Gerenciar Produtos</Link>
+                </li>
+              </div>
             )}
           </ul>
         </nav>
@@ -242,9 +247,14 @@ export const Header = () => {
                       <Link href="/user/dashboard">Perfil</Link>
                     </li>
                     {isAdmin && (
-                      <li className="hover:text-green-600">
-                        <Link href="/admin/dashboard">Dashboard</Link>
-                      </li>
+                      <div>
+                        <li className="hover:text-green-600">
+                          <Link href="/admin/dashboard">Dashboard</Link>
+                        </li>
+                        <li className="hover:text-green-600">
+                          <Link href="/admin/produtos">Gerenciar Produtos</Link>
+                        </li>
+                      </div>
                     )}
                     <li className="hover:text-[#e967a8]">
                       <Link href="/pedidos">Meus Pedidos</Link>

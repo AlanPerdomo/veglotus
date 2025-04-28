@@ -12,6 +12,8 @@ export default function Produtos() {
     price: number;
     image: string;
     category: string;
+    active: boolean;
+    estoque: number;
   }
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -118,7 +120,7 @@ export default function Produtos() {
   };
 
   return (
-    <div className="container sm:mx-auto sm:px-4 px-2 sm:p-6 p-4">
+    <div className="container sm:mx-auto sm:px-4 px-2 sm:p-6 p-4 ">
       <div className="flex items-center justify-center flex-row text-center">
         <div className="sm:mb-6 mb-4 flex justify-center relative">
           <button
@@ -141,7 +143,7 @@ export default function Produtos() {
       </div>
 
       {Object.keys(groupedProducts).map(categoria => (
-        <div key={categoria} className="mb-2 ">
+        <div key={categoria} className="mb-2 sm:mb-4">
           <div className="flex items-center justify-between bg-gray-200 sm:p-2 p-1 sm:pl-4 pl-2 sm:pr-5 pr-3 rounded-xl">
             <h3 className="text-sm sm:text-2xl font-semibold text-[#378b3a] capitalize">{categoria}</h3>
             <button
@@ -154,31 +156,33 @@ export default function Produtos() {
           {expandedCategories[categoria] && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:gap-2 gap-1 sm:mt-2 sm:mb-2 mt-1 mb-1">
               {groupedProducts[categoria].map(product => {
-                return (
-                  <div
-                    key={product.id}
-                    className={`border rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow bg-white sm:p-2 p-1 max-w-sm cursor-pointer hover:scale-110 h-auto`}
-                    onClick={() => openProductModal(product)}
-                  >
-                    <div>
-                      <Image
-                        src={product.image || `/no-image.jpg`}
-                        alt="product.name"
-                        width={400}
-                        height={50}
-                        priority={false}
-                        className="w-full h-full object-cover text-black"
-                      />
-                    </div>
+                if (product.active && product.estoque > 0) {
+                  return (
+                    <div
+                      key={product.id}
+                      className={`border rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow bg-white sm:p-2 p-1 max-w-sm cursor-pointer hover:scale-110 h-auto`}
+                      onClick={() => openProductModal(product)}
+                    >
+                      <div>
+                        <Image
+                          src={product.image || `/no-image.jpg`}
+                          alt="product.name"
+                          width={400}
+                          height={50}
+                          priority={false}
+                          className="w-full h-full object-cover text-black"
+                        />
+                      </div>
 
-                    <div className="p-2 flex sm:flex-col justify-between text-xs sm:text-base font-bold">
-                      <h3 className="text-black">{product.name}</h3>
-                      <p className="text-green-600 text-sm sm:text-md">
-                        R$ {(Math.trunc(product.price * 100) / 100).toFixed(2)}
-                      </p>
+                      <div className="p-2 flex sm:flex-col justify-between text-xs sm:text-base font-bold">
+                        <h3 className="text-black">{product.name}</h3>
+                        <p className="text-green-600 text-sm sm:text-md">
+                          R$ {(Math.trunc(product.price * 100) / 100).toFixed(2)}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                );
+                  );
+                }
               })}
             </div>
           )}
