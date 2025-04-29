@@ -1,8 +1,19 @@
 import { API_URL } from './config.service';
-import { Product } from '../app/admin/produtos/page';
+import { Product, NewProduct } from '../app/admin/produtos/page';
 
 class ProductService {
-  // async cadastrar( Product) {}
+  async cadastrar(product: NewProduct) {
+    const response = await fetch(API_URL + 'produtos/cadastrar', {
+      method: 'POST',
+      headers: {
+        authorization: 'bearer ' + localStorage.getItem('token'),
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
+      },
+      body: JSON.stringify(product),
+    });
+    return response;
+  }
   async atualizar(product: Product) {
     const response = await fetch(API_URL + 'produtos/atualizar', {
       method: 'PATCH',

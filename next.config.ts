@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'xalingo.vteximg.com.br',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

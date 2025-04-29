@@ -13,11 +13,30 @@ export interface Product {
   estoque: number;
   active: boolean;
 }
+export interface NewProduct {
+  name: string;
+  description: string;
+  price: number;
+  image?: string;
+  category: string;
+  estoque: number;
+  active: boolean;
+}
 
 export default function Produtos() {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productModal, setProductModal] = useState(false);
+  const [newProductModal, setNewProductModal] = useState(false);
+  const [newProduct, setNewProduct] = useState<NewProduct>({
+    name: '',
+    description: '',
+    price: 0,
+    image: '',
+    category: '',
+    estoque: 1,
+    active: true,
+  });
 
   useEffect(() => {
     const fetchProdutos = async () => {
@@ -49,14 +68,58 @@ export default function Produtos() {
     setProductModal(false);
   };
 
+  const toggleNewProductModal = () => {
+    setNewProductModal(!newProductModal);
+  };
+
+  const getColor = (active: boolean, estoque: number) => {
+    if (!active) return 'bg-red-100';
+    if (estoque <= 0) return 'bg-yellow-100';
+    return 'bg-green-100';
+  };
+
+  const handleNewProduct = async () => {
+    const response = await productService.cadastrar(newProduct);
+    if (response.ok) {
+      const data = await response.json();
+      setProducts([...products, data]);
+      setNewProduct({
+        name: '',
+        description: '',
+        price: 0,
+        image: '',
+        category: '',
+        estoque: 1,
+        active: true,
+      });
+      toggleNewProductModal();
+    }
+  };
+
+  const formatPriceFromString = (value: number) => {
+    return value.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 2,
+    });
+  };
+
   return (
     <div className="container sm:mx-auto sm:px-4 px-2 sm:p-6 p-4">
       <h2 className="text-2xl sm:text-3xl flex-1 font-semibold text-center sm:mb-6 mb-4 text-black">Produtos</h2>
+      <div className="flex justify-end">
+        <button onClick={toggleNewProductModal} className="mb-4 text-right">
+          <span className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded w-full">Adicionar Produto</span>
+        </button>
+      </div>
       <div>
         {products.map(product => (
           <div
             key={product.id}
-            className="border items-center flex p-4 mb-4 justify-between cursor-pointer hover:bg-gray-100 transition"
+            className={`border items-center flex p-4 mb-4 justify-between cursor-pointer hover:bg-gray-300 ${getColor(
+              product.active,
+              product.estoque,
+            )} rounded transition`}
             onClick={() => openProductModal(product)}
           >
             {product.image ? (
@@ -101,6 +164,76 @@ export default function Produtos() {
           </div>
         ))}
       </div>
+
+      {newProductModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transition-opacity duration-300 animate-fade-in">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full relative transform transition-all duration-300 animate-scale-in">
+            <button className="absolute top-2 right-2" onClick={toggleNewProductModal}>
+              x
+            </button>
+            <h2 className="text-black font-bold text-center text-lg">Adicionar Produto</h2>
+            <form onSubmit={handleNewProduct} className="mt-4 space-y-4">
+              <input
+                type="text"
+                value={newProduct.name}
+                onChange={e => setNewProduct({ ...newProduct, name: e.target.value })}
+                placeholder="Nome"
+                className="border p-2 w-full rounded"
+                required
+              />
+              <input
+                type="text"
+                value={newProduct.description}
+                onChange={e => setNewProduct({ ...newProduct, description: e.target.value })}
+                placeholder="Descrição"
+                className="border p-2 w-full rounded"
+                required
+              />
+              <input
+                type="text"
+                value={formatPriceFromString(newProduct.price)}
+                onChange={e => {
+                  const onlyNumbers = e.target.value.replace(/\D/g, '');
+                  setNewProduct({
+                    ...newProduct,
+                    price: parseFloat((parseInt(onlyNumbers || '0') / 100).toFixed(2)),
+                  });
+                }}
+                className="border p-2 w-full rounded"
+                inputMode="numeric"
+                required
+              />
+              <input
+                type="number"
+                value={newProduct.estoque}
+                onChange={e => setNewProduct({ ...newProduct, estoque: parseInt(e.target.value) })}
+                placeholder="Estoque"
+                className="border p-2 w-full rounded"
+                required
+              />
+              <input
+                type="text"
+                value={newProduct.category}
+                onChange={e => setNewProduct({ ...newProduct, category: e.target.value })}
+                placeholder="Categoria"
+                className="border p-2 w-full rounded"
+                required
+              />
+              <div className="flex items-center space-x-2">
+                <label>Ativo:</label>
+                <input
+                  type="checkbox"
+                  checked={newProduct.active}
+                  onChange={e => setNewProduct({ ...newProduct, active: e.target.checked })}
+                />
+              </div>
+              <button type="submit" className="bg-green-500 hover:bg-green-600 text-white px-4 rounded py-2 w-full">
+                Adicionar Produto
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       {productModal && selectedProduct && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transition-opacity duration-300 animate-fade-in">

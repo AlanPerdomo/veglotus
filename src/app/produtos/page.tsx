@@ -121,11 +121,12 @@ export default function Produtos() {
 
   return (
     <div className="container sm:mx-auto sm:px-4 px-2 sm:p-6 p-4 ">
-      <div className="flex items-center justify-center flex-row text-center">
-        <div className="sm:mb-6 mb-4 flex justify-center relative">
+      <div className="flex items-center justify-center flex-col text-center">
+        <h2 className="text-2xl sm:text-3xl flex-1 font-semibold text-center sm:mb-4 mb-2 text-black">Produtos</h2>
+        <div className="sm:mb-4 mb-2 flex justify-center relative">
           <button
             onClick={() => setShowSearch(!showSearch)}
-            className="sm:hidden text-black bg-gray-200 p-2 rounded-full"
+            className="sm:hidden text-black bg-gray-200 p-1 rounded-full"
           >
             <FiSearch size={20} />
           </button>
@@ -135,11 +136,10 @@ export default function Produtos() {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Buscar produtos..."
-              className="border border-gray-200 text-black rounded-lg sm:p-2 p-1 w-full max-w-md sm:block"
+              className="border border-gray-200 text-black rounded-lg p-1  w-full max-w-md sm:block"
             />
           )}
         </div>
-        <h2 className="text-2xl sm:text-3xl flex-1 font-semibold text-center sm:mb-6 mb-4 text-black">Produtos</h2>
       </div>
 
       {Object.keys(groupedProducts).map(categoria => (
