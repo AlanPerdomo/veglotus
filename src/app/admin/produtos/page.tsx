@@ -1,7 +1,7 @@
 'use client';
 import { productService } from '@/service/product.service';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export interface Product {
   id: number;
@@ -41,9 +41,8 @@ export default function Produtos() {
   useEffect(() => {
     const fetchProdutos = async () => {
       const response = await productService.listar();
-      if (response.ok) {
-        const data = await response.json();
-        setProducts(data);
+      if (response) {
+        setProducts(response);
       }
     };
     fetchProdutos();
@@ -78,11 +77,11 @@ export default function Produtos() {
     return 'bg-green-100';
   };
 
-  const handleNewProduct = async () => {
+  const handleNewProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
     const response = await productService.cadastrar(newProduct);
-    if (response.ok) {
-      const data = await response.json();
-      setProducts([...products, data]);
+    if (response) {
+      setProducts([...products, response]);
       setNewProduct({
         name: '',
         description: '',
@@ -173,58 +172,99 @@ export default function Produtos() {
             </button>
             <h2 className="text-black font-bold text-center text-lg">Adicionar Produto</h2>
             <form onSubmit={handleNewProduct} className="mt-4 space-y-4">
-              <input
-                type="text"
-                value={newProduct.name}
-                onChange={e => setNewProduct({ ...newProduct, name: e.target.value })}
-                placeholder="Nome"
-                className="border p-2 w-full rounded"
-                required
-              />
-              <input
-                type="text"
-                value={newProduct.description}
-                onChange={e => setNewProduct({ ...newProduct, description: e.target.value })}
-                placeholder="Descrição"
-                className="border p-2 w-full rounded"
-                required
-              />
-              <input
-                type="text"
-                value={formatPriceFromString(newProduct.price)}
-                onChange={e => {
-                  const onlyNumbers = e.target.value.replace(/\D/g, '');
-                  setNewProduct({
-                    ...newProduct,
-                    price: parseFloat((parseInt(onlyNumbers || '0') / 100).toFixed(2)),
-                  });
-                }}
-                className="border p-2 w-full rounded"
-                inputMode="numeric"
-                required
-              />
-              <input
-                type="number"
-                value={newProduct.estoque}
-                onChange={e => setNewProduct({ ...newProduct, estoque: parseInt(e.target.value) })}
-                placeholder="Estoque"
-                className="border p-2 w-full rounded"
-                required
-              />
-              <input
-                type="text"
-                value={newProduct.category}
-                onChange={e => setNewProduct({ ...newProduct, category: e.target.value })}
-                placeholder="Categoria"
-                className="border p-2 w-full rounded"
-                required
-              />
+              <div className="flex items-center space-x-2">
+                <label>Nome:</label>
+                <input
+                  type="text"
+                  value={newProduct.name}
+                  onChange={e => setNewProduct({ ...newProduct, name: e.target.value })}
+                  placeholder="Nome"
+                  className="border p-2 w-full rounded"
+                  required
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <label>Descrição:</label>
+                <input
+                  type="text"
+                  value={newProduct.description}
+                  onChange={e => setNewProduct({ ...newProduct, description: e.target.value })}
+                  placeholder="Descrição"
+                  className="border p-2 w-full rounded"
+                  required
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <label>Preço:</label>
+                <input
+                  type="text"
+                  value={formatPriceFromString(newProduct.price)}
+                  onChange={e => {
+                    const onlyNumbers = e.target.value.replace(/\D/g, '');
+                    setNewProduct({
+                      ...newProduct,
+                      price: parseFloat((parseInt(onlyNumbers || '0') / 100).toFixed(2)),
+                    });
+                  }}
+                  className="border p-2 w-full rounded"
+                  inputMode="numeric"
+                  required
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <label>Estoque:</label>
+                <input
+                  type="number"
+                  value={newProduct.estoque}
+                  onChange={e => setNewProduct({ ...newProduct, estoque: parseInt(e.target.value) })}
+                  placeholder="Estoque"
+                  className="border p-2 w-full rounded"
+                  required
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <label>Categoria:</label>
+                <input
+                  type="text"
+                  value={newProduct.category}
+                  onChange={e => setNewProduct({ ...newProduct, category: e.target.value })}
+                  placeholder="Categoria"
+                  className="border p-2 w-full rounded"
+                  required
+                />
+              </div>
               <div className="flex items-center space-x-2">
                 <label>Ativo:</label>
                 <input
                   type="checkbox"
                   checked={newProduct.active}
                   onChange={e => setNewProduct({ ...newProduct, active: e.target.checked })}
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <label>Imagem:</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={async e => {
+                    if (e.target.files && e.target.files[0]) {
+                      const file = e.target.files[0];
+
+                      const formData = new FormData();
+                      formData.append('file', file);
+
+                      const uploadResponse = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData,
+                      });
+
+                      if (uploadResponse.ok) {
+                        const { imageUrl } = await uploadResponse.json();
+                        setNewProduct({ ...newProduct, image: imageUrl });
+                      }
+                    }
+                  }}
+                  className="mt-2"
                 />
               </div>
               <button type="submit" className="bg-green-500 hover:bg-green-600 text-white px-4 rounded py-2 w-full">
@@ -287,7 +327,7 @@ export default function Produtos() {
                 />
               </div>
 
-              {/* <div>
+              <div>
                 <label>Imagem:</label>
                 <input
                   type="file"
@@ -312,7 +352,7 @@ export default function Produtos() {
                   }}
                   className="mt-2"
                 />
-              </div> */}
+              </div>
 
               {selectedProduct.image && (
                 <div className="mt-4">
