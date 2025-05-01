@@ -28,17 +28,16 @@ export default function Produtos() {
   useEffect(() => {
     const fetchProdutos = async () => {
       const response = await productService.listar();
-      if (response.ok) {
-        const data = await response.json();
-        setProducts(data);
+      if (response) {
+        setProducts(response);
 
-        const initialExpandedState = data.reduce((acc: Record<string, boolean>, product: Product) => {
+        const initialExpandedState = response.reduce((acc: Record<string, boolean>, product: Product) => {
           acc[product.category] = true;
           return acc;
         }, {});
         setExpandedCategories(initialExpandedState);
 
-        const initialQuantities = data.reduce((acc: Record<string, number>, product: Product) => {
+        const initialQuantities = response.reduce((acc: Record<string, number>, product: Product) => {
           acc[product.id] = 1;
           return acc;
         }, {});
@@ -165,7 +164,10 @@ export default function Produtos() {
                     >
                       <div>
                         <Image
-                          src={product.image || `/no-image.jpg`}
+                          src={
+                            product.image ||
+                            `https://storage.googleapis.com/veglotus.com.br/produtos/linguica-calabresa-vegana.png`
+                          }
                           alt="product.name"
                           width={400}
                           height={50}
