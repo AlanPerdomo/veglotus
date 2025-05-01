@@ -95,6 +95,17 @@ export default function Produtos() {
     }
   };
 
+  const handleProductUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedProduct) {
+      const response = await productService.atualizar(selectedProduct);
+      if (response) {
+        setProducts(products.map(product => (product.id === selectedProduct.id ? response : product)));
+        closeProductModal();
+      }
+    }
+  };
+
   const formatPriceFromString = (value: number) => {
     return value.toLocaleString('pt-BR', {
       style: 'currency',
@@ -121,27 +132,18 @@ export default function Produtos() {
             )} rounded transition`}
             onClick={() => openProductModal(product)}
           >
-            {product.image ? (
-              <Image
-                src={product.image}
-                alt={product.name}
-                width={200}
-                height={200}
-                className="w-32 h-32 object-cover"
-              />
-            ) : (
-              <Image
-                src="/no-image.jpg"
-                alt={product.name}
-                width={200}
-                height={200}
-                className="w-32 h-32 object-cover"
-              />
-            )}
+            <Image
+              src={product.image || '/no-image.jpg'}
+              alt={product.name || 'Sem imagem'}
+              width={200}
+              height={200}
+              className="w-32 h-32 object-cover"
+            />
+
             <div className="ml-4 flex-1">
               <h2 className="text-xl font-bold">{product.name}</h2>
               <p className="text-gray-600">{product.description}</p>
-              <p className="text-green-700 font-semibold mt-2">Preço: R$ {product.price.toFixed(2)}</p>
+              <p className="text-green-700 font-semibold mt-2">Preço: R$ {product.price}</p>
               <p className="text-sm">Estoque: {product.estoque}</p>
               <p className="text-sm">Categoria: {product.category}</p>
             </div>
@@ -241,32 +243,7 @@ export default function Produtos() {
                   onChange={e => setNewProduct({ ...newProduct, active: e.target.checked })}
                 />
               </div>
-              <div className="flex items-center space-x-2">
-                <label>Imagem:</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={async e => {
-                    if (e.target.files && e.target.files[0]) {
-                      const file = e.target.files[0];
 
-                      const formData = new FormData();
-                      formData.append('file', file);
-
-                      const uploadResponse = await fetch('/api/upload', {
-                        method: 'POST',
-                        body: formData,
-                      });
-
-                      if (uploadResponse.ok) {
-                        const { imageUrl } = await uploadResponse.json();
-                        setNewProduct({ ...newProduct, image: imageUrl });
-                      }
-                    }
-                  }}
-                  className="mt-2"
-                />
-              </div>
               <button type="submit" className="bg-green-500 hover:bg-green-600 text-white px-4 rounded py-2 w-full">
                 Adicionar Produto
               </button>
@@ -277,109 +254,79 @@ export default function Produtos() {
 
       {productModal && selectedProduct && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transition-opacity duration-300 animate-fade-in">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full relative transform transition-all duration-300 animate-scale-in">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full max-h-[95vh] overflow-y-auto relative transform transition-all duration-300 animate-scale-in">
             <button onClick={closeProductModal} className="absolute top-2 right-2 text-gray-600 hover:text-black">
               ✖
             </button>
             <h2 className="text-2xl font-bold mb-4">Editar Produto</h2>
-
-            <div className="space-y-4">
-              <input
-                type="text"
-                value={selectedProduct.name}
-                onChange={e => setSelectedProduct({ ...selectedProduct, name: e.target.value })}
-                placeholder="Nome"
-                className="border p-2 w-full rounded"
-              />
-              <textarea
-                value={selectedProduct.description}
-                onChange={e => setSelectedProduct({ ...selectedProduct, description: e.target.value })}
-                placeholder="Descrição"
-                className="border p-2 w-full rounded"
-              />
-              <input
-                type="number"
-                value={selectedProduct.price}
-                onChange={e => setSelectedProduct({ ...selectedProduct, price: parseFloat(e.target.value) })}
-                placeholder="Preço, ex: 120,00"
-                className="border p-2 w-full rounded"
-              />
-              <input
-                type="number"
-                value={selectedProduct.estoque}
-                onChange={e => setSelectedProduct({ ...selectedProduct, estoque: parseInt(e.target.value) })}
-                placeholder="Estoque"
-                className="border p-2 w-full rounded"
-              />
-              <input
-                type="text"
-                value={selectedProduct.category}
-                onChange={e => setSelectedProduct({ ...selectedProduct, category: e.target.value })}
-                placeholder="Categoria"
-                className="border p-2 w-full rounded"
-              />
-              <div className="flex items-center space-x-2">
-                <label>Ativo:</label>
+            <form onSubmit={handleProductUpdate} className="mt-4">
+              <div className="space-y-4">
                 <input
-                  type="checkbox"
-                  checked={selectedProduct.active}
-                  onChange={e => setSelectedProduct({ ...selectedProduct, active: e.target.checked })}
+                  type="text"
+                  value={selectedProduct.name}
+                  onChange={e => setSelectedProduct({ ...selectedProduct, name: e.target.value })}
+                  placeholder="Nome"
+                  className="border p-2 w-full rounded"
                 />
-              </div>
-
-              <div>
-                <label>Imagem:</label>
+                <textarea
+                  value={selectedProduct.description}
+                  onChange={e => setSelectedProduct({ ...selectedProduct, description: e.target.value })}
+                  placeholder="Descrição"
+                  className="border p-2 w-full rounded"
+                />
                 <input
-                  type="file"
-                  accept="image/*"
-                  onChange={async e => {
-                    if (e.target.files && e.target.files[0]) {
-                      const file = e.target.files[0];
-
-                      const formData = new FormData();
-                      formData.append('file', file);
-
-                      const uploadResponse = await fetch('/api/upload', {
-                        method: 'POST',
-                        body: formData,
-                      });
-
-                      if (uploadResponse.ok) {
-                        const { imageUrl } = await uploadResponse.json();
-                        setSelectedProduct({ ...selectedProduct, image: imageUrl });
-                      }
-                    }
-                  }}
-                  className="mt-2"
+                  type="number"
+                  value={selectedProduct.price}
+                  onChange={e => setSelectedProduct({ ...selectedProduct, price: parseFloat(e.target.value) })}
+                  placeholder="Preço, ex: 120,00"
+                  className="border p-2 w-full rounded"
                 />
-              </div>
-
-              {selectedProduct.image && (
-                <div className="mt-4">
-                  <Image
-                    src={selectedProduct.image}
-                    alt={selectedProduct.name}
-                    width={300}
-                    height={300}
-                    className="rounded-md object-cover"
+                <input
+                  type="number"
+                  value={selectedProduct.estoque}
+                  onChange={e => setSelectedProduct({ ...selectedProduct, estoque: parseInt(e.target.value) })}
+                  placeholder="Estoque"
+                  className="border p-2 w-full rounded"
+                />
+                <input
+                  type="text"
+                  value={selectedProduct.category}
+                  onChange={e => setSelectedProduct({ ...selectedProduct, category: e.target.value })}
+                  placeholder="Categoria"
+                  className="border p-2 w-full rounded"
+                />
+                <div className="flex items-center space-x-2">
+                  <label>Ativo:</label>
+                  <input
+                    type="checkbox"
+                    checked={selectedProduct.active}
+                    onChange={e => setSelectedProduct({ ...selectedProduct, active: e.target.checked })}
                   />
                 </div>
-              )}
+                <div className="flex items-center space-x-2">
+                  <input
+                    id="imageUpload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={() => {}} // você define essa função
+                  />
+                  <label htmlFor="imageUpload" className="cursor-pointer">
+                    <Image
+                      src={selectedProduct.image || '/no-image.jpg'}
+                      alt={selectedProduct.name || 'Sem imagem'}
+                      width={300}
+                      height={300}
+                      className="rounded-md object-cover hover:opacity-80 transition"
+                    />
+                  </label>
+                </div>
 
-              <button
-                onClick={async () => {
-                  if (selectedProduct) {
-                    await productService.atualizar(selectedProduct);
-                    // Atualizar o produto na lista
-                    setProducts(products.map(p => (p.id === selectedProduct.id ? selectedProduct : p)));
-                    closeProductModal();
-                  }
-                }}
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded mt-4 w-full"
-              >
-                Salvar Alterações
-              </button>
-            </div>
+                <button type="submit" className="bg-green-500 hover:bg-green-600 text-white px-4 rounded py-2 w-full">
+                  Salvar Alterações
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

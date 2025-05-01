@@ -164,10 +164,7 @@ export default function Produtos() {
                     >
                       <div>
                         <Image
-                          src={
-                            product.image ||
-                            `https://storage.googleapis.com/veglotus.com.br/produtos/linguica-calabresa-vegana.png`
-                          }
+                          src={product.image || '/no-image.jpg'}
                           alt="product.name"
                           width={400}
                           height={50}

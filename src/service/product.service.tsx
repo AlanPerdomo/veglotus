@@ -4,6 +4,7 @@ import { Product, NewProduct } from '../app/admin/produtos/page';
 function getHeaders(auth: boolean = false): HeadersInit {
   const headers: Record<string, string> = {
     'ngrok-skip-browser-warning': 'true',
+    'Content-Type': 'application/json',
   };
 
   if (auth) {
@@ -24,14 +25,12 @@ class ProductService {
         headers: getHeaders(true),
         body: JSON.stringify(product),
       });
-
       if (!response.ok) {
         throw new Error(`Erro ao cadastrar produto: ${response.statusText}`);
       }
 
       return await response.json();
     } catch (error) {
-      console.error(error);
       throw error;
     }
   }
@@ -50,7 +49,6 @@ class ProductService {
 
       return await response.json();
     } catch (error) {
-      console.error(error);
       throw error;
     }
   }
@@ -68,7 +66,6 @@ class ProductService {
 
       return await response.json();
     } catch (error) {
-      console.error(error);
       throw error;
     }
   }
