@@ -2,7 +2,10 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['i.imgur.com', 'xalingo.vteximg.com.br', 'storage.cloud.google.com', 'storage.googleapis.com'],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'api.veglotus.com.br', port: '', pathname: '/**' },
+      { protocol: 'http', hostname: 'localhost', port: '3001', pathname: '/**' },
+    ],
     // remotePatterns: [
     //   {
     //     protocol: 'https',

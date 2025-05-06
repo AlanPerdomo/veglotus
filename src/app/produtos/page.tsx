@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { productService } from '@/service/product.service';
 import { FiSearch } from 'react-icons/fi';
+import { API_URL } from '@/service/config.service';
 
 export default function Produtos() {
   interface Product {
@@ -164,7 +165,7 @@ export default function Produtos() {
                     >
                       <div>
                         <Image
-                          src={product.image || '/no-image.jpg'}
+                          src={product.image !== '' ? `${API_URL}produtos/img/${product.id}` : '/no-image.jpg'}
                           alt="product.name"
                           width={400}
                           height={50}
@@ -196,7 +197,7 @@ export default function Produtos() {
             </button>
             {selectedProduct.image && (
               <Image
-                src={selectedProduct.image}
+                src={selectedProduct.image !== '' ? `${API_URL}produtos/img/${selectedProduct.id}` : '/no-image.jpg'}
                 alt={selectedProduct.name}
                 width={400}
                 height={300}

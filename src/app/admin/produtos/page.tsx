@@ -2,6 +2,7 @@
 import { productService } from '@/service/product.service';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
+import { API_URL } from '@/service/config.service';
 
 export interface Product {
   id: number;
@@ -133,11 +134,11 @@ export default function Produtos() {
             onClick={() => openProductModal(product)}
           >
             <Image
-              src={product.image || '/no-image.jpg'}
+              src={product.image !== '' ? `${API_URL}produtos/img/${product.id}` : '/no-image.jpg'}
               alt={product.name || 'Sem imagem'}
               width={200}
               height={200}
-              className="w-32 h-32 object-cover"
+              className="w-32 h-32 object-cover rounded-md shadow-md"
             />
 
             <div className="ml-4 flex-1">
@@ -303,17 +304,14 @@ export default function Produtos() {
                     onChange={e => setSelectedProduct({ ...selectedProduct, active: e.target.checked })}
                   />
                 </div>
-                <div className="flex items-center space-x-2">
-                  <input
-                    id="imageUpload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={() => {}} // você define essa função
-                  />
+                {/* still need to add image upload functionality*/}
+                <div className="flex justify-center items-center">
+                  <input id="imageUpload" type="file" accept="image/*" className="hidden" onChange={() => {}} />
                   <label htmlFor="imageUpload" className="cursor-pointer">
                     <Image
-                      src={selectedProduct.image || '/no-image.jpg'}
+                      src={
+                        selectedProduct.image !== '' ? `${API_URL}produtos/img/${selectedProduct.id}` : '/no-image.jpg'
+                      }
                       alt={selectedProduct.name || 'Sem imagem'}
                       width={300}
                       height={300}
