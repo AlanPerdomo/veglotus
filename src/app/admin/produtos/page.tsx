@@ -27,6 +27,7 @@ export interface NewProduct {
 export default function Produtos() {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProductImage, setSelectedProductImage] = useState<File | String | null>(null);
   const [productModal, setProductModal] = useState(false);
   const [newProductModal, setNewProductModal] = useState(false);
   const [newProduct, setNewProduct] = useState<NewProduct>({
@@ -40,14 +41,15 @@ export default function Produtos() {
   });
 
   useEffect(() => {
-    const fetchProdutos = async () => {
-      const response = await productService.listar();
-      if (response) {
-        setProducts(response);
-      }
-    };
     fetchProdutos();
   }, []);
+
+  const fetchProdutos = async () => {
+    const response = await productService.listar();
+    if (response) {
+      setProducts(response);
+    }
+  };
 
   const toggleActive = async (productId: number) => {
     const product = products.find(product => product.id === productId);
@@ -65,6 +67,7 @@ export default function Produtos() {
 
   const closeProductModal = () => {
     setSelectedProduct(null);
+    setSelectedProductImage(null);
     setProductModal(false);
   };
 
@@ -98,12 +101,28 @@ export default function Produtos() {
 
   const handleProductUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    console.log('selectedProduct');
+
     if (selectedProduct) {
-      const response = await productService.atualizar(selectedProduct);
+      const response = await productService.atualizar(selectedProduct, selectedProductImage);
+
       if (response) {
-        setProducts(products.map(product => (product.id === selectedProduct.id ? response : product)));
-        closeProductModal();
+        // fetchProdutos();
+        // closeProductModal();
       }
+    }
+  };
+
+  const handleProductUpdateImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setSelectedProductImage(file);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -260,7 +279,7 @@ export default function Produtos() {
               ✖
             </button>
             <h2 className="text-2xl font-bold mb-4">Editar Produto</h2>
-            <form onSubmit={handleProductUpdate} className="mt-4">
+            <form onSubmit={handleProductUpdate} onChange={() => {}} className="mt-4">
               <div className="space-y-4">
                 <input
                   type="text"
@@ -304,13 +323,15 @@ export default function Produtos() {
                     onChange={e => setSelectedProduct({ ...selectedProduct, active: e.target.checked })}
                   />
                 </div>
-                {/* still need to add image upload functionality*/}
                 <div className="flex justify-center items-center">
-                  <input id="imageUpload" type="file" accept="image/*" className="hidden" onChange={() => {}} />
                   <label htmlFor="imageUpload" className="cursor-pointer">
                     <Image
                       src={
-                        selectedProduct.image !== '' ? `${API_URL}produtos/img/${selectedProduct.id}` : '/no-image.jpg'
+                        selectedProductImage instanceof File
+                          ? URL.createObjectURL(selectedProductImage)
+                          : selectedProduct.image !== ''
+                          ? `${API_URL}produtos/img/${selectedProduct.id}`
+                          : '/no-image.jpg'
                       }
                       alt={selectedProduct.name || 'Sem imagem'}
                       width={300}
@@ -318,6 +339,13 @@ export default function Produtos() {
                       className="rounded-md object-cover hover:opacity-80 transition"
                     />
                   </label>
+                  <input
+                    id="imageUpload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleProductUpdateImage}
+                  />
                 </div>
 
                 <button type="submit" className="bg-green-500 hover:bg-green-600 text-white px-4 rounded py-2 w-full">
