@@ -1,7 +1,7 @@
 import { API_URL } from './config.service';
 import { Product, NewProduct } from '../app/admin/produtos/page';
 
-function getHeaders(auth: boolean = false, file: boolean = false): HeadersInit {
+function getHeaders(auth: boolean = false): HeadersInit {
   const headers: Record<string, string> = {
     'ngrok-skip-browser-warning': 'true',
     Host: 'localhost:3001',
@@ -14,16 +14,26 @@ function getHeaders(auth: boolean = false, file: boolean = false): HeadersInit {
     }
   }
 
-  if (file) {
-    headers['Content-Type'] = 'multipart/form-data';
-  } else {
-    headers['Content-Type'] = 'application/json';
-  }
-  console.log('headers', headers);
   return headers;
 }
 
 class ProductService {
+  async listar(): Promise<Product[]> {
+    try {
+      const response = await fetch(API_URL + 'produtos', {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao listar produtos: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  }
   async cadastrar(product: NewProduct): Promise<Product> {
     try {
       const response = await fetch(API_URL + 'produtos/cadastrar', {
@@ -41,9 +51,12 @@ class ProductService {
     }
   }
 
-  async atualizar(product: Product, file?: any): Promise<Product> {
+  async atualizar(product: Product, file?: File | null): Promise<Product> {
     if (file) {
+      console.log('com file');
       await this.uploadImage(file, product.id);
+    } else {
+      console.log('sem file');
     }
     try {
       const response = await fetch(API_URL + 'produtos/atualizar', {
@@ -51,6 +64,8 @@ class ProductService {
         headers: getHeaders(true),
         body: JSON.stringify(product),
       });
+
+      console.log('response', response);
 
       if (!response.ok) {
         throw new Error(`Erro ao atualizar produto: ${response.statusText}`);
@@ -62,34 +77,15 @@ class ProductService {
     }
   }
 
-  async listar(): Promise<Product[]> {
-    try {
-      const response = await fetch(API_URL + 'produtos', {
-        method: 'GET',
-        headers: getHeaders(),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erro ao listar produtos: ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      throw error;
-    }
-  }
-
   async uploadImage(file: File, id: number): Promise<void> {
     try {
-      console.log('file', file);
       const formData = new FormData();
       formData.append('image', file, file.name);
 
-      const response = await fetch('http://localhost:3001/produtos/teste', {
+      const response = await fetch(API_URL + 'produtos/upload-image/' + id, {
         method: 'POST',
-        headers: getHeaders(true, true),
+        headers: getHeaders(true),
         body: formData,
-        redirect: 'follow',
       });
 
       if (!response.ok) {

@@ -160,17 +160,17 @@ export default function Produtos() {
                   return (
                     <div
                       key={product.id}
-                      className={`border rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow bg-white sm:p-2 p-1 max-w-sm cursor-pointer hover:scale-110 h-auto`}
+                      className={`rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow bg-white sm:p-2 p-1 max-w-sm cursor-pointer hover:scale-110 h-auto flex flex-col justify-between`}
                       onClick={() => openProductModal(product)}
                     >
-                      <div>
+                      <div className="flex-1 flex items-center justify-center bg-gray-100">
                         <Image
-                          src={product.image !== '' ? `${API_URL}produtos/img/${product.id}` : '/no-image.jpg'}
+                          src={product.image !== null ? `${API_URL}produtos/img/${product.id}` : '/no-image.jpg'}
                           alt="product.name"
                           width={400}
                           height={50}
                           priority={false}
-                          className="w-full h-full object-cover text-black"
+                          className="flex sm:h-52 h-fit w-fit  object-cover text-black"
                         />
                       </div>
 
@@ -199,9 +199,9 @@ export default function Produtos() {
               <Image
                 src={selectedProduct.image !== '' ? `${API_URL}produtos/img/${selectedProduct.id}` : '/no-image.jpg'}
                 alt={selectedProduct.name}
-                width={400}
-                height={300}
-                className="w-full h-full object-cover rounded-md mb-4"
+                width={200}
+                height={100}
+                className="w-300 h-300 object-cover rounded-md mb-4"
               />
             )}
             <h3 className="text-xl font-bold text-black mb-2">{selectedProduct.name}</h3>

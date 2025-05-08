@@ -27,14 +27,13 @@ export interface NewProduct {
 export default function Produtos() {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [selectedProductImage, setSelectedProductImage] = useState<File | String | null>(null);
+  const [selectedProductImage, setSelectedProductImage] = useState<File | null>(null);
   const [productModal, setProductModal] = useState(false);
   const [newProductModal, setNewProductModal] = useState(false);
   const [newProduct, setNewProduct] = useState<NewProduct>({
     name: '',
     description: '',
     price: 0,
-    image: '',
     category: '',
     estoque: 1,
     active: true,
@@ -66,12 +65,14 @@ export default function Produtos() {
   };
 
   const closeProductModal = () => {
+    fetchProdutos();
     setSelectedProduct(null);
     setSelectedProductImage(null);
     setProductModal(false);
   };
 
   const toggleNewProductModal = () => {
+    fetchProdutos();
     setNewProductModal(!newProductModal);
   };
 
@@ -85,7 +86,6 @@ export default function Produtos() {
     e.preventDefault();
     const response = await productService.cadastrar(newProduct);
     if (response) {
-      setProducts([...products, response]);
       setNewProduct({
         name: '',
         description: '',
@@ -102,14 +102,12 @@ export default function Produtos() {
   const handleProductUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log('selectedProduct');
-
     if (selectedProduct) {
       const response = await productService.atualizar(selectedProduct, selectedProductImage);
 
       if (response) {
-        // fetchProdutos();
-        // closeProductModal();
+        fetchProdutos();
+        closeProductModal();
       }
     }
   };
@@ -117,12 +115,9 @@ export default function Produtos() {
   const handleProductUpdateImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const file = e.target.files?.[0];
+    console.log(typeof file);
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setSelectedProductImage(file);
-      };
-      reader.readAsDataURL(file);
+      setSelectedProductImage(file);
     }
   };
 
@@ -153,7 +148,7 @@ export default function Produtos() {
             onClick={() => openProductModal(product)}
           >
             <Image
-              src={product.image !== '' ? `${API_URL}produtos/img/${product.id}` : '/no-image.jpg'}
+              src={product.image !== null ? `${API_URL}produtos/img/${product.id}` : '/no-image.jpg'}
               alt={product.name || 'Sem imagem'}
               width={200}
               height={200}
@@ -161,7 +156,9 @@ export default function Produtos() {
             />
 
             <div className="ml-4 flex-1">
-              <h2 className="text-xl font-bold">{product.name}</h2>
+              <h2 className="text-xl font-bold">
+                (#{product.id}) {product.name}
+              </h2>
               <p className="text-gray-600">{product.description}</p>
               <p className="text-green-700 font-semibold mt-2">Preço: R$ {product.price}</p>
               <p className="text-sm">Estoque: {product.estoque}</p>
@@ -198,6 +195,7 @@ export default function Produtos() {
                 <label>Nome:</label>
                 <input
                   type="text"
+                  id="name"
                   value={newProduct.name}
                   onChange={e => setNewProduct({ ...newProduct, name: e.target.value })}
                   placeholder="Nome"
@@ -209,6 +207,7 @@ export default function Produtos() {
                 <label>Descrição:</label>
                 <input
                   type="text"
+                  id="description"
                   value={newProduct.description}
                   onChange={e => setNewProduct({ ...newProduct, description: e.target.value })}
                   placeholder="Descrição"
@@ -220,6 +219,8 @@ export default function Produtos() {
                 <label>Preço:</label>
                 <input
                   type="text"
+                  id="price"
+                  autoComplete="on"
                   value={formatPriceFromString(newProduct.price)}
                   onChange={e => {
                     const onlyNumbers = e.target.value.replace(/\D/g, '');
@@ -237,6 +238,9 @@ export default function Produtos() {
                 <label>Estoque:</label>
                 <input
                   type="number"
+                  id="estoque"
+                  min={0}
+                  max={100}
                   value={newProduct.estoque}
                   onChange={e => setNewProduct({ ...newProduct, estoque: parseInt(e.target.value) })}
                   placeholder="Estoque"
@@ -283,18 +287,22 @@ export default function Produtos() {
               <div className="space-y-4">
                 <input
                   type="text"
+                  id="name"
                   value={selectedProduct.name}
                   onChange={e => setSelectedProduct({ ...selectedProduct, name: e.target.value })}
                   placeholder="Nome"
                   className="border p-2 w-full rounded"
                 />
                 <textarea
+                  id="description"
                   value={selectedProduct.description}
                   onChange={e => setSelectedProduct({ ...selectedProduct, description: e.target.value })}
                   placeholder="Descrição"
                   className="border p-2 w-full rounded"
                 />
                 <input
+                  id="price"
+                  inputMode="numeric"
                   type="number"
                   value={selectedProduct.price}
                   onChange={e => setSelectedProduct({ ...selectedProduct, price: parseFloat(e.target.value) })}
@@ -302,6 +310,7 @@ export default function Produtos() {
                   className="border p-2 w-full rounded"
                 />
                 <input
+                  id="estoque"
                   type="number"
                   value={selectedProduct.estoque}
                   onChange={e => setSelectedProduct({ ...selectedProduct, estoque: parseInt(e.target.value) })}
@@ -309,6 +318,7 @@ export default function Produtos() {
                   className="border p-2 w-full rounded"
                 />
                 <input
+                  id="category"
                   type="text"
                   value={selectedProduct.category}
                   onChange={e => setSelectedProduct({ ...selectedProduct, category: e.target.value })}
@@ -318,6 +328,7 @@ export default function Produtos() {
                 <div className="flex items-center space-x-2">
                   <label>Ativo:</label>
                   <input
+                    id="active"
                     type="checkbox"
                     checked={selectedProduct.active}
                     onChange={e => setSelectedProduct({ ...selectedProduct, active: e.target.checked })}
@@ -329,7 +340,7 @@ export default function Produtos() {
                       src={
                         selectedProductImage instanceof File
                           ? URL.createObjectURL(selectedProductImage)
-                          : selectedProduct.image !== ''
+                          : selectedProduct.image !== null
                           ? `${API_URL}produtos/img/${selectedProduct.id}`
                           : '/no-image.jpg'
                       }
