@@ -1,11 +1,14 @@
 import { API_URL } from './config.service';
 import { Product, NewProduct } from '../app/admin/produtos/page';
 
-function getHeaders(auth: boolean = false): HeadersInit {
+function getHeaders(auth: boolean = false, file: boolean = false): HeadersInit {
   const headers: Record<string, string> = {
     'ngrok-skip-browser-warning': 'true',
-    Host: 'localhost:3001',
   };
+
+  if (!file) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   if (auth) {
     const token = localStorage.getItem('token');
@@ -53,25 +56,21 @@ class ProductService {
 
   async atualizar(product: Product, file?: File | null): Promise<Product> {
     if (file) {
-      console.log('com file');
       await this.uploadImage(file, product.id);
-    } else {
-      console.log('sem file');
     }
+
+    console.log(product);
     try {
       const response = await fetch(API_URL + 'produtos/atualizar', {
         method: 'PATCH',
         headers: getHeaders(true),
         body: JSON.stringify(product),
       });
-
-      console.log('response', response);
-
       if (!response.ok) {
-        throw new Error(`Erro ao atualizar produto: ${response.statusText}`);
+        throw new Error(`Erro ao atualizar produto: ${response.json()}`);
       }
 
-      return await response.json();
+      return response.json();
     } catch (error) {
       throw error;
     }
@@ -84,13 +83,15 @@ class ProductService {
 
       const response = await fetch(API_URL + 'produtos/upload-image/' + id, {
         method: 'POST',
-        headers: getHeaders(true),
+        headers: getHeaders(true, true),
         body: formData,
       });
 
       if (!response.ok) {
         throw new Error(`Erro ao atualizar produto: ${response.statusText}`);
       }
+
+      return response.json();
     } catch (error) {
       throw error;
     }

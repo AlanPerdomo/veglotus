@@ -103,7 +103,10 @@ export default function Produtos() {
     e.preventDefault();
 
     if (selectedProduct) {
-      const response = await productService.atualizar(selectedProduct, selectedProductImage);
+      const response = await productService.atualizar(
+        selectedProduct,
+        selectedProductImage instanceof File ? selectedProductImage : null,
+      );
 
       if (response) {
         fetchProdutos();
@@ -115,7 +118,6 @@ export default function Produtos() {
   const handleProductUpdateImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const file = e.target.files?.[0];
-    console.log(typeof file);
     if (file) {
       setSelectedProductImage(file);
     }
@@ -252,6 +254,7 @@ export default function Produtos() {
                 <label>Categoria:</label>
                 <input
                   type="text"
+                  id="category"
                   value={newProduct.category}
                   onChange={e => setNewProduct({ ...newProduct, category: e.target.value })}
                   placeholder="Categoria"
@@ -263,6 +266,7 @@ export default function Produtos() {
                 <label>Ativo:</label>
                 <input
                   type="checkbox"
+                  id="active"
                   checked={newProduct.active}
                   onChange={e => setNewProduct({ ...newProduct, active: e.target.checked })}
                 />
@@ -338,10 +342,10 @@ export default function Produtos() {
                   <label htmlFor="imageUpload" className="cursor-pointer">
                     <Image
                       src={
-                        selectedProductImage instanceof File
+                        selectedProductImage !== null
                           ? URL.createObjectURL(selectedProductImage)
                           : selectedProduct.image !== null
-                          ? `${API_URL}produtos/img/${selectedProduct.id}`
+                          ? `${API_URL}produtos/img/${selectedProduct.image}`
                           : '/no-image.jpg'
                       }
                       alt={selectedProduct.name || 'Sem imagem'}
