@@ -123,13 +123,16 @@ export default function Produtos() {
     }
   };
 
-  const formatPriceFromString = (value: number) => {
-    return value.toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-      minimumFractionDigits: 2,
-    });
-  };
+  function formatarCentavos(valor: string) {
+    if (!valor) return '0,00';
+
+    const numero = parseInt(valor, 10) / 100;
+
+    if (isNaN(numero)) {
+      return '0,00';
+    }
+    return numero.toFixed(2).replace('.', ','); // Exibe como "1234,56"
+  }
 
   return (
     <div className="container sm:mx-auto sm:px-4 px-2 sm:p-6 p-4">
@@ -162,7 +165,7 @@ export default function Produtos() {
                 (#{product.id}) {product.name}
               </h2>
               <p className="text-gray-600">{product.description}</p>
-              <p className="text-green-700 font-semibold mt-2">Preço: R$ {product.price}</p>
+              <p className="text-green-700 font-semibold mt-2">Preço: R$ {(product.price / 100).toFixed(2)}</p>
               <p className="text-sm">Estoque: {product.estoque}</p>
               <p className="text-sm">Categoria: {product.category}</p>
             </div>
@@ -223,12 +226,12 @@ export default function Produtos() {
                   type="text"
                   id="price"
                   autoComplete="on"
-                  value={formatPriceFromString(newProduct.price)}
+                  value={`R$ ${formatarCentavos(newProduct.price.toString())}`}
                   onChange={e => {
                     const onlyNumbers = e.target.value.replace(/\D/g, '');
                     setNewProduct({
                       ...newProduct,
-                      price: parseFloat((parseInt(onlyNumbers || '0') / 100).toFixed(2)),
+                      price: parseInt(onlyNumbers, 10),
                     });
                   }}
                   className="border p-2 w-full rounded"
@@ -306,13 +309,16 @@ export default function Produtos() {
                 />
                 <input
                   id="price"
-                  inputMode="numeric"
-                  type="number"
-                  value={selectedProduct.price}
-                  onChange={e => setSelectedProduct({ ...selectedProduct, price: parseFloat(e.target.value) })}
+                  type="text"
+                  value={`R$ ${formatarCentavos(selectedProduct.price.toString())}`}
+                  onChange={e => {
+                    const onlyNumbers = e.target.value.replace(/\D/g, '');
+                    setSelectedProduct({ ...selectedProduct, price: parseInt(onlyNumbers, 10) });
+                  }}
                   placeholder="Preço, ex: 120,00"
                   className="border p-2 w-full rounded"
                 />
+
                 <input
                   id="estoque"
                   type="number"

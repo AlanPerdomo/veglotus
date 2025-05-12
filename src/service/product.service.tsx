@@ -1,5 +1,6 @@
 import { API_URL } from './config.service';
 import { Product, NewProduct } from '../app/admin/produtos/page';
+import { extname } from 'path';
 
 function getHeaders(auth: boolean = false, file: boolean = false): HeadersInit {
   const headers: Record<string, string> = {
@@ -57,9 +58,9 @@ class ProductService {
   async atualizar(product: Product, file?: File | null): Promise<Product> {
     if (file) {
       await this.uploadImage(file, product.id);
+      product.image = product.id + extname(file.name);
     }
 
-    console.log(product);
     try {
       const response = await fetch(API_URL + 'produtos/atualizar', {
         method: 'PATCH',

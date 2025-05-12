@@ -176,9 +176,7 @@ export default function Produtos() {
 
                       <div className="p-2 flex sm:flex-col justify-between text-xs sm:text-base font-bold">
                         <h3 className="text-black">{product.name}</h3>
-                        <p className="text-green-600 text-sm sm:text-md">
-                          R$ {(Math.trunc(product.price * 100) / 100).toFixed(2)}
-                        </p>
+                        <p className="text-green-600 text-sm sm:text-md">R$ {(product.price / 100).toFixed(2)}</p>
                       </div>
                     </div>
                   );
@@ -206,9 +204,7 @@ export default function Produtos() {
             )}
             <h3 className="text-xl font-bold text-black mb-2">{selectedProduct.name}</h3>
             <p className="text-gray-700 mb-4">{selectedProduct.description}</p>
-            <p className="text-green-600 font-bold text-lg">
-              R$ {(Math.trunc(selectedProduct.price * 100) / 100).toFixed(2)}
-            </p>
+            <p className="text-green-600 font-bold text-lg">R$ {(selectedProduct.price / 100).toFixed(2)}</p>
             <div className="flex items-center mb-4 mt-4">
               <button
                 onClick={() => decrementQuantity(selectedProduct.id)}
@@ -237,7 +233,7 @@ export default function Produtos() {
             >
               Adicionar ao Carrinho{' '}
               <span className="text-green-800 font-bold">
-                R${((quantities[selectedProduct.id] * Math.trunc(selectedProduct.price * 100)) / 100).toFixed(2)}
+                R${((quantities[selectedProduct.id] * selectedProduct.price) / 100).toFixed(2)}
               </span>
             </button>
           </div>
