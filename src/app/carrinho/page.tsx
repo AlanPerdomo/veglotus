@@ -4,6 +4,7 @@ import { paymentService } from '@/service/payment.service';
 import { useEffect, useState } from 'react';
 import { FaTrash } from 'react-icons/fa';
 import { initMercadoPago } from '@mercadopago/sdk-react';
+import { API_URL } from '@/service/config.service';
 import Image from 'next/image';
 
 interface CartItem {
@@ -113,6 +114,7 @@ export default function Carrinho() {
       sessionStorage.setItem('teste', JSON.stringify(response.id));
       localStorage.removeItem('cart');
       window.location.href = '/pedidos';
+      setIsLoading(false);
     } catch (error) {
       console.error('Erro ao finalizar o pedido:', error);
       alert('Ocorreu um erro ao finalizar o pedido. Tente novamente.');
@@ -138,7 +140,7 @@ export default function Carrinho() {
             <div key={item.id} className="flex items-center justify-between border p-4 rounded-lg shadow-md bg-white">
               {item.image && (
                 <Image
-                  src={item.image}
+                  src={`${API_URL}produtos/img/${item.id}`}
                   alt={item.name}
                   width={100}
                   height={100}
