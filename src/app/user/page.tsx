@@ -1,7 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { userService } from '@/service/user.service';
-import { AnimatePresence, motion } from 'framer-motion'; // IMPORTANTE
+import { AnimatePresence, motion } from 'framer-motion';
+import Link from 'next/link';
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -134,6 +135,11 @@ export default function AuthPage() {
                     placeholder="Digite sua senha"
                     required
                   />
+                  <div className="flex justify-end">
+                    <button className="text-blue-500 hover:underline text-xs">
+                      <Link href="/user/forgot-password">Esqueci minha senha</Link>
+                    </button>
+                  </div>
                 </div>
                 <button
                   type="submit"

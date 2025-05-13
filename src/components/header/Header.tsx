@@ -135,7 +135,7 @@ export const Header = () => {
               <Image src={userImage} alt="User" className="w-5" width={0} height={0} sizes="100vw" />
             </button>
           ) : (
-            <Link href="/user/dashboard">
+            <Link href="/user/perfil">
               <Image src={userImage} alt="User" className="w-5" width={0} height={0} sizes="100vw" />
             </Link>
           )
@@ -205,7 +205,7 @@ export const Header = () => {
         >
           <ul>
             <li>
-              <Link href="/user/dashboard">Perfil</Link>
+              <Link href="/user/perfil">Perfil</Link>
             </li>
             {isAdmin && (
               <div>
@@ -244,7 +244,7 @@ export const Header = () => {
                     className="absolute top-8 right-0 bg-gray-200 shadow-lg rounded-lg p-4 w-40 text-md text-gray-700"
                   >
                     <li className="hover:text-[#e967a8]">
-                      <Link href="/user/dashboard">Perfil</Link>
+                      <Link href="/user/perfil">Perfil</Link>
                     </li>
                     {isAdmin && (
                       <div>

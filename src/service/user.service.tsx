@@ -15,10 +15,11 @@ interface Address {
 }
 interface User {
   id?: string;
-  name: string;
-  surname: string;
-  email: string;
+  name?: string;
+  surname?: string;
+  email?: string;
   phone?: string;
+  password?: string;
   cpf?: string;
   addresses?: Address[];
 }
@@ -166,6 +167,25 @@ class UserService {
     await this.getAddresses(token);
 
     return response;
+  }
+
+  async sendPasswordResetEmail(email: string) {
+    try {
+      const response = await (
+        await fetch(API_URL + 'user/reset-password', {
+          method: 'POST',
+          headers: {
+            'ngrok-skip-browser-warning': 'true',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }),
+        })
+      ).json();
+      console.log(response);
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
 
