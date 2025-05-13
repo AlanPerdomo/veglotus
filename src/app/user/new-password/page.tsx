@@ -40,6 +40,7 @@ export default function NewPassword() {
         setLoading(false);
       } else {
         setErrorMessage('Ocorreu um erro ao atualizar a senha.');
+        setSuccess(true);
         setLoading(false);
       }
     });

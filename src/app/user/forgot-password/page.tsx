@@ -16,7 +16,7 @@ export default function ForgotPassword() {
       await userService.sendPasswordResetEmail(email);
       setMessage('Se o e-mail estiver cadastrado, enviaremos um link para redefinir sua senha.');
     } catch (error) {
-      setMessage('Ocorreu um erro ao tentar recuperar a senha.');
+      setMessage('Ocorreu um erro ao tentar recuperar a senha.' + error);
     } finally {
       setLoading(false);
     }
