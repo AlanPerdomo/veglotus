@@ -42,6 +42,9 @@ export default function Carrinho() {
   const [address, setAddress] = useState<Address | null>(null);
   const [deliveryFee, setDeliveryFee] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [itemToRemove, setItemToRemove] = useState<CartItem | null>(null);
+
   const totalPrice = cart.reduce((acc, item) => acc + (Math.trunc(item.price * 100) / 100) * item.quantity, 0);
 
   useEffect(() => {
@@ -88,9 +91,23 @@ export default function Carrinho() {
     updateCart(updatedCart);
   }
 
-  const removeFromCart = (productId: string) => {
-    const updatedCart = cart.filter(item => item.id !== productId);
-    updateCart(updatedCart);
+  const handleRemoveClick = (item: CartItem) => {
+    setItemToRemove(item);
+    setShowModal(true);
+  };
+
+  const confirmRemove = () => {
+    if (itemToRemove) {
+      const updatedCart = cart.filter(item => item.id !== itemToRemove.id);
+      updateCart(updatedCart);
+    }
+    setShowModal(false);
+    setItemToRemove(null);
+  };
+
+  const cancelRemove = () => {
+    setShowModal(false);
+    setItemToRemove(null);
   };
 
   const checkout = async () => {
@@ -149,52 +166,57 @@ export default function Carrinho() {
               )}
               <div className="flex-1 ml-4">
                 <h3 className="text-black font-semibold">{item.name}</h3>
-                <p className="text-green-600 font-bold">R$ {Math.trunc(item.price * 100) / 100}</p>
+                <div className="flex justify-start gap-4">
+                  <p className="text-green-600 font-bold">R$ {(item.price / 100).toFixed(2)}</p>
+                </div>
               </div>
-              <div className="flex justify-center sm:text-sm text-xs">
-                <div className="flex items-center">
-                  {item.quantity === 1 ? (
+              <div className="flex items-center justify-between gap-2 sm:text-sm text-xs">
+                <div className="flex flex-col items-center gap-1">
+                  <div className="flex items-center">
+                    {item.quantity === 1 ? (
+                      <button
+                        onClick={() => handleRemoveClick(item)}
+                        className="bg-red-500 hover:bg-red-600 text-white font-bold p-2 rounded-md"
+                      >
+                        <FaTrash />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => decrementQuantity(item.id)}
+                        className="bg-green-300 hover:bg-green-400 text-black font-bold py-1 px-3 rounded-l-lg"
+                      >
+                        -
+                      </button>
+                    )}
+                    <input
+                      type="text"
+                      value={item.quantity}
+                      readOnly
+                      className="w-12 p-1 text-center border-y font-extrabold border-gray-300 text-black"
+                    />
                     <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-3 rounded-md"
+                      onClick={() => incrementQuantity(item.id)}
+                      className="bg-green-300 hover:bg-green-400 text-black  font-bold py-1 px-3 rounded-r-lg"
                     >
-                      <FaTrash />
+                      +
                     </button>
-                  ) : (
-                    <button
-                      onClick={() => decrementQuantity(item.id)}
-                      className="bg-green-300 hover:bg-green-400 text-black font-semibold py-1 px-3 rounded-l-lg"
-                    >
-                      -
-                    </button>
-                  )}
-                  <input
-                    type="text"
-                    value={item.quantity}
-                    readOnly
-                    className="w-12 text-center border-y border-gray-300 text-black"
-                  />
-                  <button
-                    onClick={() => incrementQuantity(item.id)}
-                    className="bg-green-300 hover:bg-green-400 text-black  font-semibold py-1 px-3 rounded-r-lg"
-                  >
-                    +
-                  </button>
+                  </div>
+                  <p className="text-black font-bold">R$ {((item.price * item.quantity) / 100).toFixed(2)}</p>
                 </div>
                 <button
-                  onClick={() => removeFromCart(item.id)}
-                  className="ml-4 bg-red-500 hover:bg-red-600 text-white font-semibold sm:py-2 py-1 sm:px-3 px-2 rounded-xl"
+                  onClick={() => handleRemoveClick(item)}
+                  className=" bg-red-500 hover:bg-red-600 text-white font-semibold py-1 sm:px-3 px-2 rounded-xl"
                 >
                   Remover
                 </button>
               </div>
             </div>
           ))}
-          <div className="text-right sm:font-bold font-semibold text-base text-black">
-            Subtotal: R$ {(Math.trunc(totalPrice * 100) / 100).toFixed(2)}
+          <div className="text-right sm:font-bold font-semibold text-base text-black pt-4">
+            Subtotal: R$ {(totalPrice / 100).toFixed(2)}
           </div>
           {address ? (
-            <div className="mt-4 text-right text-black">
+            <div className=" text-right text-black">
               <div>
                 <p className="font-semibold">Endereço de entrega</p>
                 <p className="text-sm">{`${address.rua}, ${address.numero}${
@@ -209,7 +231,7 @@ export default function Carrinho() {
           )}
           <div className="text-right text-black">
             <p className="font-semibold">Entrega: R$ {deliveryFee.toFixed(2)}</p>
-            <p className="font-bold text-xl">Total: R$ {(totalPrice + deliveryFee).toFixed(2)}</p>
+            <p className="font-bold text-xl">Total: R$ {(totalPrice / 100 + deliveryFee).toFixed(2)}</p>
           </div>
           <div className="flex justify-end items-center space-x-4">
             <button
@@ -237,7 +259,7 @@ export default function Carrinho() {
               </button>
             ) : isLoading && !address ? (
               <a
-                href="/user/dashboard"
+                href="/user/perfil"
                 className="flex items-center bg-[#f0ad31] hover:bg-[#e6942c] text-white font-semibold  rounded-md py-2 px-4"
               >
                 Escolha um endereço
@@ -250,6 +272,31 @@ export default function Carrinho() {
                 Fechar pedido
               </button>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Modal de confirmação */}
+      {showModal && itemToRemove && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Deseja remover <span className="text-red-500">{itemToRemove.name}</span> do carrinho?
+            </h3>
+            <div className="flex justify-center gap-4 mt-4">
+              <button
+                onClick={confirmRemove}
+                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+              >
+                Remover
+              </button>
+              <button
+                onClick={cancelRemove}
+                className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded"
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
         </div>
       )}

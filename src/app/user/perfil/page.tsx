@@ -68,7 +68,7 @@ export default function Dashboard() {
     const fetchData = async () => {
       const logged = localStorage.getItem('isLogged');
       if (logged !== 'true') {
-        window.location.href = '/user/login';
+        window.location.href = '/user';
       }
 
       await getUser();

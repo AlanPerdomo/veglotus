@@ -70,7 +70,7 @@ export default function Pedidos() {
         const pedidos = await orderService.meusPedidos();
         sortOrders(pedidos);
       } else {
-        window.location.href = '/user/login';
+        window.location.href = '/user';
       }
     };
 
