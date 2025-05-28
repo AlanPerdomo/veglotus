@@ -186,7 +186,7 @@ export default function Pedidos() {
                     <div className="flex flex-col sm:items-end items-center text-black sm:gap-1 ">
                       <p className="text-gray-500 text-center">{pedido.status}</p>
                       <p className="text-green-800 sm:font-bold font-semibold">
-                        <span className="text-black">Total: </span> R$ {pedido.total.toFixed(2)}
+                        <span className="text-black">Total: </span> R$ {(pedido.total / 100).toFixed(2)}
                       </p>
                     </div>
                   </div>
@@ -224,10 +224,10 @@ export default function Pedidos() {
                 <span className="font-semibold">Status do Pagamento:</span> {selectedPedido.paymentStatus}
               </p>
               <p className="mt-4">
-                <span className="font-semibold">Entrega:</span> R$ {selectedPedido.deliveryFee.toFixed(2)}
+                <span className="font-semibold">Entrega:</span> R$ {(selectedPedido.deliveryFee / 100).toFixed(2)}
               </p>
               <p>
-                <span className="font-semibold">Total:</span> R$ {selectedPedido.total.toFixed(2)}
+                <span className="font-semibold">Total:</span> R$ {(selectedPedido.total / 100).toFixed(2)}
               </p>
               {selectedPedido.address &&
                 (() => {
@@ -271,10 +271,10 @@ export default function Pedidos() {
                           </td>
                           <td className="border border-gray-300 px-4 py-2 text-center">{orderProduct.quantity}</td>
                           <td className="border border-gray-300 px-4 py-2 text-center">
-                            R$ {orderProduct.price.toFixed(2)}
+                            R$ {(orderProduct.price / 100).toFixed(2)}
                           </td>
                           <td className="border border-gray-300 px-4 py-2 text-center">
-                            R$ {(orderProduct.price * orderProduct.quantity).toFixed(2)}
+                            R$ {((orderProduct.price * orderProduct.quantity) / 100).toFixed(2)}
                           </td>
                         </tr>
                       ))}

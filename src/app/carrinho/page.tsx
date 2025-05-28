@@ -60,13 +60,13 @@ export default function Carrinho() {
       quotation.addressId === address?.id &&
       new Date().getTime() - new Date(quotation.createdAt).getTime() <= 20 * 60 * 1000
     ) {
-      setDeliveryFee(parseFloat(quotation.valorFrete.priceBreakdown.total));
+      setDeliveryFee(parseFloat(quotation.valorFrete.priceBreakdown.total) * 100);
       setIsLoading(false);
     } else if (address) {
       const calculateDeliveryFee = async () => {
         const location = localStorage.getItem('address') || '';
         const quotation = await orderService.getQuotation(location);
-        setDeliveryFee(parseFloat(quotation.valorFrete.priceBreakdown.total));
+        setDeliveryFee(parseFloat(quotation.valorFrete.priceBreakdown.total) * 100);
         setIsLoading(false);
       };
       calculateDeliveryFee();
@@ -230,8 +230,8 @@ export default function Carrinho() {
             <div className="text-right text-sm text-gray-500">Nenhum endereço principal cadastrado.</div>
           )}
           <div className="text-right text-black">
-            <p className="font-semibold">Entrega: R$ {deliveryFee.toFixed(2)}</p>
-            <p className="font-bold text-xl">Total: R$ {(totalPrice / 100 + deliveryFee).toFixed(2)}</p>
+            <p className="font-semibold">Entrega: R$ {(deliveryFee / 100).toFixed(2)}</p>
+            <p className="font-bold text-xl">Total: R$ {((totalPrice + deliveryFee) / 100).toFixed(2)}</p>
           </div>
           <div className="flex justify-end items-center space-x-4">
             <button

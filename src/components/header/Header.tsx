@@ -140,7 +140,7 @@ export const Header = () => {
             </Link>
           )
         ) : (
-          <Link href="/user/login">
+          <Link href="/user">
             <Image src={userImage} alt="User" className="w-5" width={0} height={0} sizes="100vw" />
           </Link>
         )}

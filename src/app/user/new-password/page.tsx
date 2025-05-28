@@ -7,7 +7,7 @@ export default function NewPassword() {
   const [showForm, setShowForm] = useState(false);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(''); // Novo estado para mensagem de erro
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -37,9 +37,11 @@ export default function NewPassword() {
     setLoading(true);
     await userService.updateUser({ password: password.value }, tokenKey).then(response => {
       if (response?.ok) {
+        console.log('Senha atualizada com sucesso!');
         setLoading(false);
       } else {
         setErrorMessage('Ocorreu um erro ao atualizar a senha.');
+        console.error('Erro ao atualizar a senha:');
         setSuccess(true);
         setLoading(false);
       }
