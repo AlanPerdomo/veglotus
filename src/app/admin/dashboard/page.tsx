@@ -49,7 +49,6 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [showDetails, setShowDetails] = useState(false);
 
-  // Estados para os filtros
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [paymentStatusFilter, setPaymentStatusFilter] = useState<string>('');
   const [customerFilterByName, setCustomerFilterByName] = useState<string>('');
@@ -70,7 +69,6 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  // Função para aplicar os filtros
   const filteredOrders = orders.filter(order => {
     return (
       (statusFilter === '' || order.status.toLowerCase() === statusFilter.toLowerCase()) &&
@@ -80,7 +78,6 @@ export default function Dashboard() {
     );
   });
 
-  // Agrupar pedidos por usuário (após aplicar filtros)
   const groupedOrders = filteredOrders.reduce((acc, order) => {
     const userId = order.user.id;
     if (!acc[userId]) {
