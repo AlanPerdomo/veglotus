@@ -35,10 +35,13 @@ export default function NewPassword() {
 
     setErrorMessage('');
     setLoading(true);
+
     await userService.updateUser({ password: password.value }, tokenKey).then(response => {
       if (response?.ok) {
         console.log('Senha atualizada com sucesso!');
         setLoading(false);
+        setSuccess(true);
+        window.location.href = '/login';
       } else {
         setErrorMessage('Ocorreu um erro ao atualizar a senha.');
         console.error('Erro ao atualizar a senha:');
