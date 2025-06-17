@@ -15,7 +15,7 @@ export const Footer = () => {
           <p>© 2025 VegLótus. Todos os direitos reservados.</p>
           <p>
             Desenvolvido por{' '}
-            <Link href="https://github.com/AlanPerdomo" className="underline hover:text-blue-500">
+            <Link href="https://alanperdomo.github.io/" className="underline hover:text-blue-500">
               Alan Perdomo
             </Link>
           </p>
