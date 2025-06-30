@@ -205,7 +205,7 @@ export default function Dashboard() {
                         {order.status}
                       </span>
                     </div>
-                    <div className="text-sm text-gray-600">Total: R$ {order.total.toFixed(2)}</div>
+                    <div className="text-sm text-gray-600">Total: R$ {(order.total / 100).toFixed(2)}</div>
                     <div className="text-sm text-gray-600">Data: {new Date(order.createdAt).toLocaleDateString()}</div>
                   </div>
                 ))}
@@ -228,7 +228,7 @@ export default function Dashboard() {
                 <strong>Pagamento:</strong> {selectedOrder.paymentStatus}
               </p>
               <p>
-                <strong>Total:</strong> R$ {selectedOrder.total.toFixed(2)}
+                <strong>Total:</strong> R$ {(selectedOrder.total / 100).toFixed(2)}
               </p>
               <p>
                 <strong>Endereço:</strong> {JSON.parse(selectedOrder.address).rua},{' '}
@@ -243,10 +243,10 @@ export default function Dashboard() {
                   <ul className="list-disc pl-6">
                     {selectedOrder.orderProducts.map(item => (
                       <li key={item.id} className="mb-2">
-                        {item.product.name} - R$ {item.price.toFixed(2)} - Quantidade: {item.quantity}
+                        {item.product.name} - R$ {(item.price / 100).toFixed(2)} - Quantidade: {item.quantity}
                       </li>
                     ))}
-                    <li className="mb-2 ">Frete: R$ {selectedOrder.deliveryFee}</li>
+                    <li className="mb-2 ">Frete: R$ {(selectedOrder.deliveryFee / 100).toFixed(2)}</li>
                   </ul>
                 </div>
               )}
