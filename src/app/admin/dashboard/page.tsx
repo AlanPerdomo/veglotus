@@ -240,10 +240,13 @@ export default function Dashboard() {
               {showDetails && (
                 <div className="border border-gray-300">
                   <h3 className="text-center text-lg font-semibold mt-2 mb-4">Itens do Pedido</h3>
-                  <ul className="list-disc pl-6">
+                  <ul className="list-disc pl-6 pr-6">
                     {selectedOrder.orderProducts.map(item => (
-                      <li key={item.id} className="mb-2">
-                        {item.product.name} - R$ {(item.price / 100).toFixed(2)} - Quantidade: {item.quantity}
+                      <li key={item.id} className="mb-2 flex justify-between underline">
+                        <div>
+                          {item.quantity} x {item.product.name}
+                        </div>
+                        <div>R$ {(item.price / 100).toFixed(2)}</div>
                       </li>
                     ))}
                     <li className="mb-2 ">Frete: R$ {(selectedOrder.deliveryFee / 100).toFixed(2)}</li>
