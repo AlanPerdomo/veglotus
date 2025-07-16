@@ -254,12 +254,24 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-4 mt-6">
               <button
                 onClick={closeModal}
                 className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-xl hover:bg-blue-600 transition-colors"
               >
                 Fechar
+              </button>
+              <button
+                onClick={() => {}}
+                className="mt-4 bg-green-500 text-white px-4 py-2 rounded-xl hover:bg-green-600 transition-colors"
+              >
+                concluir pedido
+              </button>
+              <button
+                onClick={() => {}}
+                className="mt-4 bg-yellow-500 text-white px-4 py-2 rounded-xl hover:bg-yellow-600 transition-colors"
+              >
+                informar envio
               </button>
               <button
                 onClick={() => setShowDetails(!showDetails)}

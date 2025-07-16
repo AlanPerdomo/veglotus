@@ -100,7 +100,7 @@ export default function Pedidos() {
         return 'bg-purple-100 border-purple-300';
       case 'enviado':
         return 'bg-indigo-100 border-indigo-300';
-      case 'entregue':
+      case 'concluido':
         return 'bg-green-100 border-green-300';
       case 'cancelado':
         return 'bg-red-100 border-red-300';
@@ -289,7 +289,7 @@ export default function Pedidos() {
                     initialization={{ preferenceId: selectedPedido.MLpaymentId, redirectMode: 'self' }}
                   />
                 )}
-                {selectedPedido.status !== 'CANCELADO' && (
+                {selectedPedido.status !== 'CANCELADO' && selectedPedido.status.toUpperCase() !== 'CONCLUIDO' && (
                   <div>
                     <button
                       className="text-white bg-red-500 hover:bg-red-600 rounded-xl m-2 sm:p-1"
